@@ -3,6 +3,7 @@ import { registerSchema } from "../schemas/register.schema.js";
 import { loginSchema } from "../schemas/login.schema.js";
 import { RegisterUseCase } from "../use-cases/register/register.use-case.js";
 import { LoginUseCase } from "../use-cases/login/login.use-case.js";
+import { prisma } from "../../../lib/prisma.js";
 
 const registerUseCase = new RegisterUseCase();
 const loginUseCase = new LoginUseCase();
@@ -26,4 +27,23 @@ export class AuthController {
 
     return reply.status(200).send(result);
   }
+
+  async me(request: FastifyRequest, reply: FastifyReply) {
+  const user = await prisma.user.findUnique({
+    where: {
+      id: request.user.id,
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      avatarUrl: true,
+      createdAt: true,
+    },
+  });
+
+  return reply.send({
+    user,
+  });
+}
 }
