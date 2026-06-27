@@ -1,10 +1,12 @@
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 import { prisma } from "./lib/prisma.js";
-import { authRoutes } from "./modules/auth/auth.rotes.js";
+import { authRoutes } from "./modules/auth/routes/auth.rotes.js";
+
+const isProduction = process.env.NODE_ENV === "production";
 
 export const app = Fastify({
-  logger: true,
+  logger: isProduction,
 });
 
 app.register(cors, {
