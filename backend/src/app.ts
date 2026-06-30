@@ -2,6 +2,7 @@ import Fastify from "fastify";
 import cors from "@fastify/cors";
 import { prisma } from "./lib/prisma.js";
 import { authRoutes } from "./modules/auth/routes/auth.rotes.js";
+import { errorMiddleware } from "./middlewares/error.middleware.js";
 
 const isProduction = process.env.NODE_ENV === "production";
 
@@ -33,3 +34,5 @@ app.get("/health/db", async () => {
     users: usersCount,
   };
 });
+
+app.setErrorHandler(errorMiddleware);

@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import { prisma } from "../../../../lib/prisma.js";
 import type { RegisterInput } from "../../schemas/register.schema.js";
+import { AppError } from "../../../../shared/errors/app-error.js";
 
 export class RegisterUseCase {
   async execute(data: RegisterInput) {
@@ -11,7 +12,7 @@ export class RegisterUseCase {
     });
 
     if (userAlreadyExists) {
-      throw new Error("Email já está em uso");
+      throw new AppError("Email já está em uso", 409);
     }
 
     const passwordHash = await bcrypt.hash(data.password, 8);
