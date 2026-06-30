@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { prisma } from "../../../../lib/prisma.js";
 import type { LoginInput } from "../../schemas/login.schema.js";
+import { env } from "../../../../config/env.js"; 
 
 export class LoginUseCase {
   async execute(data: LoginInput) {
@@ -25,7 +26,7 @@ export class LoginUseCase {
       {
         sub: user.id,
       },
-      process.env.JWT_SECRET as string,
+      env.JWT_SECRET,
       {
         expiresIn: "7d",
       }
