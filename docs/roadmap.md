@@ -46,7 +46,7 @@ O projeto será desenvolvido por milestones, permitindo evolução contínua da 
 ## Objetivos
 
 - [x] Criar Workspace
-- [ ] Listar Workspaces
+- [x] Listar Workspaces
 - [ ] Buscar Workspace por ID
 - [ ] Atualizar Workspace
 - [ ] Excluir Workspace
