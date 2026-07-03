@@ -45,12 +45,14 @@ O projeto será desenvolvido por milestones, permitindo evolução contínua da 
 
 ## Objetivos
 
-- CRUD de Workspaces
-- Convites
-- Gerenciamento de membros
-- Sistema de permissões
-- Atualização de permissões
-- Exclusão de membros
+- [x] Criar Workspace
+- [ ] Listar Workspaces
+- [ ] Buscar Workspace por ID
+- [ ] Atualizar Workspace
+- [ ] Excluir Workspace
+- [ ] Convites
+- [ ] Gerenciamento de membros
+- [ ] Sistema de permissões
 
 ---
 

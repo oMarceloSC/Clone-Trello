@@ -12,13 +12,13 @@ A autenticação é realizada utilizando **JWT (JSON Web Token)**.
 
 # Base URL
 
-Desenvolvimento
+## Desenvolvimento
 
 ```
 http://localhost:3333
 ```
 
-Produção
+## Produção
 
 ```
 Em definição
@@ -53,9 +53,7 @@ Em definição
 
 Após realizar o login, a API retorna um JWT.
 
-Esse token deve ser enviado nas rotas protegidas.
-
-Exemplo:
+Esse token deve ser enviado em todas as rotas protegidas utilizando o header:
 
 ```
 Authorization: Bearer TOKEN
@@ -77,13 +75,9 @@ Authorization: Bearer TOKEN
 /auth/register
 ```
 
----
-
 ### Descrição
 
 Cria um novo usuário na plataforma.
-
----
 
 ### Request Body
 
@@ -94,8 +88,6 @@ Cria um novo usuário na plataforma.
     "password": "123456"
 }
 ```
-
----
 
 ### Resposta
 
@@ -114,13 +106,11 @@ Cria um novo usuário na plataforma.
 }
 ```
 
----
-
 ### Possíveis Erros
 
-Email já cadastrado
+#### Email já cadastrado
 
-**409**
+**409 Conflict**
 
 ```json
 {
@@ -129,11 +119,9 @@ Email já cadastrado
 }
 ```
 
----
+#### Erro de validação
 
-Erro de validação
-
-**400**
+**400 Bad Request**
 
 ```json
 {
@@ -144,7 +132,7 @@ Erro de validação
 
 ---
 
-# Login
+## Login
 
 ### POST
 
@@ -152,13 +140,9 @@ Erro de validação
 /auth/login
 ```
 
----
-
 ### Descrição
 
 Autentica um usuário utilizando email e senha.
-
----
 
 ### Request Body
 
@@ -168,8 +152,6 @@ Autentica um usuário utilizando email e senha.
     "password": "123456"
 }
 ```
-
----
 
 ### Resposta
 
@@ -187,13 +169,11 @@ Autentica um usuário utilizando email e senha.
 }
 ```
 
----
-
 ### Possíveis Erros
 
-Credenciais inválidas
+#### Credenciais inválidas
 
-**401**
+**401 Unauthorized**
 
 ```json
 {
@@ -202,11 +182,9 @@ Credenciais inválidas
 }
 ```
 
----
+#### Erro de validação
 
-Erro de validação
-
-**400**
+**400 Bad Request**
 
 ```json
 {
@@ -217,7 +195,7 @@ Erro de validação
 
 ---
 
-# Usuário Autenticado
+## Usuário Autenticado
 
 ### GET
 
@@ -225,21 +203,15 @@ Erro de validação
 /auth/me
 ```
 
----
-
 ### Descrição
 
-Retorna as informações do usuário autenticado.
-
----
+Retorna os dados do usuário autenticado.
 
 ### Headers
 
 ```
 Authorization: Bearer TOKEN
 ```
-
----
 
 ### Resposta
 
@@ -257,13 +229,11 @@ Authorization: Bearer TOKEN
 }
 ```
 
----
-
 ### Possíveis Erros
 
-Token ausente
+#### Token não informado
 
-**401**
+**401 Unauthorized**
 
 ```json
 {
@@ -271,15 +241,96 @@ Token ausente
 }
 ```
 
----
+#### Token inválido
 
-Token inválido
-
-**401**
+**401 Unauthorized**
 
 ```json
 {
     "message": "Token inválido ou expirado"
+}
+```
+
+---
+
+# Workspaces
+
+## Criar Workspace
+
+### POST
+
+```
+/workspaces
+```
+
+### Descrição
+
+Cria um novo Workspace para o usuário autenticado.
+
+O usuário que cria o Workspace é automaticamente adicionado como membro com a permissão **OWNER**.
+
+### Headers
+
+```
+Authorization: Bearer TOKEN
+Content-Type: application/json
+```
+
+### Request Body
+
+```json
+{
+    "name": "Projetos Pessoais",
+    "description": "Workspace para organizar meus projetos de portfólio"
+}
+```
+
+### Resposta
+
+**201 Created**
+
+```json
+{
+    "message": "Workspace criado com sucesso",
+    "workspace": {
+        "id": "uuid",
+        "name": "Projetos Pessoais",
+        "description": "Workspace para organizar meus projetos de portfólio",
+        "createdAt": "2026-06-27T00:00:00.000Z",
+        "updatedAt": "2026-06-27T00:00:00.000Z",
+        "members": [
+            {
+                "id": "uuid",
+                "userId": "uuid",
+                "workspaceId": "uuid",
+                "role": "OWNER",
+                "createdAt": "2026-06-27T00:00:00.000Z"
+            }
+        ]
+    }
+}
+```
+
+### Possíveis Erros
+
+#### Token inválido
+
+**401 Unauthorized**
+
+```json
+{
+    "message": "Token inválido ou expirado"
+}
+```
+
+#### Erro de validação
+
+**400 Bad Request**
+
+```json
+{
+    "statusCode": 400,
+    "message": "Erro de validação"
 }
 ```
 
@@ -290,8 +341,6 @@ Token inválido
 ## Workspaces
 
 ```
-POST   /workspaces
-
 GET    /workspaces
 
 GET    /workspaces/:id
@@ -299,6 +348,14 @@ GET    /workspaces/:id
 PATCH  /workspaces/:id
 
 DELETE /workspaces/:id
+
+POST   /workspaces/:id/invitations
+
+GET    /workspaces/:id/members
+
+PATCH  /workspaces/:id/members/:memberId
+
+DELETE /workspaces/:id/members/:memberId
 ```
 
 ---
@@ -306,13 +363,15 @@ DELETE /workspaces/:id
 ## Boards
 
 ```
-POST
+POST   /boards
 
-GET
+GET    /boards
 
-PATCH
+GET    /boards/:id
 
-DELETE
+PATCH  /boards/:id
+
+DELETE /boards/:id
 ```
 
 ---
@@ -320,13 +379,13 @@ DELETE
 ## Lists
 
 ```
-POST
+POST   /lists
 
-GET
+GET    /lists
 
-PATCH
+PATCH  /lists/:id
 
-DELETE
+DELETE /lists/:id
 ```
 
 ---
@@ -334,13 +393,13 @@ DELETE
 ## Cards
 
 ```
-POST
+POST   /cards
 
-GET
+GET    /cards
 
-PATCH
+PATCH  /cards/:id
 
-DELETE
+DELETE /cards/:id
 ```
 
 ---
@@ -348,11 +407,11 @@ DELETE
 ## Comments
 
 ```
-POST
+POST   /comments
 
-PATCH
+PATCH  /comments/:id
 
-DELETE
+DELETE /comments/:id
 ```
 
 ---
@@ -360,11 +419,11 @@ DELETE
 ## Labels
 
 ```
-POST
+POST   /labels
 
-PATCH
+PATCH  /labels/:id
 
-DELETE
+DELETE /labels/:id
 ```
 
 ---
@@ -372,9 +431,9 @@ DELETE
 ## Attachments
 
 ```
-POST
+POST   /attachments
 
-DELETE
+DELETE /attachments/:id
 ```
 
 ---
@@ -382,9 +441,9 @@ DELETE
 ## Notifications
 
 ```
-GET
+GET    /notifications
 
-PATCH
+PATCH  /notifications/:id/read
 ```
 
 ---
@@ -414,13 +473,13 @@ GET /search
 
 # Versionamento
 
-Atualmente a API encontra-se na versão:
+Versão atual da API:
 
 ```
-v0.1.0
+v0.2.0
 ```
 
-As futuras versões serão registradas no arquivo:
+O histórico completo de alterações pode ser encontrado em:
 
 ```
 docs/changelog.md
