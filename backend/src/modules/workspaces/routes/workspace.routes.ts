@@ -12,4 +12,12 @@ export async function workspaceRoutes(app: FastifyInstance) {
     },
     workspaceController.create
   );
+
+  app.get(
+    "/",
+    {
+      preHandler: authMiddleware,
+    },
+    workspaceController.list
+  );
 }
