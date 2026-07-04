@@ -2,7 +2,42 @@
 
 Todas as mudanças importantes deste projeto serão documentadas neste arquivo.
 
-O formato utilizado é inspirado no padrão **Keep a Changelog**.
+O formato utilizado é inspirado no padrão **Keep a Changelog** e o projeto segue o versionamento semântico (**Semantic Versioning**).
+
+---
+
+# [0.2.0] - Workspace Management
+
+## Added
+
+### Workspace
+
+- Estrutura inicial do módulo Workspaces.
+- Endpoint para criação de Workspaces.
+- Endpoint para listagem de Workspaces.
+- Endpoint para busca de Workspace por ID.
+- Associação automática do criador do Workspace como `OWNER`.
+- Validação de acesso através da tabela `WorkspaceMember`.
+
+### Arquitetura
+
+- Organização do módulo Workspaces utilizando:
+  - Controllers
+  - Routes
+  - Schemas
+  - Use Cases
+  - Types
+
+### Segurança
+
+- Todas as rotas do módulo protegidas por autenticação JWT.
+- Busca de Workspace limitada aos membros pertencentes ao Workspace.
+- Retorno `404 Not Found` quando o usuário não possui acesso ao Workspace, evitando enumeração de recursos.
+
+### Documentação
+
+- Criação da documentação específica do módulo:
+  - `docs/api/workspaces.md`
 
 ---
 
@@ -19,31 +54,35 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**.
 - Sistema de Migrations.
 - Fastify.
 - TypeScript.
+- Configuração do ambiente utilizando `.env`.
+- Validação das variáveis de ambiente com Zod.
 
 ### Arquitetura
 
-- Estrutura modular.
+- Estrutura modular da aplicação.
+- Organização baseada em módulos.
 - Controllers.
 - Use Cases.
 - Schemas.
 - Middlewares.
 - AppError.
-- Middleware global de erros.
+- Middleware global de tratamento de erros.
 
 ### Autenticação
 
 - Cadastro de usuários.
 - Login.
-- Hash de senha.
-- JWT.
+- Geração de JWT.
+- Hash de senha utilizando Bcrypt.
 - Middleware de autenticação.
 - Endpoint `/auth/me`.
 
 ### Banco de Dados
 
-- Model User.
-- Model Workspace.
-- Model WorkspaceMember.
+- Model `User`.
+- Model `Workspace`.
+- Model `WorkspaceMember`.
+- Enum `WorkspaceRole`.
 
 ### Documentação
 
@@ -51,18 +90,7 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**.
 - architecture.md.
 - backend.md.
 - database.md.
-- api.md.
 - roadmap.md.
-- changelog.md.
 - decisions.md.
-
----
-
-# Próxima Versão
-
-## 0.2.0
-
-- CRUD de Workspaces.
-- Permissões.
-- Convites.
-- Gerenciamento de membros.
+- websocket.md.
+- API organizada por módulos.

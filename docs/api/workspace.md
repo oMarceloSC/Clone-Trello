@@ -1,6 +1,61 @@
 # Workspaces API
 
-Responsável pelo gerenciamento dos Workspaces.
+## Visão Geral
+
+O módulo de Workspaces é responsável pelo gerenciamento dos espaços de trabalho do sistema.
+
+Um Workspace representa o nível mais alto de organização da aplicação, agrupando Boards, membros, permissões e, futuramente, convites, atividades, notificações e configurações.
+
+Todo Workspace possui pelo menos um membro com a permissão **OWNER**, que é automaticamente definido no momento da criação.
+
+---
+
+# Fluxo Geral
+
+```
+Usuário
+
+↓
+
+Workspace
+
+↓
+
+Boards
+
+↓
+
+Lists
+
+↓
+
+Cards
+```
+
+Um usuário pode participar de vários Workspaces.
+
+Cada Workspace pode possuir vários membros.
+
+---
+
+# Permissões
+
+Atualmente existem quatro níveis de permissão.
+
+| Role | Descrição |
+|------|-----------|
+| OWNER | Proprietário do Workspace |
+| ADMIN | Administrador |
+| MEMBER | Membro comum |
+| VIEWER | Apenas visualização |
+
+No momento apenas a role **OWNER** é utilizada automaticamente durante a criação do Workspace.
+
+As demais serão utilizadas nas próximas etapas do desenvolvimento.
+
+---
+
+# Endpoints
 
 ---
 
@@ -16,14 +71,19 @@ Responsável pelo gerenciamento dos Workspaces.
 
 Cria um novo Workspace para o usuário autenticado.
 
-O criador é automaticamente associado ao Workspace como **OWNER**.
+Ao criar um Workspace, o usuário é automaticamente associado como membro utilizando a permissão **OWNER**.
+
+---
 
 ### Headers
 
 ```
 Authorization: Bearer TOKEN
+
 Content-Type: application/json
 ```
+
+---
 
 ### Request Body
 
@@ -34,7 +94,9 @@ Content-Type: application/json
 }
 ```
 
-### Resposta
+---
+
+### Response
 
 **201 Created**
 
@@ -50,14 +112,17 @@ Content-Type: application/json
     "members": [
       {
         "id": "uuid",
+        "userId": "uuid",
+        "workspaceId": "uuid",
         "role": "OWNER",
-        "createdAt": "2026-06-27T00:00:00.000Z",
-        "userId": "uuid"
+        "createdAt": "2026-06-27T00:00:00.000Z"
       }
     ]
   }
 }
 ```
+
+---
 
 ### Possíveis Erros
 
@@ -70,6 +135,8 @@ Content-Type: application/json
   "message": "Token inválido ou expirado"
 }
 ```
+
+---
 
 #### Erro de validação
 
@@ -96,13 +163,19 @@ Content-Type: application/json
 
 Retorna todos os Workspaces dos quais o usuário autenticado faz parte.
 
+A listagem é realizada através da tabela `WorkspaceMember`, garantindo que apenas Workspaces onde o usuário possui vínculo sejam retornados.
+
+---
+
 ### Headers
 
 ```
 Authorization: Bearer TOKEN
 ```
 
-### Resposta
+---
+
+### Response
 
 **200 OK**
 
@@ -133,7 +206,116 @@ Authorization: Bearer TOKEN
 }
 ```
 
+---
+
 ### Possíveis Erros
+
+#### Token inválido
+
+**401 Unauthorized**
+
+```json
+{
+  "message": "Token inválido ou expirado"
+}
+```
+
+---
+
+# Buscar Workspace por ID
+
+## GET
+
+```
+/workspaces/:id
+```
+
+### Descrição
+
+Retorna um Workspace específico.
+
+Antes de retornar os dados, o sistema verifica se o usuário autenticado pertence ao Workspace solicitado.
+
+Caso o usuário não faça parte do Workspace, a API retorna **404 Not Found**, impedindo que usuários descubram a existência de Workspaces aos quais não possuem acesso.
+
+Essa abordagem aumenta a segurança da aplicação e evita enumeração de identificadores.
+
+---
+
+### Headers
+
+```
+Authorization: Bearer TOKEN
+```
+
+---
+
+### Path Parameters
+
+| Parâmetro | Tipo | Descrição |
+|-----------|------|-----------|
+| id | UUID | Identificador do Workspace |
+
+---
+
+### Response
+
+**200 OK**
+
+```json
+{
+  "workspace": {
+    "id": "uuid",
+    "name": "Projetos Pessoais",
+    "description": "Workspace destinado aos meus projetos.",
+    "createdAt": "2026-06-27T00:00:00.000Z",
+    "updatedAt": "2026-06-27T00:00:00.000Z",
+    "members": [
+      {
+        "id": "uuid",
+        "role": "OWNER",
+        "createdAt": "2026-06-27T00:00:00.000Z",
+        "user": {
+          "id": "uuid",
+          "name": "Marcelo Cruz",
+          "email": "marcelo@email.com",
+          "avatarUrl": null
+        }
+      }
+    ]
+  }
+}
+```
+
+---
+
+### Possíveis Erros
+
+#### Workspace inexistente
+
+**404 Not Found**
+
+```json
+{
+  "statusCode": 404,
+  "message": "Workspace não encontrado."
+}
+```
+
+---
+
+#### Usuário sem acesso ao Workspace
+
+**404 Not Found**
+
+```json
+{
+  "statusCode": 404,
+  "message": "Workspace não encontrado."
+}
+```
+
+---
 
 #### Token inválido
 
@@ -149,10 +331,113 @@ Authorization: Bearer TOKEN
 
 # Próximos Endpoints
 
-- GET /workspaces/:id
-- PATCH /workspaces/:id
-- DELETE /workspaces/:id
-- POST /workspaces/:id/invitations
-- GET /workspaces/:id/members
-- PATCH /workspaces/:id/members/:memberId
-- DELETE /workspaces/:id/members/:memberId
+Os seguintes endpoints serão implementados nas próximas etapas do desenvolvimento.
+
+## Atualizar Workspace
+
+```
+PATCH /workspaces/:id
+```
+
+---
+
+## Excluir Workspace
+
+```
+DELETE /workspaces/:id
+```
+
+---
+
+## Listar Membros
+
+```
+GET /workspaces/:id/members
+```
+
+---
+
+## Convidar Usuário
+
+```
+POST /workspaces/:id/invitations
+```
+
+---
+
+## Alterar Permissão
+
+```
+PATCH /workspaces/:id/members/:memberId
+```
+
+---
+
+## Remover Membro
+
+```
+DELETE /workspaces/:id/members/:memberId
+```
+
+---
+
+# Fluxo de Permissões (Planejado)
+
+```
+Usuário
+
+↓
+
+JWT
+
+↓
+
+Middleware
+
+↓
+
+WorkspaceMember
+
+↓
+
+Validação de Role
+
+↓
+
+OWNER
+
+ADMIN
+
+MEMBER
+
+VIEWER
+
+↓
+
+Permissão concedida
+```
+
+Esse fluxo será utilizado em todas as operações futuras do módulo de Workspaces, como atualização, exclusão, gerenciamento de membros e convites.
+
+---
+
+# Estado Atual do Módulo
+
+## Implementado
+
+- ✅ Criar Workspace
+- ✅ Listar Workspaces
+- ✅ Buscar Workspace por ID
+- ✅ Associação automática do OWNER
+- ✅ Validação de acesso através da tabela WorkspaceMember
+
+---
+
+## Próximas Funcionalidades
+
+- Atualizar Workspace
+- Excluir Workspace
+- Convites
+- Gerenciamento de membros
+- Sistema de permissões
+- Auditoria de atividades
