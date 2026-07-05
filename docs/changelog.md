@@ -10,6 +10,9 @@ O formato utilizado é inspirado no padrão **Keep a Changelog** e o projeto seg
 
 ## Added
 
+- Endpoint para atualização de Workspace.
+- Controle de permissões para atualização utilizando as roles OWNER e ADMIN.
+
 ### Workspace
 
 - Estrutura inicial do módulo Workspaces.
@@ -33,6 +36,8 @@ O formato utilizado é inspirado no padrão **Keep a Changelog** e o projeto seg
 - Todas as rotas do módulo protegidas por autenticação JWT.
 - Busca de Workspace limitada aos membros pertencentes ao Workspace.
 - Retorno `404 Not Found` quando o usuário não possui acesso ao Workspace, evitando enumeração de recursos.
+- Endpoint para atualização de Workspace.
+- Controle de permissões para atualização utilizando as roles OWNER e ADMIN.
 
 ### Documentação
 

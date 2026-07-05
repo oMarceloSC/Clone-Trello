@@ -49,9 +49,9 @@ Atualmente existem quatro níveis de permissão.
 | MEMBER | Membro comum |
 | VIEWER | Apenas visualização |
 
-No momento apenas a role **OWNER** é utilizada automaticamente durante a criação do Workspace.
+Atualmente apenas as roles **OWNER** e **ADMIN** possuem permissão para atualizar um Workspace.
 
-As demais serão utilizadas nas próximas etapas do desenvolvimento.
+As demais permissões serão utilizadas nas próximas funcionalidades, como gerenciamento de membros, Boards e Convites.
 
 ---
 
@@ -329,6 +329,116 @@ Authorization: Bearer TOKEN
 
 ---
 
+# Atualizar Workspace
+
+## PATCH
+
+```
+/workspaces/:id
+```
+
+### Descrição
+
+Atualiza as informações de um Workspace existente.
+
+Somente usuários com as permissões **OWNER** ou **ADMIN** podem realizar esta operação.
+
+Caso o usuário não pertença ao Workspace, a API retornará **404 Not Found**.
+
+Caso pertença ao Workspace, mas não possua permissão suficiente, retornará **403 Forbidden**.
+
+---
+
+### Headers
+
+```
+Authorization: Bearer TOKEN
+
+Content-Type: application/json
+```
+
+---
+
+### Path Parameters
+
+| Campo | Tipo | Descrição |
+|--------|------|-----------|
+| id | UUID | Identificador do Workspace |
+
+---
+
+### Request Body
+
+Todos os campos são opcionais.
+
+```json
+{
+  "name": "Projetos Atualizados",
+  "description": "Workspace atualizado pelo endpoint PATCH"
+}
+```
+
+---
+
+### Response
+
+**200 OK**
+
+```json
+{
+  "message": "Workspace atualizado com sucesso",
+  "workspace": {
+    "id": "uuid",
+    "name": "Projetos Atualizados",
+    "description": "Workspace atualizado pelo endpoint PATCH",
+    "createdAt": "2026-06-27T00:00:00.000Z",
+    "updatedAt": "2026-06-27T00:15:00.000Z"
+  }
+}
+```
+
+---
+
+### Possíveis Erros
+
+#### Workspace inexistente
+
+**404 Not Found**
+
+```json
+{
+  "statusCode": 404,
+  "message": "Workspace não encontrado."
+}
+```
+
+---
+
+#### Usuário sem permissão
+
+**403 Forbidden**
+
+```json
+{
+  "statusCode": 403,
+  "message": "Você não tem permissão para atualizar este Workspace."
+}
+```
+
+---
+
+#### Token inválido
+
+**401 Unauthorized**
+
+```json
+{
+  "message": "Token inválido ou expirado"
+}
+```
+
+---
+
 # Próximos Endpoints
 
 Os seguintes endpoints serão implementados nas próximas etapas do desenvolvimento.
@@ -430,6 +540,8 @@ Esse fluxo será utilizado em todas as operações futuras do módulo de Workspa
 - ✅ Buscar Workspace por ID
 - ✅ Associação automática do OWNER
 - ✅ Validação de acesso através da tabela WorkspaceMember
+- ✅ Atualizar Workspace
+- ✅ Controle de permissões para atualização (OWNER e ADMIN)
 
 ---
 
