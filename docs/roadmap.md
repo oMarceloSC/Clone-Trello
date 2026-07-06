@@ -49,7 +49,7 @@ O projeto será desenvolvido por milestones, permitindo evolução contínua da 
 - [x] Listar Workspaces
 - [x] Buscar Workspace por ID
 - [x] Atualizar Workspace
-- [ ] Excluir Workspace
+- [x] Excluir Workspace
 - [ ] Convites
 - [ ] Gerenciamento de membros
 - [ ] Sistema de permissões

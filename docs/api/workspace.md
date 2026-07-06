@@ -49,7 +49,12 @@ Atualmente existem quatro níveis de permissão.
 | MEMBER | Membro comum |
 | VIEWER | Apenas visualização |
 
-Atualmente apenas as roles **OWNER** e **ADMIN** possuem permissão para atualizar um Workspace.
+Atualmente:
+
+- **OWNER** pode atualizar e excluir um Workspace.
+- **ADMIN** pode atualizar um Workspace.
+- **MEMBER** não possui permissões administrativas.
+- **VIEWER** possui apenas acesso de leitura.
 
 As demais permissões serão utilizadas nas próximas funcionalidades, como gerenciamento de membros, Boards e Convites.
 
@@ -439,25 +444,99 @@ Todos os campos são opcionais.
 
 ---
 
+# Excluir Workspace
+
+## DELETE
+
+```
+/workspaces/:id
+```
+
+### Descrição
+
+Exclui permanentemente um Workspace.
+
+Esta operação remove o Workspace e todos os seus relacionamentos no banco de dados.
+
+Somente usuários com a permissão **OWNER** podem realizar esta operação.
+
+Caso o usuário não pertença ao Workspace, a API retornará **404 Not Found**.
+
+Caso pertença ao Workspace, mas não seja o proprietário, retornará **403 Forbidden**.
+
+---
+
+### Headers
+
+```
+Authorization: Bearer TOKEN
+```
+
+---
+
+### Path Parameters
+
+| Campo | Tipo | Descrição |
+|--------|------|-----------|
+| id | UUID | Identificador do Workspace |
+
+---
+
+### Response
+
+**200 OK**
+
+```json
+{
+  "message": "Workspace excluído com sucesso"
+}
+```
+
+---
+
+### Possíveis Erros
+
+#### Workspace inexistente
+
+**404 Not Found**
+
+```json
+{
+  "statusCode": 404,
+  "message": "Workspace não encontrado."
+}
+```
+
+---
+
+#### Usuário sem permissão
+
+**403 Forbidden**
+
+```json
+{
+  "statusCode": 403,
+  "message": "Você não tem permissão para excluir este Workspace."
+}
+```
+
+---
+
+#### Token inválido
+
+**401 Unauthorized**
+
+```json
+{
+  "message": "Token inválido ou expirado"
+}
+```
+
+---
+
 # Próximos Endpoints
 
 Os seguintes endpoints serão implementados nas próximas etapas do desenvolvimento.
-
-## Atualizar Workspace
-
-```
-PATCH /workspaces/:id
-```
-
----
-
-## Excluir Workspace
-
-```
-DELETE /workspaces/:id
-```
-
----
 
 ## Listar Membros
 
@@ -542,6 +621,8 @@ Esse fluxo será utilizado em todas as operações futuras do módulo de Workspa
 - ✅ Validação de acesso através da tabela WorkspaceMember
 - ✅ Atualizar Workspace
 - ✅ Controle de permissões para atualização (OWNER e ADMIN)
+- ✅ Excluir Workspace
+- ✅ Controle de permissão OWNER para exclusão
 
 ---
 

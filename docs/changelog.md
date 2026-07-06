@@ -21,6 +21,8 @@ O formato utilizado é inspirado no padrão **Keep a Changelog** e o projeto seg
 - Endpoint para busca de Workspace por ID.
 - Associação automática do criador do Workspace como `OWNER`.
 - Validação de acesso através da tabela `WorkspaceMember`.
+- Endpoint para exclusão de Workspace.
+- Exclusão permitida apenas para usuários OWNER.
 
 ### Arquitetura
 
@@ -38,6 +40,8 @@ O formato utilizado é inspirado no padrão **Keep a Changelog** e o projeto seg
 - Retorno `404 Not Found` quando o usuário não possui acesso ao Workspace, evitando enumeração de recursos.
 - Endpoint para atualização de Workspace.
 - Controle de permissões para atualização utilizando as roles OWNER e ADMIN.
+- Exclusão protegida por validação de permissões.
+- Retorno 403 Forbidden para usuários sem permissão de exclusão.
 
 ### Documentação
 

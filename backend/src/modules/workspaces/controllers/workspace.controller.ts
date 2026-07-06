@@ -6,16 +6,19 @@ import {
   updateWorkspaceBodySchema,
   updateWorkspaceParamsSchema,
 } from "../schemas/update-workspace.schema.js";
+import { deleteWorkspaceParamsSchema } from "../schemas/delete-workspace.schema.js";
 
 import { CreateWorkspaceUseCase } from "../use-cases/create-workspace.use-case.js";
 import { ListWorkspacesUseCase } from "../use-cases/list-workspaces.use-case.js";
 import { GetWorkspaceUseCase } from "../use-cases/get-workspace.use-case.js";
 import { UpdateWorkspaceUseCase } from "../use-cases/update-workspace.use-case.js";
+import { DeleteWorkspaceUseCase } from "../use-cases/delete-workspace.use-case.js";
 
 const createWorkspaceUseCase = new CreateWorkspaceUseCase();
 const listWorkspacesUseCase = new ListWorkspacesUseCase();
 const getWorkspaceUseCase = new GetWorkspaceUseCase();
 const updateWorkspaceUseCase = new UpdateWorkspaceUseCase();
+const deleteWorkspaceUseCase = new DeleteWorkspaceUseCase();
 
 export class WorkspaceController {
   async create(request: FastifyRequest, reply: FastifyReply) {
@@ -68,6 +71,19 @@ export class WorkspaceController {
     return reply.status(200).send({
       message: "Workspace atualizado com sucesso",
       workspace,
+    });
+  }
+
+  async delete(request: FastifyRequest, reply: FastifyReply) {
+    const { id } = deleteWorkspaceParamsSchema.parse(request.params);
+
+    await deleteWorkspaceUseCase.execute({
+      workspaceId: id,
+      userId: request.user.id,
+    });
+
+    return reply.status(200).send({
+      message: "Workspace excluído com sucesso",
     });
   }
 }
