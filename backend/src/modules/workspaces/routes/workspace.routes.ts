@@ -16,4 +16,6 @@ export async function workspaceRoutes(app: FastifyInstance) {
   app.patch("/:id", workspaceController.update);
 
   app.delete("/:id", workspaceController.delete);
+
+  app.post("/:id/invitations", workspaceController.invite);
 }

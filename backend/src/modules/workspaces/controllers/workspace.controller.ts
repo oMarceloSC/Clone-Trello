@@ -7,18 +7,24 @@ import {
   updateWorkspaceParamsSchema,
 } from "../schemas/update-workspace.schema.js";
 import { deleteWorkspaceParamsSchema } from "../schemas/delete-workspace.schema.js";
+import {
+  inviteWorkspaceMemberBodySchema,
+  inviteWorkspaceMemberParamsSchema,
+} from "../schemas/invite-workspace-member.schema.js";
 
 import { CreateWorkspaceUseCase } from "../use-cases/create-workspace.use-case.js";
 import { ListWorkspacesUseCase } from "../use-cases/list-workspaces.use-case.js";
 import { GetWorkspaceUseCase } from "../use-cases/get-workspace.use-case.js";
 import { UpdateWorkspaceUseCase } from "../use-cases/update-workspace.use-case.js";
 import { DeleteWorkspaceUseCase } from "../use-cases/delete-workspace.use-case.js";
+import { InviteWorkspaceMemberUseCase } from "../use-cases/invite-workspace-member.use-case.js";
 
 const createWorkspaceUseCase = new CreateWorkspaceUseCase();
 const listWorkspacesUseCase = new ListWorkspacesUseCase();
 const getWorkspaceUseCase = new GetWorkspaceUseCase();
 const updateWorkspaceUseCase = new UpdateWorkspaceUseCase();
 const deleteWorkspaceUseCase = new DeleteWorkspaceUseCase();
+const inviteWorkspaceMemberUseCase = new InviteWorkspaceMemberUseCase();
 
 export class WorkspaceController {
   async create(request: FastifyRequest, reply: FastifyReply) {
@@ -84,6 +90,22 @@ export class WorkspaceController {
 
     return reply.status(200).send({
       message: "Workspace excluído com sucesso",
+    });
+  }
+
+  async invite(request: FastifyRequest, reply: FastifyReply) {
+    const { id } = inviteWorkspaceMemberParamsSchema.parse(request.params);
+    const data = inviteWorkspaceMemberBodySchema.parse(request.body);
+
+    const invitation = await inviteWorkspaceMemberUseCase.execute({
+      workspaceId: id,
+      userId: request.user.id,
+      ...data,
+    });
+
+    return reply.status(201).send({
+      message: "Convite criado com sucesso",
+      invitation,
     });
   }
 }

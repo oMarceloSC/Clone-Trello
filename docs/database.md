@@ -6,6 +6,8 @@ O Clone do Trello utiliza o **PostgreSQL** como banco de dados relacional e o **
 
 A modelagem foi projetada para ser altamente escalável, permitindo o crescimento da aplicação sem necessidade de grandes refatorações.
 
+Todo o banco foi pensado para suportar colaboração em tempo real, controle de permissões, histórico de atividades e crescimento modular.
+
 ---
 
 # Tecnologias
@@ -38,7 +40,7 @@ Toda a comunicação entre a aplicação e o banco de dados acontece através do
 
 # Models Implementados
 
-Atualmente o sistema possui três entidades.
+Atualmente o sistema possui quatro entidades.
 
 ```
 User
@@ -46,6 +48,8 @@ User
 Workspace
 
 WorkspaceMember
+
+WorkspaceInvitation
 ```
 
 ---
@@ -54,7 +58,7 @@ WorkspaceMember
 
 Representa um usuário cadastrado na plataforma.
 
-Cada usuário pode participar de vários Workspaces.
+Cada usuário pode participar de vários Workspaces e também pode enviar convites para outros usuários.
 
 ## Campos
 
@@ -75,12 +79,15 @@ Cada usuário pode participar de vários Workspaces.
 ```
 User
 
-│
+├── WorkspaceMember
 
-└── WorkspaceMember
+└── WorkspaceInvitation (Invites Sent)
 ```
 
-Um usuário pode participar de vários Workspaces.
+Um usuário pode:
+
+- Participar de vários Workspaces.
+- Enviar vários convites.
 
 ---
 
@@ -88,7 +95,7 @@ Um usuário pode participar de vários Workspaces.
 
 Representa um espaço de trabalho.
 
-Cada Workspace agrupa Boards, membros e configurações.
+Cada Workspace agrupa Boards, membros, permissões, convites e, futuramente, atividades.
 
 ## Campos
 
@@ -107,9 +114,9 @@ Cada Workspace agrupa Boards, membros e configurações.
 ```
 Workspace
 
-│
+├── WorkspaceMember
 
-└── WorkspaceMember
+└── WorkspaceInvitation
 ```
 
 ---
@@ -146,33 +153,99 @@ MEMBER
 VIEWER
 ```
 
+### Descrição
+
+| Permissão | Capacidades |
+|-----------|-------------|
+| OWNER | Controle total do Workspace |
+| ADMIN | Administração do Workspace |
+| MEMBER | Participação normal |
+| VIEWER | Apenas visualização |
+
+Atualmente:
+
+- OWNER pode atualizar e excluir Workspaces.
+- ADMIN pode atualizar Workspaces.
+- MEMBER não possui permissões administrativas.
+- VIEWER possui acesso somente leitura.
+
+---
+
+# Model: WorkspaceInvitation
+
+Representa um convite enviado para ingresso em um Workspace.
+
+Os convites são independentes dos membros do Workspace.
+
+Somente quando um convite for aceito será criado um registro em `WorkspaceMember`.
+
+---
+
+## Campos
+
+| Campo | Tipo | Descrição |
+|--------|------|-----------|
+| id | UUID | Identificador |
+| email | String | Email do convidado |
+| token | UUID | Token único do convite |
+| status | Enum | Estado do convite |
+| workspaceId | UUID | Workspace relacionado |
+| invitedById | UUID | Usuário que enviou |
+| expiresAt | DateTime | Data de expiração |
+| createdAt | DateTime | Data de criação |
+| updatedAt | DateTime | Última atualização |
+
+---
+
+## Status
+
+```
+PENDING
+
+ACCEPTED
+
+EXPIRED
+
+CANCELED
+```
+
+---
+
+## Relacionamentos
+
+```
+WorkspaceInvitation
+
+├── Workspace
+
+└── User (Invited By)
+```
+
 ---
 
 # Relacionamento Atual
 
 ```
-User
-
-│
-
-├──────────────┐
-│              │
-│              ▼
-│      WorkspaceMember
-│              ▲
-│              │
-└──────────────┘
-
-Workspace
+               User
+                │
+     ┌──────────┼──────────┐
+     │          │          │
+     ▼          ▼          ▼
+WorkspaceMember │ WorkspaceInvitation
+     ▲          │          ▲
+     │          │          │
+     └──────────┼──────────┘
+                │
+           Workspace
 ```
 
 WorkspaceMember representa a relação N:N entre usuários e Workspaces.
 
+WorkspaceInvitation representa convites pendentes para ingresso em um Workspace.
+
 ---
 
 # Índices
-
-Atualmente:
 
 ## User
 
@@ -180,7 +253,7 @@ Atualmente:
 email
 ```
 
-Possui índice único.
+Índice único.
 
 ---
 
@@ -190,9 +263,37 @@ Possui índice único.
 (userId, workspaceId)
 ```
 
-Possui chave composta única.
+Chave composta única.
 
-Isso impede que um usuário seja adicionado duas vezes ao mesmo Workspace.
+Impede que um usuário seja adicionado duas vezes ao mesmo Workspace.
+
+---
+
+## WorkspaceInvitation
+
+```
+token
+```
+
+Índice único.
+
+```
+email
+```
+
+Índice.
+
+```
+workspaceId
+```
+
+Índice.
+
+Esses índices aceleram:
+
+- Busca por token.
+- Busca por email.
+- Busca de convites de um Workspace.
 
 ---
 
@@ -206,12 +307,12 @@ UUID
 
 Como chave primária.
 
-Vantagens:
+### Vantagens
 
-- Segurança
-- Escalabilidade
-- Compatibilidade com ambientes distribuídos
-- Dificulta enumeração de registros
+- Segurança.
+- Escalabilidade.
+- Compatibilidade com ambientes distribuídos.
+- Dificulta enumeração de registros.
 
 ---
 
@@ -225,7 +326,15 @@ createdAt
 updatedAt
 ```
 
-Permitindo auditoria básica da aplicação.
+Além disso, alguns modelos possuem campos específicos.
+
+Exemplo:
+
+```
+expiresAt
+```
+
+Utilizado para controle automático de validade dos convites.
 
 ---
 
@@ -237,7 +346,12 @@ Atualmente os relacionamentos utilizam:
 Cascade
 ```
 
-Ao remover um User ou Workspace, os registros relacionados em WorkspaceMember também são removidos.
+Ao remover um User ou Workspace, todos os registros relacionados também são removidos automaticamente.
+
+Isso inclui:
+
+- WorkspaceMember
+- WorkspaceInvitation
 
 ---
 
@@ -249,13 +363,15 @@ User
 Workspace
 
 WorkspaceMember
+
+WorkspaceInvitation
 ```
 
 ---
 
 # Modelos Planejados
 
-Os próximos modelos serão implementados na seguinte ordem:
+Os próximos modelos serão implementados na seguinte ordem.
 
 ```
 Board
@@ -306,10 +422,6 @@ Notification
 
 ↓
 
-Invitation
-
-↓
-
 Activity
 ```
 
@@ -320,29 +432,25 @@ Activity
 ```
 User
 
-│
-
 ├── WorkspaceMember
 
-│
+├── WorkspaceInvitation
 
 ├── BoardMember
 
-│
-
 ├── Comment
 
-│
-
 ├── Notification
-
-│
 
 └── Activity
 
 ↓
 
 Workspace
+
+├── Board
+
+└── WorkspaceInvitation
 
 ↓
 
@@ -374,11 +482,13 @@ Card
 A modelagem foi planejada para:
 
 - Permitir múltiplos usuários por Workspace.
+- Permitir convites pendentes.
 - Permitir múltiplos Boards por Workspace.
 - Permitir múltiplas Lists por Board.
 - Permitir múltiplos Cards por List.
 - Permitir múltiplos membros por Card.
 - Suportar colaboração em tempo real.
+- Facilitar futuras integrações com envio de e-mails.
 
 ---
 
@@ -389,4 +499,4 @@ Na próxima milestone serão adicionadas as entidades:
 - Board
 - BoardMember
 
-Após a implementação, este documento será atualizado com os novos relacionamentos e diagramas.
+Após a implementação, este documento será atualizado com os novos relacionamentos, diagramas e regras de negócio.

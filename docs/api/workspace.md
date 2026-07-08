@@ -534,6 +534,143 @@ Authorization: Bearer TOKEN
 
 ---
 
+# Convidar Membro
+
+## POST
+
+```
+/workspaces/:id/invitations
+```
+
+### Descrição
+
+Cria um convite para que um usuário possa ingressar em um Workspace.
+
+Apenas usuários com as permissões **OWNER** ou **ADMIN** podem criar convites.
+
+O convite é criado com status **PENDING** e possui validade de **7 dias**.
+
+Cada convite recebe um token único (UUID), que será utilizado futuramente para aceitação.
+
+---
+
+### Headers
+
+```
+Authorization: Bearer TOKEN
+
+Content-Type: application/json
+```
+
+---
+
+### Path Parameters
+
+| Campo | Tipo | Descrição |
+|--------|------|-----------|
+| id | UUID | Identificador do Workspace |
+
+---
+
+### Request Body
+
+```json
+{
+  "email": "convidado@email.com"
+}
+```
+
+---
+
+### Response
+
+**201 Created**
+
+```json
+{
+  "message": "Convite criado com sucesso",
+  "invitation": {
+    "id": "uuid",
+    "email": "convidado@email.com",
+    "token": "uuid",
+    "status": "PENDING",
+    "workspaceId": "uuid",
+    "invitedById": "uuid",
+    "expiresAt": "2026-07-15T18:21:37.119Z",
+    "createdAt": "2026-07-08T18:21:37.125Z",
+    "updatedAt": "2026-07-08T18:21:37.125Z"
+  }
+}
+```
+
+---
+
+### Possíveis Erros
+
+#### Convite já existente
+
+**409 Conflict**
+
+```json
+{
+  "statusCode": 409,
+  "message": "Já existe um convite pendente para este email."
+}
+```
+
+---
+
+#### Usuário já é membro
+
+**409 Conflict**
+
+```json
+{
+  "statusCode": 409,
+  "message": "Este usuário já é membro do Workspace."
+}
+```
+
+---
+
+#### Usuário sem permissão
+
+**403 Forbidden**
+
+```json
+{
+  "statusCode": 403,
+  "message": "Você não tem permissão para convidar membros."
+}
+```
+
+---
+
+#### Workspace inexistente
+
+**404 Not Found**
+
+```json
+{
+  "statusCode": 404,
+  "message": "Workspace não encontrado."
+}
+```
+
+---
+
+#### Token inválido
+
+**401 Unauthorized**
+
+```json
+{
+  "message": "Token inválido ou expirado"
+}
+```
+
+---
+
 # Próximos Endpoints
 
 Os seguintes endpoints serão implementados nas próximas etapas do desenvolvimento.
@@ -542,14 +679,6 @@ Os seguintes endpoints serão implementados nas próximas etapas do desenvolvime
 
 ```
 GET /workspaces/:id/members
-```
-
----
-
-## Convidar Usuário
-
-```
-POST /workspaces/:id/invitations
 ```
 
 ---
@@ -623,6 +752,9 @@ Esse fluxo será utilizado em todas as operações futuras do módulo de Workspa
 - ✅ Controle de permissões para atualização (OWNER e ADMIN)
 - ✅ Excluir Workspace
 - ✅ Controle de permissão OWNER para exclusão
+- ✅ Convites para Workspace
+- ✅ Geração de token único para convites
+- ✅ Expiração automática em 7 dias
 
 ---
 

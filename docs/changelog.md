@@ -23,6 +23,12 @@ O formato utilizado é inspirado no padrão **Keep a Changelog** e o projeto seg
 - Validação de acesso através da tabela `WorkspaceMember`.
 - Endpoint para exclusão de Workspace.
 - Exclusão permitida apenas para usuários OWNER.
+- Model WorkspaceInvitation.
+- Endpoint para criação de convites.
+- Geração automática de token UUID.
+- Expiração de convites em 7 dias.
+- Validação para impedir convites duplicados.
+- Validação para impedir convites de usuários já pertencentes ao Workspace.
 
 ### Arquitetura
 
@@ -42,6 +48,7 @@ O formato utilizado é inspirado no padrão **Keep a Changelog** e o projeto seg
 - Controle de permissões para atualização utilizando as roles OWNER e ADMIN.
 - Exclusão protegida por validação de permissões.
 - Retorno 403 Forbidden para usuários sem permissão de exclusão.
+- Apenas OWNER e ADMIN podem enviar convites.
 
 ### Documentação
 
