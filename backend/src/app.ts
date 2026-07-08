@@ -4,6 +4,7 @@ import { prisma } from "./lib/prisma.js";
 import { authRoutes } from "./modules/auth/routes/auth.rotes.js";
 import { errorMiddleware } from "./middlewares/error.middleware.js";
 import { workspaceRoutes } from "./modules/workspaces/routes/workspace.routes.js";
+import { workspaceInvitationRoutes } from "./modules/workspaces/routes/workspace-invitation.routes.js";
 
 const isProduction = process.env.NODE_ENV === "production";
 
@@ -17,6 +18,10 @@ app.register(cors, {
 
 app.register(workspaceRoutes, {
   prefix: "/workspaces"
+});
+
+app.register(workspaceInvitationRoutes, {
+  prefix: "/workspace-invitations",
 });
 
 app.get("/", async () => {

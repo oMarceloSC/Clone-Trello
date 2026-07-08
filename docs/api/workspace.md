@@ -671,6 +671,167 @@ Content-Type: application/json
 
 ---
 
+# Aceitar Convite
+
+## POST
+
+```
+/workspace-invitations/:token/accept
+```
+
+### Descrição
+
+Aceita um convite pendente para ingressar em um Workspace.
+
+O usuário autenticado precisa possuir o mesmo email para o qual o convite foi enviado.
+
+Quando o convite é aceito:
+
+- Um registro é criado em `WorkspaceMember`.
+- O usuário entra no Workspace como `MEMBER`.
+- O convite muda seu status para `ACCEPTED`.
+
+---
+
+### Headers
+
+```
+Authorization: Bearer TOKEN
+```
+
+---
+
+### Path Parameters
+
+| Campo | Tipo | Descrição |
+|--------|------|-----------|
+| token | UUID | Token único do convite |
+
+---
+
+### Body
+
+Este endpoint não exige body.
+
+Caso o cliente HTTP envie automaticamente um `Content-Type` incompatível, como `text/plain`, o Fastify pode retornar erro `415 Unsupported Media Type`.
+
+Para evitar isso:
+
+- deixe o Body como `None`; ou
+- envie um body vazio `{}` com `Content-Type: application/json`.
+
+---
+
+### Response
+
+**200 OK**
+
+```json
+{
+  "message": "Convite aceito com sucesso",
+  "workspaceMember": {
+    "id": "uuid",
+    "userId": "uuid",
+    "workspaceId": "uuid",
+    "role": "MEMBER",
+    "createdAt": "2026-07-08T18:30:00.000Z"
+  },
+  "invitation": {
+    "id": "uuid",
+    "email": "convidado@email.com",
+    "token": "uuid",
+    "status": "ACCEPTED",
+    "workspaceId": "uuid",
+    "invitedById": "uuid",
+    "expiresAt": "2026-07-15T18:30:00.000Z",
+    "createdAt": "2026-07-08T18:21:37.125Z",
+    "updatedAt": "2026-07-08T18:30:00.000Z"
+  }
+}
+```
+
+---
+
+### Possíveis Erros
+
+#### Convite inexistente ou inválido
+
+**404 Not Found**
+
+```json
+{
+  "statusCode": 404,
+  "message": "Convite não encontrado ou inválido."
+}
+```
+
+---
+
+#### Convite pertence a outro usuário
+
+**403 Forbidden**
+
+```json
+{
+  "statusCode": 403,
+  "message": "Este convite não pertence ao usuário autenticado."
+}
+```
+
+---
+
+#### Convite expirado
+
+**410 Gone**
+
+```json
+{
+  "statusCode": 410,
+  "message": "Convite expirado."
+}
+```
+
+---
+
+#### Usuário já é membro
+
+**409 Conflict**
+
+```json
+{
+  "statusCode": 409,
+  "message": "Usuário já é membro deste Workspace."
+}
+```
+
+---
+
+#### Content-Type incompatível
+
+**415 Unsupported Media Type**
+
+```json
+{
+  "statusCode": 415,
+  "message": "Unsupported Media Type"
+}
+```
+
+---
+
+#### Token inválido
+
+**401 Unauthorized**
+
+```json
+{
+  "message": "Token inválido ou expirado"
+}
+```
+
+
+---
+
 # Próximos Endpoints
 
 Os seguintes endpoints serão implementados nas próximas etapas do desenvolvimento.

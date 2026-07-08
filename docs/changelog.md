@@ -29,6 +29,12 @@ O formato utilizado é inspirado no padrão **Keep a Changelog** e o projeto seg
 - Expiração de convites em 7 dias.
 - Validação para impedir convites duplicados.
 - Validação para impedir convites de usuários já pertencentes ao Workspace.
+- Endpoint para aceitar convites de Workspace.
+- Criação automática de `WorkspaceMember` ao aceitar convite.
+- Atualização do status do convite para `ACCEPTED`.
+- Validação de token único do convite.
+- Validação para garantir que o convite pertence ao usuário autenticado.
+- Tratamento de convites expirados.
 
 ### Arquitetura
 
@@ -49,6 +55,8 @@ O formato utilizado é inspirado no padrão **Keep a Changelog** e o projeto seg
 - Exclusão protegida por validação de permissões.
 - Retorno 403 Forbidden para usuários sem permissão de exclusão.
 - Apenas OWNER e ADMIN podem enviar convites.
+- Aceitação de convite permitida apenas para o usuário dono do email convidado.
+- Convites expirados são marcados automaticamente como `EXPIRED`.
 
 ### Documentação
 
