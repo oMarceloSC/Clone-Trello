@@ -52,7 +52,7 @@ O projeto será desenvolvido por milestones, permitindo evolução contínua da 
 - [x] Excluir Workspace
 - [x] Convites
 - [x] Aceitar Convites
-- [ ] Gerenciamento de membros
+- [x] Gerenciamento de membros (listagem)
 - [ ] Sistema de permissões
 
 ---

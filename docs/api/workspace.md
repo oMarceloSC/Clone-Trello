@@ -829,18 +829,107 @@ Para evitar isso:
 }
 ```
 
+---
+
+# Listar Membros
+
+## GET
+
+```
+/workspaces/:id/members
+```
+
+### Descrição
+
+Retorna todos os membros pertencentes ao Workspace.
+
+Qualquer usuário que seja membro do Workspace pode visualizar a lista de membros.
+
+Os resultados são ordenados pela data de ingresso no Workspace.
+
+---
+
+### Headers
+
+```
+Authorization: Bearer TOKEN
+```
+
+---
+
+### Path Parameters
+
+| Campo | Tipo | Descrição |
+|--------|------|-----------|
+| id | UUID | Identificador do Workspace |
+
+---
+
+### Response
+
+**200 OK**
+
+```json
+{
+  "members": [
+    {
+      "id": "uuid",
+      "role": "OWNER",
+      "createdAt": "2026-07-08T18:30:00.000Z",
+      "user": {
+        "id": "uuid",
+        "name": "Marcelo Cruz",
+        "email": "marcelo@email.com",
+        "avatarUrl": null
+      }
+    },
+    {
+      "id": "uuid",
+      "role": "MEMBER",
+      "createdAt": "2026-07-08T18:45:00.000Z",
+      "user": {
+        "id": "uuid",
+        "name": "Usuário Convidado",
+        "email": "convidado@email.com",
+        "avatarUrl": null
+      }
+    }
+  ]
+}
+```
+
+---
+
+### Possíveis Erros
+
+#### Workspace inexistente
+
+**404 Not Found**
+
+```json
+{
+  "statusCode": 404,
+  "message": "Workspace não encontrado."
+}
+```
+
+---
+
+#### Token inválido
+
+**401 Unauthorized**
+
+```json
+{
+  "message": "Token inválido ou expirado"
+}
+```
 
 ---
 
 # Próximos Endpoints
 
 Os seguintes endpoints serão implementados nas próximas etapas do desenvolvimento.
-
-## Listar Membros
-
-```
-GET /workspaces/:id/members
-```
 
 ---
 
@@ -916,6 +1005,7 @@ Esse fluxo será utilizado em todas as operações futuras do módulo de Workspa
 - ✅ Convites para Workspace
 - ✅ Geração de token único para convites
 - ✅ Expiração automática em 7 dias
+- ✅ Listagem de membros do Workspace
 
 ---
 

@@ -162,12 +162,40 @@ VIEWER
 | MEMBER | Participação normal |
 | VIEWER | Apenas visualização |
 
-Atualmente:
+### Permissões implementadas atualmente
 
-- OWNER pode atualizar e excluir Workspaces.
-- ADMIN pode atualizar Workspaces.
-- MEMBER não possui permissões administrativas.
-- VIEWER possui acesso somente leitura.
+| Ação | OWNER | ADMIN | MEMBER | VIEWER |
+|------|:-----:|:-----:|:------:|:------:|
+| Atualizar Workspace | ✅ | ✅ | ❌ | ❌ |
+| Excluir Workspace | ✅ | ❌ | ❌ | ❌ |
+| Convidar membros | ✅ | ✅ | ❌ | ❌ |
+| Listar membros | ✅ | ✅ | ✅ | ✅ |
+
+---
+
+## Fluxo de Associação
+
+A entrada de um usuário em um Workspace ocorre através do seguinte fluxo:
+
+```
+Usuário convidado
+
+↓
+
+WorkspaceInvitation (PENDING)
+
+↓
+
+Aceitar Convite
+
+↓
+
+WorkspaceMember (MEMBER)
+```
+
+Somente após a aceitação do convite é criado um registro em `WorkspaceMember`.
+
+A partir desse momento o usuário passa a fazer parte oficialmente do Workspace.
 
 ---
 
@@ -226,22 +254,25 @@ WorkspaceInvitation
 # Relacionamento Atual
 
 ```
-               User
-                │
-     ┌──────────┼──────────┐
-     │          │          │
-     ▼          ▼          ▼
-WorkspaceMember │ WorkspaceInvitation
-     ▲          │          ▲
-     │          │          │
-     └──────────┼──────────┘
-                │
-           Workspace
+                    User
+                     │
+        ┌────────────┼────────────┐
+        │            │            │
+        ▼            ▼            ▼
+WorkspaceMember   WorkspaceInvitation
+        ▲            ▲
+        │            │
+        └──────┬─────┘
+               │
+          Workspace
 ```
 
-WorkspaceMember representa a relação N:N entre usuários e Workspaces.
+### Relações
 
-WorkspaceInvitation representa convites pendentes para ingresso em um Workspace.
+- User ↔ WorkspaceMember (N:N)
+- Workspace ↔ WorkspaceMember (1:N)
+- Workspace ↔ WorkspaceInvitation (1:N)
+- User ↔ WorkspaceInvitation (1:N)
 
 ---
 
@@ -334,7 +365,7 @@ Exemplo:
 expiresAt
 ```
 
-Utilizado para controle automático de validade dos convites.
+Utilizado para controlar automaticamente a validade dos convites.
 
 ---
 
@@ -357,15 +388,20 @@ Isso inclui:
 
 # Banco Atual
 
-```
-User
+Atualmente o banco suporta:
 
-Workspace
-
-WorkspaceMember
-
-WorkspaceInvitation
-```
+- Cadastro de usuários.
+- Autenticação JWT.
+- Criação de Workspaces.
+- Listagem de Workspaces.
+- Busca por Workspace.
+- Atualização de Workspace.
+- Exclusão de Workspace.
+- Convites para Workspace.
+- Aceitação de convites.
+- Associação automática de membros.
+- Listagem de membros.
+- Controle de permissões.
 
 ---
 
@@ -448,9 +484,9 @@ User
 
 Workspace
 
-├── Board
+├── WorkspaceInvitation
 
-└── WorkspaceInvitation
+└── Board
 
 ↓
 
@@ -483,12 +519,14 @@ A modelagem foi planejada para:
 
 - Permitir múltiplos usuários por Workspace.
 - Permitir convites pendentes.
+- Permitir controle de permissões.
 - Permitir múltiplos Boards por Workspace.
 - Permitir múltiplas Lists por Board.
 - Permitir múltiplos Cards por List.
 - Permitir múltiplos membros por Card.
 - Suportar colaboração em tempo real.
 - Facilitar futuras integrações com envio de e-mails.
+- Facilitar auditoria através de registros de atividades.
 
 ---
 
@@ -499,4 +537,9 @@ Na próxima milestone serão adicionadas as entidades:
 - Board
 - BoardMember
 
-Após a implementação, este documento será atualizado com os novos relacionamentos, diagramas e regras de negócio.
+Após a implementação, este documento será atualizado com:
+
+- Novos relacionamentos.
+- Diagrama completo do banco.
+- Regras de permissão por Board.
+- Controle de acesso aos Cards.

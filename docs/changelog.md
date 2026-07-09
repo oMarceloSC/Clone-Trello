@@ -35,6 +35,8 @@ O formato utilizado é inspirado no padrão **Keep a Changelog** e o projeto seg
 - Validação de token único do convite.
 - Validação para garantir que o convite pertence ao usuário autenticado.
 - Tratamento de convites expirados.
+- Endpoint para listagem de membros do Workspace.
+- Ordenação dos membros pela data de ingresso.
 
 ### Arquitetura
 
@@ -57,6 +59,7 @@ O formato utilizado é inspirado no padrão **Keep a Changelog** e o projeto seg
 - Apenas OWNER e ADMIN podem enviar convites.
 - Aceitação de convite permitida apenas para o usuário dono do email convidado.
 - Convites expirados são marcados automaticamente como `EXPIRED`.
+- Apenas membros do Workspace podem visualizar sua lista de participantes.
 
 ### Documentação
 
