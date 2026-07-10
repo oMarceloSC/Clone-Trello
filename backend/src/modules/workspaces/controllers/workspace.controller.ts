@@ -16,6 +16,7 @@ import {
   updateWorkspaceMemberRoleBodySchema,
   updateWorkspaceMemberRoleParamsSchema,
 } from "../schemas/update-workspace-member-role.schema.js";
+import { removeWorkspaceMemberParamsSchema } from "../schemas/remove-workspace-member.schema.js";
 
 import { CreateWorkspaceUseCase } from "../use-cases/create-workspace.use-case.js";
 import { ListWorkspacesUseCase } from "../use-cases/list-workspaces.use-case.js";
@@ -25,6 +26,7 @@ import { DeleteWorkspaceUseCase } from "../use-cases/delete-workspace.use-case.j
 import { InviteWorkspaceMemberUseCase } from "../use-cases/invite-workspace-member.use-case.js";
 import { ListWorkspaceMembersUseCase } from "../use-cases/list-workspace-members.use-case.js";
 import { UpdateWorkspaceMemberRoleUseCase } from "../use-cases/update-workspace-member-role.use-case.js";
+import { RemoveWorkspaceMemberUseCase } from "../use-cases/remove-workspace-member.use-case.js";
 
 const createWorkspaceUseCase = new CreateWorkspaceUseCase();
 const listWorkspacesUseCase = new ListWorkspacesUseCase();
@@ -33,7 +35,9 @@ const updateWorkspaceUseCase = new UpdateWorkspaceUseCase();
 const deleteWorkspaceUseCase = new DeleteWorkspaceUseCase();
 const inviteWorkspaceMemberUseCase = new InviteWorkspaceMemberUseCase();
 const listWorkspaceMembersUseCase = new ListWorkspaceMembersUseCase();
-const updateWorkspaceMemberRoleUseCase = new UpdateWorkspaceMemberRoleUseCase();
+const updateWorkspaceMemberRoleUseCase =
+  new UpdateWorkspaceMemberRoleUseCase();
+const removeWorkspaceMemberUseCase = new RemoveWorkspaceMemberUseCase();
 
 export class WorkspaceController {
   async create(request: FastifyRequest, reply: FastifyReply) {
@@ -148,6 +152,22 @@ export class WorkspaceController {
     return reply.status(200).send({
       message: "Permissão atualizada com sucesso",
       member,
+    });
+  }
+
+  async removeMember(request: FastifyRequest, reply: FastifyReply) {
+    const { id, memberId } = removeWorkspaceMemberParamsSchema.parse(
+      request.params
+    );
+
+    await removeWorkspaceMemberUseCase.execute({
+      workspaceId: id,
+      memberId,
+      userId: request.user.id,
+    });
+
+    return reply.status(200).send({
+      message: "Membro removido com sucesso",
     });
   }
 }

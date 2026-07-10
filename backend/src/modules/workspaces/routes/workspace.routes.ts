@@ -22,4 +22,6 @@ export async function workspaceRoutes(app: FastifyInstance) {
   app.get("/:id/members", workspaceController.listMembers);
 
   app.patch("/:id/members/:memberId", workspaceController.updateMemberRole);
+
+  app.delete("/:id/members/:memberId", workspaceController.removeMember);
 }
