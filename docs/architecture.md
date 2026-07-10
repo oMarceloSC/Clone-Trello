@@ -131,18 +131,16 @@ Essa organização evita dependências desnecessárias entre diferentes partes d
 Todos os módulos seguem exatamente o mesmo padrão.
 
 ```
-auth
+workspaces
 │
 ├── controllers
-│
 ├── routes
-│
 ├── schemas
-│
 ├── use-cases
-│
 └── types
 ```
+
+Cada responsabilidade fica isolada, facilitando manutenção, testes e evolução da aplicação.
 
 ---
 
@@ -157,7 +155,7 @@ Os Controllers possuem apenas uma responsabilidade:
 
 Eles não possuem regras de negócio.
 
-Exemplo:
+Fluxo:
 
 ```
 Request
@@ -188,9 +186,13 @@ login.use-case.ts
 
 create-workspace.use-case.ts
 
-create-board.use-case.ts
+invite-workspace-member.use-case.ts
 
-move-card.use-case.ts
+accept-workspace-invitation.use-case.ts
+
+list-workspace-members.use-case.ts
+
+update-workspace-member-role.use-case.ts
 ```
 
 Essa abordagem mantém arquivos pequenos, organizados e fáceis de manter.
@@ -262,10 +264,11 @@ Tipos de erro tratados:
 
 - Erros de validação.
 - Erros de autenticação.
+- Erros de autorização.
 - Erros de negócio.
 - Erros internos.
 
-Além disso, foi criada uma classe AppError para padronizar erros de domínio.
+Além disso, foi criada uma classe `AppError` para padronizar todos os erros de domínio.
 
 ---
 
@@ -316,6 +319,10 @@ Route
 
 ↓
 
+Middleware
+
+↓
+
 Controller
 
 ↓
@@ -341,30 +348,134 @@ Response
 
 Cada módulo possui seu próprio arquivo de rotas.
 
-Exemplo:
+### Auth
 
 ```
-Auth
+POST   /auth/register
+
+POST   /auth/login
+
+GET    /auth/me
+```
+
+### Workspaces
+
+```
+POST   /workspaces
+
+GET    /workspaces
+
+GET    /workspaces/:id
+
+PATCH  /workspaces/:id
+
+DELETE /workspaces/:id
+
+POST   /workspaces/:id/invitations
+
+GET    /workspaces/:id/members
+
+PATCH  /workspaces/:id/members/:memberId
+
+POST   /workspace-invitations/:token/accept
+```
+
+---
+
+# Módulo de Workspaces
+
+O módulo de Workspaces é responsável por gerenciar espaços de trabalho, membros, convites e permissões.
+
+## Funcionalidades implementadas
+
+- Criar Workspace.
+- Listar Workspaces.
+- Buscar Workspace por ID.
+- Atualizar Workspace.
+- Excluir Workspace.
+- Criar convites.
+- Aceitar convites.
+- Listar membros.
+- Atualizar permissões dos membros.
+
+---
+
+## Fluxo de criação de Workspace
+
+```
+Usuário
 
 ↓
 
-/auth/register
+Criar Workspace
 
-/auth/login
+↓
 
-/auth/me
+Workspace
+
+↓
+
+WorkspaceMember (OWNER)
 ```
 
-No futuro:
+---
+
+## Fluxo de Convites
 
 ```
-/workspaces
+OWNER / ADMIN
 
-/boards
+↓
 
-/cards
+Cria Convite
 
-/comments
+↓
+
+WorkspaceInvitation (PENDING)
+
+↓
+
+Usuário convidado
+
+↓
+
+Aceita Convite
+
+↓
+
+WorkspaceMember (MEMBER)
+
+↓
+
+WorkspaceInvitation (ACCEPTED)
+```
+
+---
+
+## Fluxo de Permissões
+
+```
+OWNER
+│
+├── Atualizar Workspace
+├── Excluir Workspace
+├── Convidar membros
+├── Listar membros
+└── Alterar permissões
+
+ADMIN
+│
+├── Atualizar Workspace
+├── Convidar membros
+└── Listar membros
+
+MEMBER
+│
+└── Listar membros
+
+VIEWER
+│
+└── Listar membros
 ```
 
 ---
@@ -378,6 +489,7 @@ Exemplos:
 - Movimentação de cartões.
 - Criação de comentários.
 - Atualização de listas.
+- Atualização automática de Boards.
 - Notificações.
 - Presença de usuários.
 
@@ -401,7 +513,7 @@ Usuário B
 
 A arquitetura foi planejada para suportar crescimento sem necessidade de grandes refatorações.
 
-Novos módulos podem ser adicionados mantendo o mesmo padrão estrutural.
+Novos módulos podem ser adicionados mantendo exatamente o mesmo padrão estrutural.
 
 Exemplo:
 
@@ -433,6 +545,7 @@ Sem alterar módulos existentes.
 - Reutilização de código.
 - Escalabilidade.
 - Código limpo.
+- Arquitetura baseada em Use Cases.
 
 ---
 
@@ -440,27 +553,57 @@ Sem alterar módulos existentes.
 
 ## Implementado
 
+### Infraestrutura
+
 - Estrutura modular.
 - Fastify.
 - Prisma ORM.
 - PostgreSQL.
 - Docker.
-- Use Cases.
-- Controllers.
-- Rotas.
+- JWT.
+- Zod.
 - Middleware global de erros.
 - Middleware de autenticação.
-- Validação com Zod.
-- JWT.
+
+### Auth
+
+- Cadastro.
+- Login.
+- Usuário autenticado.
+
+### Workspaces
+
+- Criar Workspace.
+- Listar Workspaces.
+- Buscar Workspace.
+- Atualizar Workspace.
+- Excluir Workspace.
+
+### Convites
+
+- Criar convite.
+- Aceitar convite.
+- Controle de expiração.
+- Token único por convite.
+
+### Membros
+
+- Adição automática após aceitar convite.
+- Listagem de membros.
+- Atualização de permissões.
+
+---
 
 ## Em desenvolvimento
 
-- Plugins.
+- Boards.
+- Lists.
+- Cards.
 - Socket.IO.
 - Upload de arquivos.
-- Sistema de permissões.
 - Dashboard.
 - Busca Global.
+- Notificações.
 
 ---
 
@@ -468,18 +611,16 @@ Sem alterar módulos existentes.
 
 A evolução da arquitetura seguirá a seguinte ordem:
 
-1. Workspaces
-2. Sistema de Permissões
-3. Boards
-4. Lists
-5. Cards
-6. Comentários
-7. Etiquetas
-8. Checklists
-9. Uploads
-10. Socket.IO
-11. Notificações
-12. Dashboard
-13. Busca Global
+1. Boards
+2. Lists
+3. Cards
+4. Comentários
+5. Etiquetas
+6. Checklists
+7. Uploads
+8. Socket.IO
+9. Notificações
+10. Dashboard
+11. Busca Global
 
 Cada novo módulo seguirá exatamente a arquitetura descrita neste documento.

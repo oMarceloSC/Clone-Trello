@@ -12,6 +12,10 @@ import {
   inviteWorkspaceMemberParamsSchema,
 } from "../schemas/invite-workspace-member.schema.js";
 import { listWorkspaceMembersParamsSchema } from "../schemas/list-workspace-members.schema.js";
+import {
+  updateWorkspaceMemberRoleBodySchema,
+  updateWorkspaceMemberRoleParamsSchema,
+} from "../schemas/update-workspace-member-role.schema.js";
 
 import { CreateWorkspaceUseCase } from "../use-cases/create-workspace.use-case.js";
 import { ListWorkspacesUseCase } from "../use-cases/list-workspaces.use-case.js";
@@ -20,6 +24,7 @@ import { UpdateWorkspaceUseCase } from "../use-cases/update-workspace.use-case.j
 import { DeleteWorkspaceUseCase } from "../use-cases/delete-workspace.use-case.js";
 import { InviteWorkspaceMemberUseCase } from "../use-cases/invite-workspace-member.use-case.js";
 import { ListWorkspaceMembersUseCase } from "../use-cases/list-workspace-members.use-case.js";
+import { UpdateWorkspaceMemberRoleUseCase } from "../use-cases/update-workspace-member-role.use-case.js";
 
 const createWorkspaceUseCase = new CreateWorkspaceUseCase();
 const listWorkspacesUseCase = new ListWorkspacesUseCase();
@@ -28,6 +33,7 @@ const updateWorkspaceUseCase = new UpdateWorkspaceUseCase();
 const deleteWorkspaceUseCase = new DeleteWorkspaceUseCase();
 const inviteWorkspaceMemberUseCase = new InviteWorkspaceMemberUseCase();
 const listWorkspaceMembersUseCase = new ListWorkspaceMembersUseCase();
+const updateWorkspaceMemberRoleUseCase = new UpdateWorkspaceMemberRoleUseCase();
 
 export class WorkspaceController {
   async create(request: FastifyRequest, reply: FastifyReply) {
@@ -122,6 +128,26 @@ export class WorkspaceController {
 
     return reply.status(200).send({
       members,
+    });
+  }
+
+  async updateMemberRole(request: FastifyRequest, reply: FastifyReply) {
+    const { id, memberId } = updateWorkspaceMemberRoleParamsSchema.parse(
+      request.params
+    );
+
+    const { role } = updateWorkspaceMemberRoleBodySchema.parse(request.body);
+
+    const member = await updateWorkspaceMemberRoleUseCase.execute({
+      workspaceId: id,
+      memberId,
+      userId: request.user.id,
+      role,
+    });
+
+    return reply.status(200).send({
+      message: "Permissão atualizada com sucesso",
+      member,
     });
   }
 }

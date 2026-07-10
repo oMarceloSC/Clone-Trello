@@ -53,7 +53,7 @@ O projeto será desenvolvido por milestones, permitindo evolução contínua da 
 - [x] Convites
 - [x] Aceitar Convites
 - [x] Gerenciamento de membros (listagem)
-- [ ] Sistema de permissões
+- [x] Sistema de permissões
 
 ---
 

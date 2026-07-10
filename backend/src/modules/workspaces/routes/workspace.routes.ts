@@ -20,4 +20,6 @@ export async function workspaceRoutes(app: FastifyInstance) {
   app.post("/:id/invitations", workspaceController.invite);
 
   app.get("/:id/members", workspaceController.listMembers);
+
+  app.patch("/:id/members/:memberId", workspaceController.updateMemberRole);
 }

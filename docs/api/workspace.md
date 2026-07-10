@@ -927,17 +927,142 @@ Authorization: Bearer TOKEN
 
 ---
 
-# Próximos Endpoints
+# Atualizar Permissão de Membro
 
-Os seguintes endpoints serão implementados nas próximas etapas do desenvolvimento.
+## PATCH
+
+```
+/workspaces/:id/members/:memberId
+```
+
+### Descrição
+
+Atualiza a permissão de um membro pertencente ao Workspace.
+
+Atualmente apenas o **OWNER** possui permissão para alterar cargos.
+
+Não é permitido:
+
+- alterar a permissão do OWNER;
+- alterar a própria permissão.
 
 ---
 
-## Alterar Permissão
+### Headers
 
 ```
-PATCH /workspaces/:id/members/:memberId
+Authorization: Bearer TOKEN
+
+Content-Type: application/json
 ```
+
+---
+
+### Path Parameters
+
+| Campo | Tipo | Descrição |
+|--------|------|-----------|
+| id | UUID | Identificador do Workspace |
+| memberId | UUID | Identificador do membro |
+
+---
+
+### Request Body
+
+```json
+{
+    "role": "ADMIN"
+}
+```
+
+Roles permitidas:
+
+- ADMIN
+- MEMBER
+- VIEWER
+
+---
+
+### Response
+
+**200 OK**
+
+```json
+{
+    "message": "Permissão atualizada com sucesso",
+    "member": {
+        "id": "uuid",
+        "role": "ADMIN",
+        "createdAt": "2026-07-08T18:30:00.000Z",
+        "user": {
+            "id": "uuid",
+            "name": "Usuário Convidado",
+            "email": "convidado@email.com",
+            "avatarUrl": null
+        }
+    }
+}
+```
+
+---
+
+### Possíveis Erros
+
+#### Usuário sem permissão
+
+**403 Forbidden**
+
+```json
+{
+    "statusCode": 403,
+    "message": "Você não tem permissão para alterar permissões neste Workspace."
+}
+```
+
+---
+
+#### Alteração do OWNER
+
+**403 Forbidden**
+
+```json
+{
+    "statusCode": 403,
+    "message": "Não é possível alterar a permissão do OWNER."
+}
+```
+
+---
+
+#### Alteração da própria permissão
+
+**403 Forbidden**
+
+```json
+{
+    "statusCode": 403,
+    "message": "Você não pode alterar sua própria permissão."
+}
+```
+
+---
+
+#### Membro inexistente
+
+**404 Not Found**
+
+```json
+{
+    "statusCode": 404,
+    "message": "Membro não encontrado."
+}
+```
+
+---
+
+# Próximos Endpoints
+
+Os seguintes endpoints serão implementados nas próximas etapas do desenvolvimento.
 
 ---
 
@@ -1006,6 +1131,7 @@ Esse fluxo será utilizado em todas as operações futuras do módulo de Workspa
 - ✅ Geração de token único para convites
 - ✅ Expiração automática em 7 dias
 - ✅ Listagem de membros do Workspace
+- ✅ Alteração de permissões dos membros
 
 ---
 

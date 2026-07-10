@@ -37,6 +37,8 @@ O formato utilizado é inspirado no padrão **Keep a Changelog** e o projeto seg
 - Tratamento de convites expirados.
 - Endpoint para listagem de membros do Workspace.
 - Ordenação dos membros pela data de ingresso.
+- Endpoint para alteração de permissões dos membros.
+- Controle de cargos OWNER, ADMIN, MEMBER e VIEWER.
 
 ### Arquitetura
 
@@ -60,6 +62,9 @@ O formato utilizado é inspirado no padrão **Keep a Changelog** e o projeto seg
 - Aceitação de convite permitida apenas para o usuário dono do email convidado.
 - Convites expirados são marcados automaticamente como `EXPIRED`.
 - Apenas membros do Workspace podem visualizar sua lista de participantes.
+- Apenas OWNER pode alterar permissões.
+- OWNER não pode alterar sua própria permissão.
+- OWNER não pode ter sua permissão modificada.
 
 ### Documentação
 

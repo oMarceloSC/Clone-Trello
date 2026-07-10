@@ -170,6 +170,7 @@ VIEWER
 | Excluir Workspace | ✅ | ❌ | ❌ | ❌ |
 | Convidar membros | ✅ | ✅ | ❌ | ❌ |
 | Listar membros | ✅ | ✅ | ✅ | ✅ |
+| Alterar permissões | ✅ | ❌ | ❌ | ❌ |
 
 ---
 
