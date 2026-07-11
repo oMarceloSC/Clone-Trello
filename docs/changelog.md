@@ -4,6 +4,24 @@ Todas as mudanças importantes deste projeto serão documentadas neste arquivo.
 
 O formato utilizado é inspirado no padrão **Keep a Changelog** e o projeto segue o versionamento semântico (**Semantic Versioning**).
 
+# [0.3.0] - Frontend Integration
+
+## Added
+
+### Frontend
+
+- Inicialização da aplicação React com Vite e TypeScript.
+- ESLint.
+- Estrutura inicial baseada em funcionalidades.
+- Configuração do React Router.
+- Instância centralizada do Axios.
+- Interceptor de autenticação JWT.
+- Página de login.
+- Validação com React Hook Form e Zod.
+- Rota protegida para o dashboard.
+- Persistência inicial da sessão no localStorage.
+- Logout.
+
 ---
 
 # [0.2.0] - Workspace Management
