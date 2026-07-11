@@ -1,23 +1,17 @@
 import { useNavigate } from "react-router";
 
-import type { User } from "../features/auth/types/auth.types";
+import { useAuth } from "../features/auth/hooks/useAuth";
 
 export function DashboardPage() {
   const navigate = useNavigate();
-
-  const storedUser = localStorage.getItem(
-    "@clone-trello:user",
-  );
-
-  const user: User | null = storedUser
-    ? JSON.parse(storedUser)
-    : null;
+  const { user, signOut } = useAuth();
 
   function handleLogout() {
-    localStorage.removeItem("@clone-trello:token");
-    localStorage.removeItem("@clone-trello:user");
+    signOut();
 
-    navigate("/login");
+    navigate("/login", {
+      replace: true,
+    });
   }
 
   return (
@@ -25,6 +19,7 @@ export function DashboardPage() {
       <header className="dashboard-header">
         <div>
           <h1>Clone do Trello</h1>
+
           <p>
             Bem-vindo
             {user ? `, ${user.name}` : ""}.

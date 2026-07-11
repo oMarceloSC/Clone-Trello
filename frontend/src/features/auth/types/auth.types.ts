@@ -26,3 +26,7 @@ export type RegisterResponse = {
   message: string;
   user: User;
 };
+
+export type CurrentUserResponse = {
+  user: User;
+};

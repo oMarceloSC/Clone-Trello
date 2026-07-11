@@ -8,11 +8,11 @@ import {
   useNavigate,
 } from "react-router";
 
+import { useAuth } from "../hooks/useAuth";
 import {
   loginSchema,
   type LoginFormData,
 } from "../schemas/login.schema";
-import { login } from "../services/auth.service";
 
 type LoginLocationState = {
   registrationSuccess?: boolean;
@@ -21,6 +21,7 @@ type LoginLocationState = {
 export function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { signIn } = useAuth();
 
   const state = location.state as LoginLocationState | null;
 
@@ -45,19 +46,11 @@ export function LoginPage() {
     try {
       setApiError(null);
 
-      const response = await login(data);
+      await signIn(data);
 
-      localStorage.setItem(
-        "@clone-trello:token",
-        response.token,
-      );
-
-      localStorage.setItem(
-        "@clone-trello:user",
-        JSON.stringify(response.user),
-      );
-
-      navigate("/dashboard");
+      navigate("/dashboard", {
+        replace: true,
+      });
     } catch (error) {
       if (axios.isAxiosError(error)) {
         const message =
@@ -77,7 +70,6 @@ export function LoginPage() {
       <section className="auth-card">
         <header className="auth-header">
           <h1>Clone do Trello</h1>
-
           <p>Entre para acessar seus Workspaces.</p>
         </header>
 

@@ -7,21 +7,54 @@ import {
 
 import { LoginPage } from "../features/auth/pages/LoginPage";
 import { RegisterPage } from "../features/auth/pages/RegisterPage";
+import { useAuth } from "../features/auth/hooks/useAuth";
 import { DashboardPage } from "../pages/DashboardPage";
 
-type RequireAuthenticationProps = {
+type RouteGuardProps = {
   children: ReactNode;
 };
 
+function LoadingPage() {
+  return (
+    <main className="loading-page">
+      <p>Carregando sessão...</p>
+    </main>
+  );
+}
+
 function RequireAuthentication({
   children,
-}: RequireAuthenticationProps) {
-  const token = localStorage.getItem(
-    "@clone-trello:token",
-  );
+}: RouteGuardProps) {
+  const {
+    isAuthenticated,
+    isLoading,
+  } = useAuth();
 
-  if (!token) {
+  if (isLoading) {
+    return <LoadingPage />;
+  }
+
+  if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
+  }
+
+  return children;
+}
+
+function RequireGuest({
+  children,
+}: RouteGuardProps) {
+  const {
+    isAuthenticated,
+    isLoading,
+  } = useAuth();
+
+  if (isLoading) {
+    return <LoadingPage />;
+  }
+
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
   }
 
   return children;
@@ -32,17 +65,25 @@ export function AppRoutes() {
     <Routes>
       <Route
         path="/"
-        element={<Navigate to="/login" replace />}
+        element={<Navigate to="/dashboard" replace />}
       />
 
       <Route
         path="/login"
-        element={<LoginPage />}
+        element={
+          <RequireGuest>
+            <LoginPage />
+          </RequireGuest>
+        }
       />
 
       <Route
         path="/register"
-        element={<RegisterPage />}
+        element={
+          <RequireGuest>
+            <RegisterPage />
+          </RequireGuest>
+        }
       />
 
       <Route
@@ -56,7 +97,7 @@ export function AppRoutes() {
 
       <Route
         path="*"
-        element={<Navigate to="/login" replace />}
+        element={<Navigate to="/dashboard" replace />}
       />
     </Routes>
   );

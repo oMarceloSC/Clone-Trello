@@ -107,26 +107,26 @@ Cada milestone representa um conjunto de funcionalidades relacionadas.
 
 ## Comunicação
 
-* [x] Configurar Axios
-* [x] Configurar URL da API
-* [x] Criar interceptor JWT
-* [x] Criar serviço de autenticação
-* [ ] Criar interceptor de respostas
-* [ ] Tratar sessão expirada
+- [x] Configurar Axios
+- [x] Configurar URL da API
+- [x] Criar interceptor JWT
+- [x] Criar serviço de autenticação
+- [ ] Criar interceptor de respostas
+- [ ] Tratar sessão expirada
 
 ## Autenticação
 
-* [x] Implementar Login
-* [x] Implementar Cadastro
-* [x] Implementar Logout
-* [x] Persistir token no `localStorage`
-* [x] Persistir usuário no `localStorage`
-* [x] Validar formulários com Zod
-* [x] Integrar React Hook Form
-* [ ] Implementar AuthContext
-* [ ] Recuperar sessão com `/auth/me`
-* [ ] Bloquear páginas públicas para usuários autenticados
-* [ ] Implementar recuperação de senha
+- [x] Implementar Login
+- [x] Implementar Cadastro
+- [x] Implementar Logout
+- [x] Persistir token no localStorage
+- [x] Persistir usuário no localStorage
+- [x] Validar formulários com Zod
+- [x] Integrar React Hook Form
+- [x] Implementar AuthContext
+- [x] Recuperar sessão com `/auth/me`
+- [x] Bloquear páginas públicas para usuários autenticados
+- [ ] Implementar recuperação de senha
 
 ## Workspaces
 

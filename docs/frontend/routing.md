@@ -2,7 +2,7 @@
 
 ## Visão Geral
 
-O frontend utiliza o **React Router** para controlar a navegação entre as páginas.
+O frontend do Clone do Trello utiliza o **React Router** para controlar toda a navegação da aplicação.
 
 As rotas são centralizadas no arquivo:
 
@@ -10,59 +10,89 @@ As rotas são centralizadas no arquivo:
 src/routes/AppRoutes.tsx
 ```
 
+A proteção das rotas é realizada através do `AuthContext`, permitindo diferenciar usuários autenticados de visitantes.
+
 ---
 
-# Configuração
+# Arquitetura
 
-O `BrowserRouter` é registrado no arquivo:
-
-```text
-src/main.tsx
 ```
-
-Estrutura:
-
-```text
 BrowserRouter
-      ↓
+
+↓
+
+AuthProvider
+
+↓
+
 App
-      ↓
+
+↓
+
 AppRoutes
-      ↓
+
+↓
+
 Routes
 ```
 
----
+O `BrowserRouter` é responsável pela navegação.
 
-# Rotas Atuais
+O `AuthProvider` disponibiliza o estado da autenticação para toda a aplicação.
 
-| Rota         | Acesso      | Status         | Descrição                |
-| ------------ | ----------- | -------------- | ------------------------ |
-| `/`          | Público     | ✅ Implementada | Redireciona para o login |
-| `/login`     | Público     | ✅ Implementada | Login                    |
-| `/register`  | Público     | ✅ Implementada | Cadastro                 |
-| `/dashboard` | Autenticado | ✅ Implementada | Dashboard inicial        |
-| `*`          | Público     | ✅ Implementada | Redireciona para o login |
+O `AppRoutes` define todas as rotas disponíveis.
 
 ---
 
-# Rota Inicial
+# Estrutura Atual
 
-A rota:
+```text
+AppRoutes
+
+├── /
+├── /login
+├── /register
+├── /dashboard
+└── *
+```
+
+---
+
+# Rotas Implementadas
+
+| Rota | Acesso | Status | Descrição |
+|--------|--------|---------|-----------------------------|
+| / | Público | ✅ | Redireciona para Dashboard |
+| /login | Visitante | ✅ | Login |
+| /register | Visitante | ✅ | Cadastro |
+| /dashboard | Autenticado | ✅ | Dashboard |
+| * | Público | ✅ | Redirecionamento |
+
+---
+
+# Página Inicial
+
+Quando o usuário acessa:
 
 ```text
 /
 ```
 
-redireciona automaticamente para:
+é realizado automaticamente:
 
 ```text
-/login
+↓
+
+/dashboard
 ```
+
+O próprio sistema decide se o usuário continuará no Dashboard ou será enviado para Login.
 
 ---
 
 # Rotas Públicas
+
+Atualmente existem duas rotas públicas.
 
 ## Login
 
@@ -70,7 +100,9 @@ redireciona automaticamente para:
 /login
 ```
 
-Permite autenticar usuários.
+Responsável pela autenticação.
+
+---
 
 ## Cadastro
 
@@ -78,11 +110,57 @@ Permite autenticar usuários.
 /register
 ```
 
-Permite criar uma conta.
+Responsável pela criação de usuários.
+
+---
+
+# RequireGuest
+
+As páginas públicas utilizam o componente:
+
+```text
+RequireGuest
+```
+
+Objetivo:
+
+Impedir que usuários autenticados retornem às páginas de Login ou Cadastro.
+
+Fluxo:
+
+```
+Usuário autenticado
+
+↓
+
+/login
+
+↓
+
+Dashboard
+```
+
+O mesmo ocorre para:
+
+```
+/register
+```
 
 ---
 
 # Rotas Protegidas
+
+As páginas privadas utilizam:
+
+```text
+RequireAuthentication
+```
+
+Objetivo:
+
+Garantir que apenas usuários autenticados tenham acesso.
+
+---
 
 ## Dashboard
 
@@ -90,103 +168,317 @@ Permite criar uma conta.
 /dashboard
 ```
 
-A rota utiliza:
+Fluxo:
 
-```text
+```
+Usuário
+
+↓
+
+Dashboard
+
+↓
+
 RequireAuthentication
+
+↓
+
+Sessão válida?
+
+↓
+
+Sim → Dashboard
+
+Não → Login
 ```
 
-Esse componente verifica a existência do token:
+---
 
-```text
-@clone-trello:token
+# Recuperação da Sessão
+
+Antes de liberar qualquer rota protegida, o sistema verifica se existe uma sessão armazenada.
+
+Fluxo:
+
+```
+Aplicação inicia
+
+↓
+
+AuthProvider
+
+↓
+
+Existe Token?
+
+↓
+
+Não
+
+↓
+
+Login
+
+↓
+
+Sim
+
+↓
+
+GET /auth/me
+
+↓
+
+Token válido?
+
+↓
+
+Sim
+
+↓
+
+Dashboard
+
+↓
+
+Não
+
+↓
+
+Limpa sessão
+
+↓
+
+Login
 ```
 
-Caso o token não exista:
+---
 
-```text
+# Estado de Carregamento
+
+Enquanto o frontend consulta:
+
+```http
+GET /auth/me
+```
+
+é exibida uma tela de carregamento.
+
+```
+Carregando sessão...
+```
+
+Esse comportamento evita que páginas protegidas sejam exibidas antes da validação da sessão.
+
+---
+
+# Redirecionamentos
+
+## Visitante
+
+```
+/
+
 /dashboard
-     ↓
+
+↓
+
+Login
+```
+
+---
+
+## Usuário autenticado
+
+```
 /login
+
+↓
+
+Dashboard
 ```
 
 ---
 
-# Fluxo de Proteção
+## Cadastro
 
-```text
-Usuário acessa rota protegida
-          ↓
-RequireAuthentication
-          ↓
-Token existe?
-     ┌────┴────┐
-     │         │
-    Sim       Não
-     │         │
- Página     /login
 ```
-
----
-
-# Navegação após Login
-
-```text
-/login
-   ↓
-Login concluído
-   ↓
-/dashboard
-```
-
----
-
-# Navegação após Cadastro
-
-```text
 /register
-    ↓
-Cadastro concluído
-    ↓
-/login
-    ↓
-Mensagem de sucesso
+
+↓
+
+Dashboard
 ```
 
 ---
 
-# Navegação após Logout
+## Logout
 
-```text
+```
+Dashboard
+
+↓
+
+Logout
+
+↓
+
+Login
+```
+
+---
+
+# Página Não Encontrada
+
+Atualmente qualquer rota inexistente é redirecionada para:
+
+```
 /dashboard
-    ↓
-Remoção da sessão
-    ↓
-/login
+```
+
+O sistema então decide:
+
+```
+Autenticado
+
+↓
+
+Dashboard
+
+Não autenticado
+
+↓
+
+Login
+```
+
+Futuramente será implementada uma página dedicada de erro 404.
+
+---
+
+# Fluxo Completo da Navegação
+
+```
+BrowserRouter
+
+↓
+
+AppRoutes
+
+↓
+
+RequireGuest
+           \
+            \
+             Login
+
+ou
+
+RequireAuthentication
+                 \
+                  \
+                 Dashboard
 ```
 
 ---
 
 # Rotas Planejadas
 
-| Rota               | Acesso      | Status      | Descrição             |
-| ------------------ | ----------- | ----------- | --------------------- |
-| `/workspaces/:id`  | Autenticado | ⏳ Planejada | Detalhes do Workspace |
-| `/boards/:id`      | Autenticado | ⏳ Planejada | Board                 |
-| `/forgot-password` | Público     | ⏳ Planejada | Recuperação de senha  |
-| `/reset-password`  | Público     | ⏳ Planejada | Redefinição de senha  |
-| `/notifications`   | Autenticado | ⏳ Planejada | Notificações          |
-| `/profile`         | Autenticado | ⏳ Planejada | Perfil do usuário     |
+## Workspace
+
+```
+/workspaces/:id
+```
 
 ---
 
-# Melhorias Planejadas
+## Boards
 
-* Criar layout para rotas autenticadas.
-* Criar página `NotFoundPage`.
-* Centralizar a autenticação em `AuthContext`.
-* Verificar a validade do token.
-* Bloquear `/login` e `/register` para usuários já autenticados.
-* Preservar a rota original após redirecionamento para login.
-* Adicionar lazy loading.
-* Adicionar code splitting por rota.
+```
+/boards/:id
+```
+
+---
+
+## Perfil
+
+```
+/profile
+```
+
+---
+
+## Notificações
+
+```
+/notifications
+```
+
+---
+
+## Recuperação de senha
+
+```
+/forgot-password
+```
+
+---
+
+## Redefinição de senha
+
+```
+/reset-password
+```
+
+---
+
+## Página 404
+
+```
+*
+```
+
+---
+
+# Melhorias Futuras
+
+Estão planejadas para as próximas milestones:
+
+- Layout autenticado.
+- Página 404.
+- Lazy Loading.
+- Code Splitting.
+- Breadcrumbs.
+- Proteção por permissões.
+- Rotas por Workspace.
+- Rotas por Board.
+- Rotas dinâmicas.
+- Navegação baseada em permissões.
+
+---
+
+# Estado Atual
+
+## Implementado
+
+- BrowserRouter.
+- AppRoutes.
+- RequireAuthentication.
+- RequireGuest.
+- Redirecionamento automático.
+- Recuperação da sessão.
+- Tela de carregamento.
+- Dashboard protegido.
+- Login.
+- Cadastro.
+
+## Planejado
+
+- Página 404.
+- Layout autenticado.
+- Rotas dos Workspaces.
+- Rotas dos Boards.
+- Rotas de Perfil.
+- Recuperação de senha.
+- Lazy Loading.
+- Code Splitting.

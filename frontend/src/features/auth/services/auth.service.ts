@@ -1,6 +1,7 @@
 import { api } from "../../../services/api";
 
 import type {
+  CurrentUserResponse,
   LoginRequest,
   LoginResponse,
   RegisterRequest,
@@ -25,6 +26,12 @@ export async function registerUser(
     "/auth/register",
     data,
   );
+
+  return response.data;
+}
+
+export async function getCurrentUser(): Promise<CurrentUserResponse> {
+  const response = await api.get<CurrentUserResponse>("/auth/me");
 
   return response.data;
 }

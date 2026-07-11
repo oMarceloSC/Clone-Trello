@@ -2,27 +2,56 @@
 
 ## Visão Geral
 
-A camada de serviços é responsável pela comunicação entre o frontend e a API REST.
+A camada de serviços é responsável pela comunicação entre o frontend e a API REST do backend.
 
-O Axios é utilizado como cliente HTTP.
+Todos os serviços utilizam uma instância compartilhada do Axios, responsável por:
 
-A organização inicial é dividida entre:
+- Configuração da URL da API.
+- Envio automático do JWT.
+- Padronização das requisições.
+- Centralização da comunicação HTTP.
+
+A organização segue a arquitetura baseada em funcionalidades.
+
+---
+
+# Estrutura
 
 ```text
-src/services/
-└── api.ts
+src/
+
+├── services/
+│   └── api.ts
+│
+└── features/
+    └── auth/
+        └── services/
+            └── auth.service.ts
 ```
 
-e serviços específicos por feature:
+Novas funcionalidades possuirão seus próprios serviços.
+
+Exemplo:
 
 ```text
-src/features/auth/services/
-└── auth.service.ts
+features/
+
+workspaces/
+    services/
+
+boards/
+    services/
+
+lists/
+    services/
+
+cards/
+    services/
 ```
 
 ---
 
-# Instância da API
+# API
 
 ## Arquivo
 
@@ -30,15 +59,24 @@ src/features/auth/services/
 src/services/api.ts
 ```
 
-## Responsabilidade
+---
 
-Criar uma instância centralizada do Axios.
+## Responsabilidades
 
-Configuração:
+- Criar instância única do Axios.
+- Definir URL da API.
+- Configurar cabeçalhos padrão.
+- Adicionar automaticamente o JWT.
+- Ser reutilizada por todos os módulos.
+
+---
+
+## Configuração
 
 ```ts
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
+
   headers: {
     "Content-Type": "application/json",
   },
@@ -47,27 +85,29 @@ export const api = axios.create({
 
 ---
 
-# Variável de Ambiente
+# Variáveis de Ambiente
 
-A URL do backend é configurada por:
+A URL do backend é obtida através da variável:
+
+```env
+VITE_API_URL
+```
+
+Exemplo:
 
 ```env
 VITE_API_URL=http://localhost:3333
 ```
 
-O arquivo `.env.example` documenta a variável necessária sem expor dados privados.
+O arquivo `.env.example` documenta todas as variáveis necessárias para execução do projeto.
 
 ---
 
-# Interceptor JWT
+# Interceptor de Requisição
 
-Antes de cada requisição, o Axios procura o token:
+Antes de cada requisição, o Axios verifica a existência de um token JWT.
 
-```text
-@clone-trello:token
-```
-
-Caso exista, adiciona:
+Caso exista, é enviado automaticamente:
 
 ```text
 Authorization: Bearer TOKEN
@@ -75,16 +115,28 @@ Authorization: Bearer TOKEN
 
 Fluxo:
 
-```text
+```
 Serviço
-   ↓
+
+↓
+
 Axios
-   ↓
+
+↓
+
 Interceptor
-   ↓
-JWT
-   ↓
-API
+
+↓
+
+localStorage
+
+↓
+
+Authorization
+
+↓
+
+Backend
 ```
 
 ---
@@ -97,170 +149,312 @@ API
 src/features/auth/services/auth.service.ts
 ```
 
-Atualmente disponibiliza:
-
-```text
-login
-
-registerUser
-```
+Responsável por toda comunicação relacionada à autenticação.
 
 ---
 
-# login
+# login()
 
-Envia as credenciais para:
+## Endpoint
 
 ```http
 POST /auth/login
 ```
 
+---
+
 ## Entrada
 
 ```ts
 {
-  email: string;
-  password: string;
-}
-```
-
-## Saída
-
-```ts
-{
-  token: string;
-  user: {
-    id: string;
-    name: string;
     email: string;
-    avatarUrl: string | null;
-  };
+    password: string;
 }
 ```
-
-## Responsabilidade
-
-* Enviar email e senha.
-* Retornar token e usuário.
-* Não armazenar diretamente os dados da sessão.
-
-O armazenamento ainda é feito pela `LoginPage` e será movido para o `AuthContext`.
 
 ---
 
-# registerUser
+## Resposta
 
-Envia os dados para:
+```ts
+{
+    token: string;
+
+    user: User;
+}
+```
+
+---
+
+## Responsabilidades
+
+- Enviar credenciais.
+- Receber JWT.
+- Receber usuário autenticado.
+
+O armazenamento da sessão é responsabilidade do `AuthContext`.
+
+---
+
+# registerUser()
+
+## Endpoint
 
 ```http
 POST /auth/register
 ```
 
+---
+
 ## Entrada
 
 ```ts
 {
-  name: string;
-  email: string;
-  password: string;
+    name: string;
+    email: string;
+    password: string;
 }
 ```
 
-## Saída
+---
+
+## Resposta
 
 ```ts
 {
-  message: string;
-  user: {
+    message: string;
+
+    user: User;
+}
+```
+
+---
+
+## Responsabilidades
+
+- Criar novo usuário.
+- Retornar usuário criado.
+
+---
+
+# getCurrentUser()
+
+## Endpoint
+
+```http
+GET /auth/me
+```
+
+---
+
+## Headers
+
+```text
+Authorization: Bearer TOKEN
+```
+
+O JWT é enviado automaticamente pelo interceptor do Axios.
+
+---
+
+## Resposta
+
+```ts
+{
+    user: User;
+}
+```
+
+---
+
+## Responsabilidades
+
+- Validar token.
+- Recuperar usuário autenticado.
+- Restaurar a sessão durante a inicialização da aplicação.
+
+Esse método é utilizado exclusivamente pelo `AuthProvider`.
+
+---
+
+# Fluxo da Autenticação
+
+```
+LoginPage
+
+↓
+
+signIn()
+
+↓
+
+auth.service
+
+↓
+
+Axios
+
+↓
+
+Backend
+
+↓
+
+JWT
+
+↓
+
+AuthContext
+```
+
+---
+
+# Fluxo de Recuperação da Sessão
+
+```
+Aplicação
+
+↓
+
+AuthProvider
+
+↓
+
+getCurrentUser()
+
+↓
+
+Axios
+
+↓
+
+GET /auth/me
+
+↓
+
+Usuário
+
+↓
+
+AuthContext
+```
+
+---
+
+# Tipos Utilizados
+
+## User
+
+```ts
+type User = {
     id: string;
     name: string;
     email: string;
     avatarUrl: string | null;
     createdAt?: string;
-  };
 }
 ```
 
-## Responsabilidade
-
-* Enviar os dados de cadastro.
-* Retornar o usuário criado.
-* Não enviar a confirmação de senha ao backend.
-
 ---
-
-# Tipos Relacionados
-
-## User
-
-```ts
-export type User = {
-  id: string;
-  name: string;
-  email: string;
-  avatarUrl: string | null;
-  createdAt?: string;
-};
-```
 
 ## LoginRequest
 
 ```ts
-export type LoginRequest = {
-  email: string;
-  password: string;
-};
+type LoginRequest = {
+    email: string;
+    password: string;
+}
 ```
+
+---
 
 ## LoginResponse
 
 ```ts
-export type LoginResponse = {
-  token: string;
-  user: User;
-};
+type LoginResponse = {
+    token: string;
+    user: User;
+}
 ```
+
+---
 
 ## RegisterRequest
 
 ```ts
-export type RegisterRequest = {
-  name: string;
-  email: string;
-  password: string;
-};
+type RegisterRequest = {
+    name: string;
+    email: string;
+    password: string;
+}
 ```
+
+---
 
 ## RegisterResponse
 
 ```ts
-export type RegisterResponse = {
-  message: string;
-  user: User;
-};
+type RegisterResponse = {
+    message: string;
+    user: User;
+}
+```
+
+---
+
+## CurrentUserResponse
+
+```ts
+type CurrentUserResponse = {
+    user: User;
+}
 ```
 
 ---
 
 # Tratamento de Erros
 
-As páginas identificam erros do Axios utilizando:
+Os serviços apenas propagam os erros recebidos da API.
 
-```ts
-axios.isAxiosError(error)
+A responsabilidade pela exibição das mensagens pertence às páginas.
+
+Exemplo:
+
 ```
+API
 
-Quando possível, a mensagem do backend é exibida:
+↓
 
-```ts
-error.response?.data?.message
+AxiosError
+
+↓
+
+Página
+
+↓
+
+Mensagem ao usuário
 ```
-
-Caso não exista uma mensagem específica, é utilizado um texto genérico.
 
 ---
 
-# Serviços Planejados
+# Boas Práticas
+
+Os serviços devem:
+
+- Não acessar diretamente componentes React.
+- Não manipular interface.
+- Não acessar o DOM.
+- Não executar navegação.
+- Apenas comunicar com a API.
+
+Toda lógica de interface permanece nas páginas ou nos hooks.
+
+---
+
+# Próximos Serviços
+
+Serão implementados conforme novas funcionalidades forem desenvolvidas.
 
 ```text
 workspace.service.ts
@@ -276,13 +470,38 @@ notification.service.ts
 
 ---
 
-# Próximas Melhorias
+# Melhorias Futuras
 
-* Criar serviço de Workspaces.
-* Criar interceptor de respostas.
-* Tratar respostas `401`.
-* Limpar a sessão automaticamente quando o token expirar.
-* Padronizar os tipos de erro da API.
-* Centralizar o tratamento de erros.
-* Integrar o `AuthContext`.
-* Adicionar cancelamento de requisições quando necessário.
+Estão planejadas para as próximas milestones:
+
+- Interceptor global de respostas.
+- Tratamento automático de respostas `401 Unauthorized`.
+- Cancelamento de requisições.
+- Refresh Token.
+- Retry automático de requisições.
+- Cache de consultas.
+- Integração com TanStack Query (caso necessário).
+
+---
+
+# Estado Atual
+
+## Implementado
+
+- Instância compartilhada do Axios.
+- Configuração por variável de ambiente.
+- Interceptor JWT.
+- login().
+- registerUser().
+- getCurrentUser().
+
+## Planejado
+
+- workspace.service.ts.
+- board.service.ts.
+- list.service.ts.
+- card.service.ts.
+- notification.service.ts.
+- Interceptor de respostas.
+- Refresh Token.
+- Cache de requisições.
