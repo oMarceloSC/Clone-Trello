@@ -2,7 +2,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+} from "react-router";
 
 import {
   loginSchema,
@@ -10,14 +14,25 @@ import {
 } from "../schemas/login.schema";
 import { login } from "../services/auth.service";
 
+type LoginLocationState = {
+  registrationSuccess?: boolean;
+};
+
 export function LoginPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const state = location.state as LoginLocationState | null;
+
   const [apiError, setApiError] = useState<string | null>(null);
 
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: {
+      errors,
+      isSubmitting,
+    },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -62,8 +77,15 @@ export function LoginPage() {
       <section className="auth-card">
         <header className="auth-header">
           <h1>Clone do Trello</h1>
+
           <p>Entre para acessar seus Workspaces.</p>
         </header>
+
+        {state?.registrationSuccess && (
+          <div className="success-message" role="status">
+            Conta criada com sucesso. Agora você pode entrar.
+          </div>
+        )}
 
         <form
           className="auth-form"

@@ -1,29 +1,30 @@
-import { Navigate, Route, Routes } from "react-router";
+import type { ReactNode } from "react";
+import {
+  Navigate,
+  Route,
+  Routes,
+} from "react-router";
 
 import { LoginPage } from "../features/auth/pages/LoginPage";
+import { RegisterPage } from "../features/auth/pages/RegisterPage";
 import { DashboardPage } from "../pages/DashboardPage";
+
+type RequireAuthenticationProps = {
+  children: ReactNode;
+};
 
 function RequireAuthentication({
   children,
-}: {
-  children: React.ReactNode;
-}) {
-  const token = localStorage.getItem("@clone-trello:token");
+}: RequireAuthenticationProps) {
+  const token = localStorage.getItem(
+    "@clone-trello:token",
+  );
 
   if (!token) {
     return <Navigate to="/login" replace />;
   }
 
   return children;
-}
-
-function RegisterPlaceholder() {
-  return (
-    <main className="placeholder-page">
-      <h1>Cadastro</h1>
-      <p>A página de cadastro será implementada em seguida.</p>
-    </main>
-  );
 }
 
 export function AppRoutes() {
@@ -34,11 +35,14 @@ export function AppRoutes() {
         element={<Navigate to="/login" replace />}
       />
 
-      <Route path="/login" element={<LoginPage />} />
+      <Route
+        path="/login"
+        element={<LoginPage />}
+      />
 
       <Route
         path="/register"
-        element={<RegisterPlaceholder />}
+        element={<RegisterPage />}
       />
 
       <Route

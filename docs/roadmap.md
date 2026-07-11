@@ -4,9 +4,9 @@
 
 Este documento apresenta o planejamento de desenvolvimento do Clone do Trello.
 
-O projeto será desenvolvido por milestones, permitindo evolução contínua da aplicação mantendo estabilidade, qualidade e organização da base de código.
+O projeto é desenvolvido por milestones, permitindo evolução contínua da aplicação enquanto mantém estabilidade, qualidade e organização da base de código.
 
-Cada milestone representa um conjunto de funcionalidades completas antes do início da próxima etapa.
+Cada milestone representa um conjunto de funcionalidades relacionadas.
 
 ---
 
@@ -14,99 +14,143 @@ Cada milestone representa um conjunto de funcionalidades completas antes do iní
 
 ## Infraestrutura
 
-- [x] Configuração inicial do projeto
-- [x] Docker
-- [x] PostgreSQL
-- [x] Prisma ORM
-- [x] Sistema de Migrations
-- [x] Fastify
-- [x] TypeScript
+* [x] Configuração inicial do projeto
+* [x] Docker
+* [x] PostgreSQL
+* [x] Prisma ORM
+* [x] Adapter PostgreSQL para Prisma 7
+* [x] Sistema de Migrations
+* [x] Fastify
+* [x] TypeScript
 
 ## Arquitetura
 
-- [x] Estrutura modular
-- [x] Controllers
-- [x] Use Cases
-- [x] Schemas
-- [x] Middlewares
-- [x] Tratamento global de erros
-- [x] Validação de ambiente
+* [x] Estrutura modular
+* [x] Controllers
+* [x] Use Cases
+* [x] Schemas
+* [x] Middlewares
+* [x] Tratamento global de erros
+* [x] Validação de ambiente
+* [x] Documentação modular
 
-## Autenticação
+## Autenticação do Backend
 
-- [x] Cadastro
-- [x] Login
-- [x] JWT
-- [x] Hash de senha
-- [x] Middleware de autenticação
-- [x] Endpoint `/auth/me`
+* [x] Cadastro
+* [x] Login
+* [x] JWT
+* [x] Hash de senha
+* [x] Middleware de autenticação
+* [x] Endpoint `/auth/me`
 
 ---
 
 # Milestone 2 — Workspaces ✅
 
-## Objetivos
+## CRUD
 
-- [x] Criar Workspace
-- [x] Listar Workspaces
-- [x] Buscar Workspace por ID
-- [x] Atualizar Workspace
-- [x] Excluir Workspace
+* [x] Criar Workspace
+* [x] Listar Workspaces
+* [x] Buscar Workspace por ID
+* [x] Atualizar Workspace
+* [x] Excluir Workspace
 
-### Membros
+## Convites
 
-- [x] Criar convites
-- [x] Aceitar convites
-- [x] Listar membros
-- [x] Atualizar permissões
-- [x] Remover membros
+* [x] Criar convite
+* [x] Gerar token único
+* [x] Definir expiração
+* [x] Aceitar convite
+* [x] Validar email do convidado
+* [x] Atualizar convite para `ACCEPTED`
+* [x] Marcar convite expirado
 
-### Permissões
+## Membros
 
-- [x] OWNER
-- [x] ADMIN
-- [x] MEMBER
-- [x] VIEWER
+* [x] Criar membro automaticamente após aceitar convite
+* [x] Listar membros
+* [x] Atualizar permissão
+* [x] Remover membro
+
+## Permissões
+
+* [x] OWNER
+* [x] ADMIN
+* [x] MEMBER
+* [x] VIEWER
+* [x] Proteger atualização
+* [x] Proteger exclusão
+* [x] Proteger convites
+* [x] Proteger gerenciamento de membros
 
 ---
 
-# Milestone 3 — Frontend 🚧
+# Milestone 3 — Frontend de Integração 🚧
 
 ## Infraestrutura
 
-- [x] Inicializar React + Vite
-- [x] Configurar TypeScript
-- [x] Configurar ESLint
-- [x] Estrutura inicial de pastas
-- [x] Configurar variáveis de ambiente
+* [x] Inicializar React com Vite
+* [x] Configurar TypeScript
+* [x] Configurar ESLint
+* [x] Criar estrutura inicial
+* [x] Configurar variáveis de ambiente
 
 ## Navegação
 
-- [x] React Router
-- [x] Rotas protegidas
+* [x] Configurar React Router
+* [x] Criar rota de login
+* [x] Criar rota de cadastro
+* [x] Criar rota protegida
+* [x] Configurar redirecionamentos
+* [ ] Criar página 404
+* [ ] Criar layout autenticado
 
 ## Comunicação
 
-- [x] Axios
-- [x] Interceptor JWT
+* [x] Configurar Axios
+* [x] Configurar URL da API
+* [x] Criar interceptor JWT
+* [x] Criar serviço de autenticação
+* [ ] Criar interceptor de respostas
+* [ ] Tratar sessão expirada
 
 ## Autenticação
 
-- [x] Login
-- [x] Logout
-- [ ] Cadastro
-- [ ] AuthContext
-- [ ] Persistência automática da sessão
+* [x] Implementar Login
+* [x] Implementar Cadastro
+* [x] Implementar Logout
+* [x] Persistir token no `localStorage`
+* [x] Persistir usuário no `localStorage`
+* [x] Validar formulários com Zod
+* [x] Integrar React Hook Form
+* [ ] Implementar AuthContext
+* [ ] Recuperar sessão com `/auth/me`
+* [ ] Bloquear páginas públicas para usuários autenticados
+* [ ] Implementar recuperação de senha
 
 ## Workspaces
 
-- [ ] Dashboard
-- [ ] Listagem de Workspaces
-- [ ] Criar Workspace
-- [ ] Atualizar Workspace
-- [ ] Excluir Workspace
-- [ ] Gerenciar membros
-- [ ] Convites
+* [ ] Listar Workspaces no Dashboard
+* [ ] Criar Workspace
+* [ ] Visualizar Workspace
+* [ ] Atualizar Workspace
+* [ ] Excluir Workspace
+* [ ] Listar membros
+* [ ] Alterar permissões
+* [ ] Remover membro
+* [ ] Criar convite
+* [ ] Aceitar convite
+
+## Interface
+
+* [x] Criar estilos globais iniciais
+* [x] Criar layout de autenticação
+* [x] Criar feedback de erro
+* [x] Criar feedback de sucesso
+* [ ] Criar componentes reutilizáveis
+* [ ] Criar estados de carregamento
+* [ ] Criar empty states
+* [ ] Criar sistema de mensagens ou toasts
 
 ---
 
@@ -114,18 +158,26 @@ Cada milestone representa um conjunto de funcionalidades completas antes do iní
 
 ## Backend
 
-- [ ] Criar Board
-- [ ] Listar Boards
-- [ ] Buscar Board
-- [ ] Atualizar Board
-- [ ] Excluir Board
+* [ ] Model Board
+* [ ] Model BoardMember
+* [ ] Criar Board
+* [ ] Listar Boards
+* [ ] Buscar Board por ID
+* [ ] Atualizar Board
+* [ ] Excluir Board
+* [ ] Favoritar Board
+* [ ] Arquivar Board
+* [ ] Sistema de permissões do Board
 
 ## Frontend
 
-- [ ] Tela de Boards
-- [ ] Criar Board
-- [ ] Atualizar Board
-- [ ] Excluir Board
+* [ ] Listar Boards
+* [ ] Criar Board
+* [ ] Visualizar Board
+* [ ] Atualizar Board
+* [ ] Excluir Board
+* [ ] Favoritar Board
+* [ ] Arquivar Board
 
 ---
 
@@ -133,16 +185,20 @@ Cada milestone representa um conjunto de funcionalidades completas antes do iní
 
 ## Backend
 
-- [ ] Criar List
-- [ ] Listar Lists
-- [ ] Atualizar List
-- [ ] Excluir List
-- [ ] Reordenação
+* [ ] Model List
+* [ ] Criar List
+* [ ] Listar Lists
+* [ ] Atualizar List
+* [ ] Excluir List
+* [ ] Reordenar Lists
 
 ## Frontend
 
-- [ ] Interface das Lists
-- [ ] CRUD de Lists
+* [ ] Exibir Lists
+* [ ] Criar List
+* [ ] Atualizar List
+* [ ] Excluir List
+* [ ] Reordenar Lists
 
 ---
 
@@ -150,59 +206,85 @@ Cada milestone representa um conjunto de funcionalidades completas antes do iní
 
 ## Backend
 
-- [ ] Criar Card
-- [ ] Atualizar Card
-- [ ] Excluir Card
-- [ ] Movimentação
-- [ ] Datas de entrega
-- [ ] Membros
-- [ ] Comentários
-- [ ] Etiquetas
-- [ ] Checklist
-- [ ] Upload de anexos
+* [ ] Model Card
+* [ ] Model CardMember
+* [ ] Criar Card
+* [ ] Buscar Card
+* [ ] Atualizar Card
+* [ ] Excluir Card
+* [ ] Arquivar Card
+* [ ] Movimentar Card
+* [ ] Datas de entrega
+* [ ] Membros
+* [ ] Comentários
+* [ ] Etiquetas
+* [ ] Checklist
+* [ ] Upload de anexos
 
 ## Frontend
 
-- [ ] Interface dos Cards
-- [ ] Modal do Card
-- [ ] Drag and Drop
-- [ ] Comentários
-- [ ] Checklist
-- [ ] Etiquetas
-- [ ] Uploads
+* [ ] Exibir Cards
+* [ ] Criar Card
+* [ ] Atualizar Card
+* [ ] Excluir Card
+* [ ] Modal do Card
+* [ ] Drag and Drop
+* [ ] Datas de entrega
+* [ ] Membros
+* [ ] Comentários
+* [ ] Etiquetas
+* [ ] Checklist
+* [ ] Uploads
 
 ---
 
-# Milestone 7 — Colaboração
+# Milestone 7 — Colaboração em Tempo Real
 
 ## WebSocket
 
-- [ ] Socket.IO
-- [ ] Atualizações em tempo real
-- [ ] Sincronização de Boards
-- [ ] Sincronização de Lists
-- [ ] Sincronização de Cards
-- [ ] Indicador de usuários online
+* [ ] Configurar Socket.IO no backend
+* [ ] Configurar Socket.IO Client
+* [ ] Autenticar conexões
+* [ ] Criar Rooms por Workspace
+* [ ] Criar Rooms por Board
+* [ ] Sincronizar Boards
+* [ ] Sincronizar Lists
+* [ ] Sincronizar Cards
+* [ ] Sincronizar comentários
+* [ ] Exibir usuários online
 
 ---
 
-# Milestone 8 — Dashboard e Notificações
+# Milestone 8 — Dashboard, Atividades e Notificações
 
 ## Dashboard
 
-- [ ] Estatísticas
-- [ ] Histórico
-- [ ] Atividades recentes
+* [ ] Estatísticas
+* [ ] Métricas
+* [ ] Atividades recentes
+* [ ] Cards concluídos
+* [ ] Prazos próximos
+
+## Atividades
+
+* [ ] Model Activity
+* [ ] Histórico do Workspace
+* [ ] Histórico do Board
+* [ ] Histórico do Card
 
 ## Notificações
 
-- [ ] Notificações em tempo real
-- [ ] Central de notificações
-- [ ] Marcar como lidas
+* [ ] Model Notification
+* [ ] Central de notificações
+* [ ] Marcar notificação como lida
+* [ ] Notificações em tempo real
 
 ## Busca
 
-- [ ] Busca Global
+* [ ] Busca global
+* [ ] Busca de Workspaces
+* [ ] Busca de Boards
+* [ ] Busca de Cards
 
 ---
 
@@ -210,52 +292,75 @@ Cada milestone representa um conjunto de funcionalidades completas antes do iní
 
 ## Interface
 
-- [ ] Responsividade
-- [ ] Tema Escuro
-- [ ] Animações
-- [ ] Skeleton Loading
-- [ ] Empty States
-- [ ] Error Pages
+* [ ] Responsividade
+* [ ] Tema escuro
+* [ ] Design System
+* [ ] Animações
+* [ ] Skeleton loading
+* [ ] Empty states
+* [ ] Error pages
+* [ ] Modais
+* [ ] Toasts
 
 ## Experiência do Usuário
 
-- [ ] Toasts
-- [ ] Confirmações
-- [ ] Feedback visual
-- [ ] Melhorias de acessibilidade
+* [ ] Confirmações para ações destrutivas
+* [ ] Feedback visual
+* [ ] Navegação por teclado
+* [ ] Acessibilidade
+* [ ] Otimização para dispositivos móveis
 
 ---
 
-# Milestone 10 — Qualidade
+# Milestone 10 — Qualidade e Produção
 
 ## Testes
 
-- [ ] Testes Unitários
-- [ ] Testes de Integração
-- [ ] Testes E2E
+* [ ] Testes unitários
+* [ ] Testes de integração
+* [ ] Testes E2E
+* [ ] Testes de permissões
+* [ ] Testes do WebSocket
+
+## Segurança
+
+* [ ] Rate limiting
+* [ ] Helmet
+* [ ] Refresh tokens
+* [ ] Revogação de sessão
+* [ ] Auditoria de segurança
 
 ## DevOps
 
-- [ ] GitHub Actions
-- [ ] CI/CD
-- [ ] Deploy
-- [ ] Monitoramento
+* [ ] GitHub Actions
+* [ ] CI
+* [ ] CD
+* [ ] Deploy do backend
+* [ ] Deploy do frontend
+* [ ] Banco de produção
+* [ ] Monitoramento
+* [ ] Logs estruturados
 
 ---
 
 # Objetivo Final
 
-Construir um Clone do Trello completo utilizando tecnologias modernas e arquitetura escalável, simulando um ambiente de desenvolvimento profissional.
+Construir um Clone do Trello completo utilizando tecnologias modernas e arquitetura escalável, simulando um ambiente profissional de desenvolvimento.
 
-Ao final do projeto, a aplicação deverá possuir:
+Ao final, a aplicação deverá possuir:
 
-- Backend totalmente modularizado.
-- Frontend moderno em React.
-- Comunicação em tempo real.
-- Sistema completo de Workspaces, Boards, Lists e Cards.
-- Gerenciamento de usuários e permissões.
-- Interface responsiva.
-- Documentação completa.
-- Testes automatizados.
-- Pipeline de CI/CD.
-- Estrutura pronta para produção.
+* Backend modular.
+* Frontend moderno em React.
+* Autenticação completa.
+* Workspaces, Boards, Lists e Cards.
+* Sistema de membros e permissões.
+* Convites.
+* Comunicação em tempo real.
+* Notificações.
+* Busca global.
+* Interface responsiva.
+* Tema escuro.
+* Documentação completa.
+* Testes automatizados.
+* Pipeline de CI/CD.
+* Estrutura pronta para produção.

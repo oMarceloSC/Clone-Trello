@@ -150,3 +150,13 @@ button {
 .dashboard-content {
   padding: 32px;
 }
+
+.success-message {
+  margin-bottom: 18px;
+  padding: 12px;
+  border: 1px solid #4bce97;
+  border-radius: 6px;
+  background: #dcfff1;
+  color: #216e4e;
+  font-size: 14px;
+}

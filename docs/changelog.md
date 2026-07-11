@@ -2,25 +2,75 @@
 
 Todas as mudanças importantes deste projeto serão documentadas neste arquivo.
 
-O formato utilizado é inspirado no padrão **Keep a Changelog** e o projeto segue o versionamento semântico (**Semantic Versioning**).
+O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto segue versionamento semântico.
+
+---
 
 # [0.3.0] - Frontend Integration
 
 ## Added
 
-### Frontend
+### Infraestrutura do Frontend
 
-- Inicialização da aplicação React com Vite e TypeScript.
-- ESLint.
-- Estrutura inicial baseada em funcionalidades.
-- Configuração do React Router.
-- Instância centralizada do Axios.
-- Interceptor de autenticação JWT.
-- Página de login.
-- Validação com React Hook Form e Zod.
-- Rota protegida para o dashboard.
-- Persistência inicial da sessão no localStorage.
-- Logout.
+* Inicialização da aplicação React.
+* Configuração do Vite.
+* Configuração do TypeScript.
+* Configuração do ESLint.
+* Estrutura inicial baseada em funcionalidades.
+* Configuração das variáveis de ambiente.
+* Arquivo `.env.example`.
+
+### Navegação
+
+* Configuração do React Router.
+* Rota pública de login.
+* Rota pública de cadastro.
+* Rota protegida do dashboard.
+* Redirecionamento da rota inicial.
+* Redirecionamento de rotas desconhecidas.
+* Componente inicial de proteção de rotas.
+
+### Comunicação com a API
+
+* Instância centralizada do Axios.
+* Configuração da URL do backend.
+* Interceptor para envio automático do JWT.
+* Serviço inicial de autenticação.
+
+### Autenticação no Frontend
+
+* Página de login.
+* Formulário de login com React Hook Form.
+* Validação do login com Zod.
+* Persistência inicial do token no `localStorage`.
+* Persistência inicial do usuário no `localStorage`.
+* Logout.
+* Dashboard inicial autenticado.
+* Página de cadastro.
+* Formulário de cadastro com React Hook Form.
+* Validação do cadastro com Zod.
+* Confirmação de senha.
+* Tratamento de email duplicado.
+* Redirecionamento para login após cadastro.
+* Mensagem de sucesso após criação da conta.
+
+### Estilização
+
+* Estilos globais iniciais.
+* Layout das páginas de autenticação.
+* Estilos dos formulários.
+* Feedback visual de erros.
+* Feedback visual de cadastro concluído.
+* Layout inicial do dashboard.
+
+### Documentação
+
+* Documentação da arquitetura inicial do frontend.
+* Documentação da autenticação.
+* Documentação das páginas.
+* Documentação das rotas.
+* Documentação dos serviços.
+* Documentação das decisões arquiteturais do frontend.
 
 ---
 
@@ -28,66 +78,66 @@ O formato utilizado é inspirado no padrão **Keep a Changelog** e o projeto seg
 
 ## Added
 
-- Endpoint para atualização de Workspace.
-- Controle de permissões para atualização utilizando as roles OWNER e ADMIN.
-
 ### Workspace
 
-- Estrutura inicial do módulo Workspaces.
-- Endpoint para criação de Workspaces.
-- Endpoint para listagem de Workspaces.
-- Endpoint para busca de Workspace por ID.
-- Associação automática do criador do Workspace como `OWNER`.
-- Validação de acesso através da tabela `WorkspaceMember`.
-- Endpoint para exclusão de Workspace.
-- Exclusão permitida apenas para usuários OWNER.
-- Model WorkspaceInvitation.
-- Endpoint para criação de convites.
-- Geração automática de token UUID.
-- Expiração de convites em 7 dias.
-- Validação para impedir convites duplicados.
-- Validação para impedir convites de usuários já pertencentes ao Workspace.
-- Endpoint para aceitar convites de Workspace.
-- Criação automática de `WorkspaceMember` ao aceitar convite.
-- Atualização do status do convite para `ACCEPTED`.
-- Validação de token único do convite.
-- Validação para garantir que o convite pertence ao usuário autenticado.
-- Tratamento de convites expirados.
-- Endpoint para listagem de membros do Workspace.
-- Ordenação dos membros pela data de ingresso.
-- Endpoint para alteração de permissões dos membros.
-- Controle de cargos OWNER, ADMIN, MEMBER e VIEWER.
+* Estrutura inicial do módulo Workspaces.
+* Endpoint para criação de Workspaces.
+* Endpoint para listagem de Workspaces.
+* Endpoint para busca de Workspace por ID.
+* Endpoint para atualização de Workspace.
+* Endpoint para exclusão de Workspace.
+* Associação automática do criador como `OWNER`.
+* Validação de acesso através da tabela `WorkspaceMember`.
+* Model `WorkspaceInvitation`.
+* Endpoint para criação de convites.
+* Geração automática de token UUID.
+* Expiração de convites em 7 dias.
+* Validação para impedir convites duplicados.
+* Validação para impedir convites de usuários já pertencentes ao Workspace.
+* Endpoint para aceitar convites.
+* Criação automática de `WorkspaceMember` ao aceitar convite.
+* Atualização do convite para `ACCEPTED`.
+* Tratamento de convites expirados.
+* Endpoint para listagem de membros.
+* Ordenação dos membros pela data de ingresso.
+* Endpoint para alteração das permissões.
+* Controle das roles `OWNER`, `ADMIN`, `MEMBER` e `VIEWER`.
+* Endpoint para remoção de membros.
 
 ### Arquitetura
 
-- Organização do módulo Workspaces utilizando:
-  - Controllers
-  - Routes
-  - Schemas
-  - Use Cases
-  - Types
+* Organização do módulo Workspaces utilizando:
+
+  * Controllers.
+  * Routes.
+  * Schemas.
+  * Use Cases.
+  * Types.
+* Separação das rotas de convites.
+* Uso de transação para aceitar convites.
 
 ### Segurança
 
-- Todas as rotas do módulo protegidas por autenticação JWT.
-- Busca de Workspace limitada aos membros pertencentes ao Workspace.
-- Retorno `404 Not Found` quando o usuário não possui acesso ao Workspace, evitando enumeração de recursos.
-- Endpoint para atualização de Workspace.
-- Controle de permissões para atualização utilizando as roles OWNER e ADMIN.
-- Exclusão protegida por validação de permissões.
-- Retorno 403 Forbidden para usuários sem permissão de exclusão.
-- Apenas OWNER e ADMIN podem enviar convites.
-- Aceitação de convite permitida apenas para o usuário dono do email convidado.
-- Convites expirados são marcados automaticamente como `EXPIRED`.
-- Apenas membros do Workspace podem visualizar sua lista de participantes.
-- Apenas OWNER pode alterar permissões.
-- OWNER não pode alterar sua própria permissão.
-- OWNER não pode ter sua permissão modificada.
+* Todas as rotas de Workspaces protegidas por JWT.
+* Workspaces acessíveis somente por membros.
+* Atualização permitida apenas para `OWNER` e `ADMIN`.
+* Exclusão permitida apenas para `OWNER`.
+* Convites permitidos apenas para `OWNER` e `ADMIN`.
+* Aceitação permitida apenas pelo usuário correspondente ao email convidado.
+* Listagem de membros limitada aos participantes do Workspace.
+* Alteração de permissões permitida apenas para `OWNER`.
+* Proteção da role do proprietário.
+* Remoção de membros permitida apenas para `OWNER`.
+* Retorno `404` para recursos sem acesso, reduzindo enumeração de IDs.
 
 ### Documentação
 
-- Criação da documentação específica do módulo:
-  - `docs/api/workspaces.md`
+* Documentação da API de Workspaces.
+* Documentação dos convites.
+* Documentação dos membros.
+* Atualização da modelagem do banco.
+* Atualização da arquitetura.
+* Atualização do roadmap.
 
 ---
 
@@ -97,50 +147,68 @@ O formato utilizado é inspirado no padrão **Keep a Changelog** e o projeto seg
 
 ### Infraestrutura
 
-- Configuração inicial do projeto.
-- Docker.
-- PostgreSQL.
-- Prisma ORM.
-- Sistema de Migrations.
-- Fastify.
-- TypeScript.
-- Configuração do ambiente utilizando `.env`.
-- Validação das variáveis de ambiente com Zod.
+* Configuração inicial do projeto.
+* Docker.
+* PostgreSQL.
+* Prisma ORM.
+* Adapter do PostgreSQL para Prisma 7.
+* Sistema de Migrations.
+* Fastify.
+* TypeScript.
+* Configuração de variáveis de ambiente.
+* Validação de ambiente com Zod.
 
 ### Arquitetura
 
-- Estrutura modular da aplicação.
-- Organização baseada em módulos.
-- Controllers.
-- Use Cases.
-- Schemas.
-- Middlewares.
-- AppError.
-- Middleware global de tratamento de erros.
+* Estrutura modular do backend.
+* Controllers.
+* Routes.
+* Schemas.
+* Use Cases.
+* Middlewares.
+* Classe `AppError`.
+* Middleware global de erros.
 
 ### Autenticação
 
-- Cadastro de usuários.
-- Login.
-- Geração de JWT.
-- Hash de senha utilizando Bcrypt.
-- Middleware de autenticação.
-- Endpoint `/auth/me`.
+* Cadastro de usuários.
+* Login.
+* Hash de senha com Bcrypt.
+* JWT.
+* Middleware de autenticação.
+* Endpoint `/auth/me`.
 
 ### Banco de Dados
 
-- Model `User`.
-- Model `Workspace`.
-- Model `WorkspaceMember`.
-- Enum `WorkspaceRole`.
+* Model `User`.
+* Model `Workspace`.
+* Model `WorkspaceMember`.
+* Enum `WorkspaceRole`.
 
 ### Documentação
 
-- README.
-- architecture.md.
-- backend.md.
-- database.md.
-- roadmap.md.
-- decisions.md.
-- websocket.md.
-- API organizada por módulos.
+* README.
+* Arquitetura.
+* Backend.
+* Banco de dados.
+* API.
+* Roadmap.
+* Changelog.
+* Decisões arquiteturais.
+* Planejamento do WebSocket.
+
+---
+
+# Próximas Versões
+
+## 0.4.0 — Frontend de Workspaces
+
+Planejado:
+
+* AuthContext.
+* Recuperação da sessão.
+* Dashboard com Workspaces.
+* Criação de Workspace.
+* Página de detalhes do Workspace.
+* Gerenciamento de membros.
+* Gerenciamento de convites.
