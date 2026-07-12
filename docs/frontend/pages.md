@@ -309,7 +309,9 @@ Caso não exista sessão válida:
 
 Servir como página inicial do usuário autenticado.
 
-Nesta etapa do projeto, o Dashboard também funciona como ponto de entrada para os Workspaces.
+O Dashboard agora é renderizado dentro do `AuthenticatedLayout`, compartilhando a Sidebar e o Header com todas as páginas privadas.
+
+Nesta etapa do projeto, ele também funciona como ponto de entrada para os Workspaces.
 
 ---
 
@@ -324,6 +326,7 @@ Nesta etapa do projeto, o Dashboard também funciona como ponto de entrada para 
 - Exibir estados de carregamento.
 - Exibir estado vazio.
 - Exibir erros da API.
+- Ser renderizado dentro do AuthenticatedLayout.
 
 ---
 
@@ -440,11 +443,11 @@ Após a criação com sucesso:
 
 ## Fluxo
 
-Dashboard
+AuthenticatedLayout
 
 ↓
 
-AuthContext
+Dashboard
 
 ↓
 
@@ -469,6 +472,79 @@ Workspace criado
 ↓
 
 Atualização automática da lista
+
+---
+
+# AuthenticatedLayout
+
+## Arquivo
+
+```
+src/layouts/AuthenticatedLayout.tsx
+```
+
+## Utilização
+
+Todas as páginas autenticadas são renderizadas dentro deste layout.
+
+Atualmente:
+
+```
+DashboardPage
+```
+
+No futuro:
+
+```
+WorkspacePage
+
+BoardPage
+
+NotificationPage
+
+ProfilePage
+```
+
+---
+
+## Responsabilidades
+
+- Renderizar a Sidebar.
+- Renderizar o Header.
+- Exibir informações do usuário autenticado.
+- Permitir logout.
+- Centralizar a navegação da aplicação.
+- Renderizar as páginas através do `Outlet`.
+
+---
+
+## Sidebar
+
+Atualmente apresenta:
+
+- Dashboard.
+- Boards (placeholder).
+- Notificações (placeholder).
+- Nome do usuário.
+- Email do usuário.
+- Avatar simplificado.
+
+---
+
+## Header
+
+Atualmente apresenta:
+
+- Área autenticada.
+- Saudação ao usuário.
+- Botão Logout.
+
+No futuro também conterá:
+
+- Pesquisa.
+- Notificações.
+- Perfil.
+- Configurações.
 
 ---
 
@@ -570,6 +646,9 @@ Responsabilidades:
 - LoginPage.
 - RegisterPage.
 - DashboardPage.
+- AuthenticatedLayout.
+- Sidebar compartilhada.
+- Header compartilhado.
 - Recuperação automática da sessão.
 - Listagem de Workspaces.
 - Criação de Workspaces.

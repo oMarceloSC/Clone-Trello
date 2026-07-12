@@ -49,6 +49,9 @@ Atualmente existem estilos para:
 - Login.
 - Cadastro.
 - Dashboard.
+- AuthenticatedLayout.
+- Sidebar.
+- Header.
 - Cards de Workspace.
 - Modal de criação de Workspace.
 - Botões.
@@ -174,6 +177,62 @@ Possui:
 - Seção de Workspaces.
 - Botão para criação de Workspace.
 - Grid responsivo de cards.
+
+---
+
+# AuthenticatedLayout
+
+Todas as páginas autenticadas compartilham um mesmo layout.
+
+Esse layout é composto por:
+
+- Sidebar.
+- Header.
+- Área de conteúdo.
+
+Seu objetivo é manter uma navegação consistente em toda a aplicação.
+
+---
+
+## Sidebar
+
+A Sidebar possui uma largura fixa e ocupa toda a altura da janela.
+
+Atualmente contém:
+
+- Logo da aplicação.
+- Navegação principal.
+- Informações do usuário autenticado.
+
+Os links disponíveis são:
+
+- Dashboard.
+- Boards (placeholder).
+- Notificações (placeholder).
+
+No rodapé da Sidebar são exibidos:
+
+- Avatar simplificado.
+- Nome do usuário.
+- Email.
+
+---
+
+## Header
+
+O Header permanece fixo no topo da área principal.
+
+Atualmente apresenta:
+
+- Identificação da área autenticada.
+- Saudação ao usuário.
+- Botão Logout.
+
+No futuro também exibirá:
+
+- Pesquisa.
+- Notificações.
+- Perfil.
 
 ---
 
@@ -558,6 +617,9 @@ Atualmente:
 - Botão Cancelar aparece abaixo da ação principal visualmente.
 - Espaçamento interno é reduzido.
 - Grid de Workspaces ajusta automaticamente a quantidade de colunas.
+- Sidebar passa para o topo em telas menores.
+- Navegação da Sidebar torna-se horizontal.
+- Header reorganiza seus elementos verticalmente quando necessário.
 
 Outras melhorias serão implementadas futuramente.
 
@@ -596,6 +658,8 @@ styles/
 ├── base.css
 ├── variables.css
 ├── layout.css
+├── sidebar.css
+├── header.css
 ├── forms.css
 ├── buttons.css
 ├── modal.css
@@ -698,6 +762,9 @@ As próximas evoluções previstas para a camada de estilos são:
 - Textareas.
 - Responsividade inicial.
 - Práticas iniciais de acessibilidade.
+- AuthenticatedLayout.
+- Sidebar compartilhada.
+- Header compartilhado.
 
 ## Planejado
 
@@ -710,3 +777,6 @@ As próximas evoluções previstas para a camada de estilos são:
 - Toasts.
 - Skeleton Loading.
 - Dialogs de confirmação.
+- Colapso da Sidebar.
+- Navegação móvel.
+- Menu lateral retrátil.

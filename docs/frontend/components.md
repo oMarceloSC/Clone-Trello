@@ -37,6 +37,14 @@ components/
 
 ├── Dropdown/
 
+layouts/
+
+├── AuthenticatedLayout/
+
+│   ├── AuthenticatedLayout.tsx
+
+│   └── index.ts
+
 ├── Sidebar/
 
 ├── Navbar/
@@ -79,31 +87,66 @@ Todos os componentes deverão:
 
 ---
 
+# Layout Compartilhado
+
+Embora ainda não exista uma biblioteca de componentes reutilizáveis, a aplicação já possui um Layout compartilhado.
+
+```
+AuthenticatedLayout
+```
+
+Esse layout é utilizado por todas as páginas autenticadas.
+
+Sua responsabilidade é centralizar elementos comuns da interface, evitando duplicação de código.
+
+Atualmente ele contém:
+
+- Sidebar.
+- Header.
+- Área de conteúdo (`Outlet`).
+- Informações do usuário autenticado.
+- Logout.
+
+Essa abordagem prepara a aplicação para futuras páginas como:
+
+- Workspace.
+- Board.
+- Perfil.
+- Notificações.
+
+---
+
 # Estado Atual
 
-Atualmente os elementos da interface permanecem dentro das páginas:
+Atualmente a maior parte dos elementos da interface permanece dentro das páginas:
 
 - LoginPage.
 - RegisterPage.
 - DashboardPage.
 
-Essa decisão foi tomada para simplificar a primeira integração entre frontend e backend.
+Entretanto, a aplicação já possui um Layout compartilhado (`AuthenticatedLayout`) responsável por reutilizar a estrutura das páginas autenticadas.
+
+Essa decisão reduz duplicação de código e prepara a arquitetura para as próximas funcionalidades.
 
 ---
 
 # Próximas Implementações
 
-Os primeiros componentes compartilhados serão:
+Os próximos componentes compartilhados serão:
 
 - Button.
 - Input.
+- TextArea.
 - FormField.
 - Card.
 - Spinner.
 - EmptyState.
 - Modal.
+- Avatar.
+- Badge.
+- Dropdown.
 
-Esses componentes servirão de base para toda a interface da aplicação.
+Após isso, novas páginas poderão reutilizar esses componentes mantendo uma interface consistente.
 
 ---
 
@@ -116,3 +159,6 @@ Após a implementação do Design System, este documento será atualizado conten
 - Exemplos de uso.
 - Padrões visuais.
 - Boas práticas.
+- Regras de composição.
+- Convenções de nomenclatura.
+- Diretrizes de acessibilidade.

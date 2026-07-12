@@ -8,6 +8,7 @@ import {
 import { LoginPage } from "../features/auth/pages/LoginPage";
 import { RegisterPage } from "../features/auth/pages/RegisterPage";
 import { useAuth } from "../features/auth/hooks/useAuth";
+import { AuthenticatedLayout } from "../layouts/AuthenticatedLayout";
 import { DashboardPage } from "../pages/DashboardPage";
 
 type RouteGuardProps = {
@@ -87,13 +88,17 @@ export function AppRoutes() {
       />
 
       <Route
-        path="/dashboard"
         element={
           <RequireAuthentication>
-            <DashboardPage />
+            <AuthenticatedLayout />
           </RequireAuthentication>
         }
-      />
+      >
+        <Route
+          path="/dashboard"
+          element={<DashboardPage />}
+        />
+      </Route>
 
       <Route
         path="*"

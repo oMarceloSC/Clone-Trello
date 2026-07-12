@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 
-import { useAuth } from "../features/auth/hooks/useAuth";
 import {
   createWorkspaceSchema,
   type CreateWorkspaceFormData,
@@ -17,7 +16,6 @@ import type { Workspace } from "../features/workspaces/types/workspace.types";
 
 export function DashboardPage() {
   const navigate = useNavigate();
-  const { user, signOut } = useAuth();
 
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
   const [isLoadingWorkspaces, setIsLoadingWorkspaces] =
@@ -78,14 +76,6 @@ export function DashboardPage() {
     void loadWorkspaces();
   }, []);
 
-  function handleLogout() {
-    signOut();
-
-    navigate("/login", {
-      replace: true,
-    });
-  }
-
   function openCreateModal() {
     setCreateWorkspaceError(null);
     setCreateWorkspaceSuccess(null);
@@ -99,6 +89,7 @@ export function DashboardPage() {
 
     setIsCreateModalOpen(false);
     setCreateWorkspaceError(null);
+    setCreateWorkspaceSuccess(null);
     reset();
   }
 
@@ -125,7 +116,7 @@ export function DashboardPage() {
       setCreateWorkspaceSuccess(response.message);
       reset();
 
-      setTimeout(() => {
+      window.setTimeout(() => {
         setIsCreateModalOpen(false);
         setCreateWorkspaceSuccess(null);
       }, 800);
@@ -147,25 +138,10 @@ export function DashboardPage() {
 
   return (
     <main className="dashboard-page">
-      <header className="dashboard-header">
-        <div>
-          <h1>Clone do Trello</h1>
-
-          <p>
-            Bem-vindo
-            {user ? `, ${user.name}` : ""}.
-          </p>
-        </div>
-
-        <button type="button" onClick={handleLogout}>
-          Sair
-        </button>
-      </header>
-
       <section className="dashboard-content">
         <div className="dashboard-section-header">
           <div>
-            <h2>Seus Workspaces</h2>
+            <h1>Seus Workspaces</h1>
 
             <p>
               Acesse e organize seus espaços de trabalho.
@@ -197,7 +173,7 @@ export function DashboardPage() {
           !workspaceError &&
           workspaces.length === 0 && (
             <div className="workspace-empty-state">
-              <h3>Nenhum Workspace encontrado</h3>
+              <h2>Nenhum Workspace encontrado</h2>
 
               <p>
                 Crie seu primeiro Workspace para começar.
@@ -223,7 +199,7 @@ export function DashboardPage() {
                   key={workspace.id}
                 >
                   <div className="workspace-card-content">
-                    <h3>{workspace.name}</h3>
+                    <h2>{workspace.name}</h2>
 
                     <p>
                       {workspace.description ??

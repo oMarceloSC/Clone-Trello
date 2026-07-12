@@ -29,6 +29,10 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Redirecionamento da rota inicial.
 * Redirecionamento de rotas desconhecidas.
 * Componente inicial de proteção de rotas.
+* Implementação do `AuthenticatedLayout`.
+* Compartilhamento da Sidebar entre páginas autenticadas.
+* Compartilhamento do Header entre páginas autenticadas.
+* Utilização do `Outlet` para renderização das páginas privadas.
 
 ### Comunicação com a API
 
@@ -97,6 +101,10 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Estado de carregamento durante a criação.
 * Feedback visual de sucesso e erro.
 * Responsividade inicial do modal.
+* Layout autenticado compartilhado.
+* Sidebar responsiva.
+* Header compartilhado.
+* Navegação adaptativa para dispositivos móveis.
 
 ### Documentação
 
@@ -112,6 +120,10 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Atualização da documentação das páginas para incluir criação de Workspaces.
 * Atualização da documentação dos serviços com `createWorkspace()`.
 * Atualização da documentação de estilização com o modal de criação.
+* Atualização da arquitetura para documentar o `AuthenticatedLayout`.
+* Atualização da documentação de rotas para incluir o `Outlet`.
+* Atualização da documentação dos componentes compartilhados.
+* Atualização da documentação das páginas autenticadas.
 
 ---
 

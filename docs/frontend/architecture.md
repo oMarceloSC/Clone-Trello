@@ -45,6 +45,14 @@ AuthProvider
 
 ↓
 
+RequireAuthentication / RequireGuest
+
+↓
+
+AuthenticatedLayout (rotas privadas)
+
+↓
+
 Pages
 
 ↓
@@ -58,6 +66,7 @@ Axios
 ↓
 
 Backend API
+```d API
 ```
 
 ---
@@ -73,7 +82,11 @@ frontend/
 
 │   ├── assets/
 
+│   ├── components/
+
 │   ├── features/
+
+│   ├── layouts/
 
 │   ├── pages/
 
@@ -187,6 +200,30 @@ Responsáveis por:
 - Exibir mensagens.
 
 As páginas **não possuem regras de negócio complexas**.
+
+---
+
+# Layouts
+
+Os Layouts são responsáveis por compartilhar estruturas visuais entre múltiplas páginas.
+
+Isso evita duplicação de código e mantém uma navegação consistente.
+
+Atualmente existe:
+
+```
+AuthenticatedLayout
+```
+
+Responsável por:
+
+- Sidebar.
+- Header.
+- Logout.
+- Informações do usuário.
+- Renderização das páginas privadas através do `Outlet`.
+
+Todas as páginas autenticadas passarão a utilizar esse layout.
 
 ---
 
@@ -325,6 +362,36 @@ Cadastro
 
 ---
 
+# Layout Autenticado
+
+As rotas privadas utilizam um layout compartilhado.
+
+Fluxo:
+
+```
+React Router
+
+↓
+
+RequireAuthentication
+
+↓
+
+AuthenticatedLayout
+
+↓
+
+Outlet
+
+↓
+
+Página
+```
+
+Essa abordagem garante que Sidebar e Header sejam reutilizados por todas as páginas autenticadas.
+
+---
+
 # AuthProvider
 
 O AuthProvider envolve toda a aplicação.
@@ -378,6 +445,14 @@ JWT
 ↓
 
 AuthContext
+
+↓
+
+RequireAuthentication
+
+↓
+
+AuthenticatedLayout
 
 ↓
 
@@ -533,7 +608,17 @@ Auth
 
 ├── AuthContext
 
-└── Dashboard Inicial
+├── AuthenticatedLayout
+
+├── Sidebar
+
+├── Header
+
+├── Dashboard
+
+├── Listagem de Workspaces
+
+└── Criação de Workspaces
 ```
 
 ---
@@ -609,15 +694,20 @@ Cada módulo seguirá exatamente a mesma arquitetura.
 - Hooks.
 - Schemas.
 - Types.
+- AuthenticatedLayout.
+- Sidebar compartilhada.
+- Header compartilhado.
+- Listagem de Workspaces.
+- Criação de Workspaces.
 
 ## Em desenvolvimento
 
-- Workspaces.
+- Visualização de Workspace.
+- CRUD completo de Workspaces.
 - Componentes reutilizáveis.
-- Sistema de Layout.
 - Design System.
 - Tema escuro.
-- Responsividade.
+- Responsividade avançada.
 
 ---
 
@@ -627,12 +717,14 @@ A arquitetura continuará crescendo mantendo o mesmo padrão.
 
 As próximas implementações serão:
 
-1. Feature Workspaces.
+1. WorkspacePage.
 2. Feature Boards.
 3. Feature Lists.
 4. Feature Cards.
 5. Componentes compartilhados.
-6. Sistema de Layout.
+6. Sistema de permissões visuais.
 7. Integração em tempo real com Socket.IO.
+
+Todas as novas páginas autenticadas utilizarão o `AuthenticatedLayout`, mantendo Sidebar e Header compartilhados em toda a aplicação.
 
 Cada nova feature deverá seguir exatamente a organização descrita neste documento.

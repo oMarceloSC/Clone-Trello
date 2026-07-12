@@ -16,7 +16,6 @@ A proteção das rotas é realizada através do `AuthContext`, permitindo difere
 
 # Arquitetura
 
-```
 BrowserRouter
 
 ↓
@@ -33,8 +32,25 @@ AppRoutes
 
 ↓
 
-Routes
-```
+RequireGuest
+            \
+             Login / Cadastro
+
+ou
+
+RequireAuthentication
+
+↓
+
+AuthenticatedLayout
+
+↓
+
+Outlet
+
+↓
+
+Página
 
 O `BrowserRouter` é responsável pela navegação.
 
@@ -52,7 +68,8 @@ AppRoutes
 ├── /
 ├── /login
 ├── /register
-├── /dashboard
+├── (AuthenticatedLayout)
+│   └── /dashboard
 └── *
 ```
 
@@ -160,6 +177,26 @@ Objetivo:
 
 Garantir que apenas usuários autenticados tenham acesso.
 
+Após a autenticação, todas as páginas privadas passam a ser renderizadas dentro do `AuthenticatedLayout`.
+
+Fluxo:
+
+```
+RequireAuthentication
+
+↓
+
+AuthenticatedLayout
+
+↓
+
+Outlet
+
+↓
+
+Página
+```
+
 ---
 
 ## Dashboard
@@ -175,22 +212,52 @@ Usuário
 
 ↓
 
-Dashboard
-
-↓
-
 RequireAuthentication
 
 ↓
 
-Sessão válida?
+AuthenticatedLayout
 
 ↓
 
-Sim → Dashboard
-
-Não → Login
+Dashboard
 ```
+
+---
+
+# AuthenticatedLayout
+
+O layout autenticado é responsável por compartilhar toda a estrutura visual das páginas privadas.
+
+Arquivo:
+
+```
+src/layouts/AuthenticatedLayout.tsx
+```
+
+Responsabilidades:
+
+- Renderizar a Sidebar.
+- Renderizar o Header.
+- Exibir informações do usuário autenticado.
+- Centralizar o botão de Logout.
+- Renderizar as páginas através do `Outlet`.
+
+Estrutura:
+
+```
+AuthenticatedLayout
+
+├── Sidebar
+
+├── Header
+
+└── Outlet
+```
+
+Atualmente apenas o Dashboard utiliza esse layout.
+
+No futuro todas as páginas privadas compartilharão essa mesma estrutura.
 
 ---
 
@@ -237,6 +304,10 @@ Sim
 
 ↓
 
+AuthenticatedLayout
+
+↓
+
 Dashboard
 
 ↓
@@ -269,6 +340,39 @@ Carregando sessão...
 ```
 
 Esse comportamento evita que páginas protegidas sejam exibidas antes da validação da sessão.
+
+---
+
+# Outlet
+
+O `AuthenticatedLayout` utiliza o componente:
+
+```
+Outlet
+```
+
+O `Outlet` é responsável por renderizar a página correspondente à rota atual.
+
+Fluxo:
+
+```
+AuthenticatedLayout
+
+↓
+
+Outlet
+
+↓
+
+DashboardPage
+```
+
+No futuro também renderizará:
+
+- WorkspacePage
+- BoardPage
+- NotificationPage
+- ProfilePage
 
 ---
 
@@ -368,16 +472,26 @@ AppRoutes
 ↓
 
 RequireGuest
-           \
-            \
-             Login
+
+↓
+
+Login / Cadastro
 
 ou
 
 RequireAuthentication
-                 \
-                  \
-                 Dashboard
+
+↓
+
+AuthenticatedLayout
+
+↓
+
+Outlet
+
+↓
+
+Dashboard
 ```
 
 ---
@@ -388,6 +502,7 @@ RequireAuthentication
 
 ```
 /workspaces/:id
+Será renderizada dentro do `AuthenticatedLayout`.
 ```
 
 ---
@@ -396,6 +511,7 @@ RequireAuthentication
 
 ```
 /boards/:id
+Será renderizada dentro do `AuthenticatedLayout`.
 ```
 
 ---
@@ -404,6 +520,7 @@ RequireAuthentication
 
 ```
 /profile
+Será renderizada dentro do `AuthenticatedLayout`.
 ```
 
 ---
@@ -412,6 +529,7 @@ RequireAuthentication
 
 ```
 /notifications
+Será renderizada dentro do `AuthenticatedLayout`.
 ```
 
 ---
@@ -444,7 +562,6 @@ RequireAuthentication
 
 Estão planejadas para as próximas milestones:
 
-- Layout autenticado.
 - Página 404.
 - Lazy Loading.
 - Code Splitting.
@@ -454,6 +571,7 @@ Estão planejadas para as próximas milestones:
 - Rotas por Board.
 - Rotas dinâmicas.
 - Navegação baseada em permissões.
+- Layout administrativo.
 
 ---
 
@@ -471,14 +589,19 @@ Estão planejadas para as próximas milestones:
 - Dashboard protegido.
 - Login.
 - Cadastro.
+- AuthenticatedLayout.
+- Sidebar compartilhada.
+- Header compartilhado.
+- Outlet.
 
 ## Planejado
 
 - Página 404.
-- Layout autenticado.
 - Rotas dos Workspaces.
 - Rotas dos Boards.
 - Rotas de Perfil.
 - Recuperação de senha.
 - Lazy Loading.
 - Code Splitting.
+- Proteção baseada em permissões.
+- Layout administrativo.
