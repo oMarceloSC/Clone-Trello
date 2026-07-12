@@ -50,6 +50,9 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Serviço `getWorkspaceById()`.
 * Integração com o endpoint `GET /workspaces/:id`.
 * Busca individual de Workspaces.
+* Serviço `updateWorkspace()`.
+* Integração com o endpoint `PATCH /workspaces/:id`.
+* Atualização de Workspaces pelo frontend.
 
 ### Autenticação no Frontend
 
@@ -93,6 +96,12 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Área inicial destinada aos Boards.
 * Tratamento de erros ao carregar um Workspace.
 * Botão para nova tentativa em caso de falha.
+* Modal de edição de Workspace.
+* Atualização do nome e da descrição.
+* Validação do formulário de edição com React Hook Form e Zod.
+* Atualização automática da interface após edição.
+* Controle de edição baseado nas permissões `OWNER` e `ADMIN`.
+* Atualização dinâmica do Breadcrumb após alteração do nome.
 
 ### Estilização
 
@@ -123,6 +132,10 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Área de Boards.
 * Estados de carregamento da WorkspacePage.
 * Estados de erro da WorkspacePage.
+* Modal de edição do Workspace.
+* Formulário de atualização.
+* Feedback visual durante a atualização.
+* Mensagens de sucesso após edição.
 
 ### Documentação
 
@@ -148,6 +161,10 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Atualização da documentação de rotas.
 * Atualização da documentação de componentes compartilhados.
 * Atualização da documentação de estilização da WorkspacePage.
+* Atualização da documentação dos serviços com `updateWorkspace()`.
+* Atualização da documentação da WorkspacePage para incluir edição.
+* Atualização da arquitetura para refletir o fluxo de atualização de Workspaces.
+* Atualização da documentação de roteamento.
 
 ---
 

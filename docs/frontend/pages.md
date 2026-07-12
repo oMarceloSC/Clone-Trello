@@ -343,14 +343,13 @@ Para cada Workspace são apresentados:
 - Descrição.
 - Quantidade de membros.
 
-Ao clicar em:
+Também existe o botão:
 
-```
 Abrir
-```
 
-o usuário é redirecionado para:
-onde pode visualizar os detalhes do Workspace.
+Ao clicar no botão, o usuário é redirecionado para a página de detalhes do Workspace.
+
+Essa página apresenta informações gerais do Workspace, estatísticas básicas e prepara a navegação para os Boards que serão implementados nas próximas milestones.
 
 Também existe o botão:
 
@@ -512,9 +511,11 @@ O usuário também deve ser membro do Workspace solicitado.
 
 ## Objetivos
 
-Exibir as informações gerais de um Workspace.
+Exibir e permitir o gerenciamento básico de um Workspace.
 
-Esta página servirá como ponto de entrada para todas as funcionalidades futuras relacionadas ao Workspace.
+Além da visualização das informações gerais, a página permite que usuários com permissão de `OWNER` ou `ADMIN` atualizem o nome e a descrição do Workspace.
+
+Esta página continuará sendo o ponto de entrada para todas as funcionalidades futuras relacionadas ao Workspace.
 
 ---
 
@@ -527,6 +528,10 @@ Esta página servirá como ponto de entrada para todas as funcionalidades futura
 - Exibir a data de criação.
 - Exibir estados de carregamento.
 - Exibir mensagens de erro.
+- Permitir edição do Workspace.
+- Validar formulário de edição.
+- Atualizar a interface sem recarregar a página.
+- Controlar permissões de edição.
 - Permitir nova tentativa.
 - Preparar a área destinada aos Boards.
 
@@ -539,6 +544,11 @@ Esta página servirá como ponto de entrada para todas as funcionalidades futura
 - Quantidade de membros.
 - Permissão atual.
 - Data de criação.
+
+Também apresenta:
+
+- Botão "Editar Workspace" (OWNER e ADMIN).
+- Modal de edição.
 
 Também apresenta:
 
@@ -560,11 +570,38 @@ Carregando Workspace...
 
 ### Workspace encontrado
 
+Também é disponibilizada a edição do Workspace para usuários autorizados.
+
 São exibidos:
 
 - Informações gerais.
 - Cards de resumo.
 - Área de Boards.
+
+---
+
+### Atualização do Workspace
+
+Ao clicar em:
+
+```
+Editar Workspace
+```
+
+é exibido um modal contendo:
+
+- Nome.
+- Descrição.
+- Botão Cancelar.
+- Botão Salvar alterações.
+
+O formulário utiliza React Hook Form e validação com Zod.
+
+Após a atualização com sucesso:
+
+- O modal é fechado automaticamente.
+- Os dados da página são atualizados sem recarregar.
+- O Breadcrumb também reflete o novo nome do Workspace.
 
 ---
 
@@ -599,6 +636,18 @@ GET /workspaces/:id
 ↓
 
 WorkspacePage
+
+↓
+
+Editar Workspace
+
+↓
+
+PATCH /workspaces/:id
+
+↓
+
+Atualização automática da interface
 ```
 
 ---
@@ -607,7 +656,6 @@ WorkspacePage
 
 Esta página será expandida para suportar:
 
-- Atualização do Workspace.
 - Exclusão do Workspace.
 - Boards.
 - Convites.
@@ -789,6 +837,10 @@ Responsabilidades:
 - Breadcrumb.
 - Cards de resumo do Workspace.
 - Área inicial para Boards.
+- Atualização de Workspace.
+- Modal de edição.
+- Atualização automática da interface após edição.
+- Controle de edição baseado em permissões (OWNER e ADMIN).
 
 ## Planejado
 

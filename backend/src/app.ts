@@ -1,10 +1,11 @@
 import Fastify from "fastify";
 import cors from "@fastify/cors";
+
 import { prisma } from "./lib/prisma.js";
-import { authRoutes } from "./modules/auth/routes/auth.rotes.js";
 import { errorMiddleware } from "./middlewares/error.middleware.js";
-import { workspaceRoutes } from "./modules/workspaces/routes/workspace.routes.js";
+import { authRoutes } from "./modules/auth/routes/auth.rotes.js";
 import { workspaceInvitationRoutes } from "./modules/workspaces/routes/workspace-invitation.routes.js";
+import { workspaceRoutes } from "./modules/workspaces/routes/workspace.routes.js";
 
 const isProduction = process.env.NODE_ENV === "production";
 
@@ -14,10 +15,19 @@ export const app = Fastify({
 
 app.register(cors, {
   origin: true,
+  methods: [
+    "GET",
+    "HEAD",
+    "POST",
+    "PUT",
+    "PATCH",
+    "DELETE",
+    "OPTIONS",
+  ],
 });
 
 app.register(workspaceRoutes, {
-  prefix: "/workspaces"
+  prefix: "/workspaces",
 });
 
 app.register(workspaceInvitationRoutes, {
@@ -32,8 +42,8 @@ app.get("/", async () => {
   };
 });
 
-app.register(authRoutes, { 
-  prefix: "/auth" 
+app.register(authRoutes, {
+  prefix: "/auth",
 });
 
 app.get("/health/db", async () => {

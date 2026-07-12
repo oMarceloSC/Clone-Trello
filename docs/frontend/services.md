@@ -286,6 +286,8 @@ getWorkspaceById()
 
 createWorkspace()
 
+updateWorkspace()
+
 ---
 
 # listWorkspaces()
@@ -516,6 +518,95 @@ Adicionado ao início da lista
 
 ---
 
+# updateWorkspace()
+
+## Endpoint
+
+```http
+PATCH /workspaces/:id
+```
+
+## Headers
+
+```text
+Authorization: Bearer TOKEN
+```
+
+O JWT é enviado automaticamente pela instância compartilhada do Axios.
+
+---
+
+## Parâmetros
+
+```ts
+workspaceId: string
+```
+
+---
+
+## Entrada
+
+```ts
+type UpdateWorkspaceRequest = {
+  name: string;
+  description?: string;
+}
+```
+
+---
+
+## Resposta
+
+```ts
+type UpdateWorkspaceResponse = {
+  message: string;
+  workspace: Workspace;
+}
+```
+
+---
+
+## Responsabilidades
+
+- Atualizar o nome do Workspace.
+- Atualizar a descrição.
+- Retornar o Workspace atualizado.
+- Permitir atualização imediata da interface sem recarregar a página.
+
+---
+
+## Fluxo
+
+```text
+WorkspacePage
+
+↓
+
+Modal de edição
+
+↓
+
+React Hook Form
+
+↓
+
+updateWorkspace()
+
+↓
+
+PATCH /workspaces/:id
+
+↓
+
+Workspace atualizado
+
+↓
+
+Atualização automática da interface
+```
+
+---
+
 # Estruturas Utilizadas
 
 ## Workspace
@@ -613,11 +704,17 @@ DashboardPage
 
 listWorkspaces()
 
+↓
+
 WorkspacePage
 
 ↓
 
 getWorkspaceById()
+
+↓
+
+updateWorkspace()
 
 ---
 
@@ -766,6 +863,10 @@ Na visualização de um Workspace, caso a API não retorne uma mensagem específ
 Não foi possível abrir o Workspace.
 ´´´
 
+Na atualização de um Workspace, caso a API não retorne uma mensagem específica, é exibido:
+
+Não foi possível atualizar o Workspace.
+
 ---
 
 # Boas Práticas
@@ -786,8 +887,6 @@ Os serviços devem:
 # Serviços Planejados
 
 ```text
-
-updateWorkspace()
 
 deleteWorkspace()
 
@@ -839,10 +938,10 @@ notification.service.ts
 - listWorkspaces().
 - getWorkspaceById().
 - createWorkspace().
+- updateWorkspace().
 
 ## Planejado
 
-- Atualização de Workspace.
 - Exclusão de Workspace.
 - Gerenciamento de membros.
 - Gerenciamento de convites.

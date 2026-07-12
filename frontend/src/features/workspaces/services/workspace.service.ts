@@ -5,6 +5,8 @@ import type {
   CreateWorkspaceResponse,
   GetWorkspaceResponse,
   ListWorkspacesResponse,
+  UpdateWorkspaceRequest,
+  UpdateWorkspaceResponse,
   Workspace,
 } from "../types/workspace.types";
 
@@ -30,6 +32,18 @@ export async function createWorkspace(
 ): Promise<CreateWorkspaceResponse> {
   const response = await api.post<CreateWorkspaceResponse>(
     "/workspaces",
+    data,
+  );
+
+  return response.data;
+}
+
+export async function updateWorkspace(
+  workspaceId: string,
+  data: UpdateWorkspaceRequest,
+): Promise<UpdateWorkspaceResponse> {
+  const response = await api.patch<UpdateWorkspaceResponse>(
+    `/workspaces/${workspaceId}`,
     data,
   );
 

@@ -46,3 +46,17 @@ export type CreateWorkspaceResponse = {
   message: string;
   workspace: Workspace;
 };
+
+export type UpdateWorkspaceRequest = {
+  name: string;
+  description?: string;
+};
+
+export type UpdatedWorkspace = Omit<Workspace, "members"> & {
+  members?: WorkspaceMember[];
+};
+
+export type UpdateWorkspaceResponse = {
+  message: string;
+  workspace: UpdatedWorkspace;
+};

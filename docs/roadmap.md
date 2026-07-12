@@ -133,7 +133,7 @@ Cada milestone representa um conjunto de funcionalidades relacionadas.
 * [x] Listar Workspaces no Dashboard
 * [x] Criar Workspace
 * [x] Visualizar Workspace
-* [ ] Atualizar Workspace
+* [x] Atualizar Workspace
 * [ ] Excluir Workspace
 * [ ] Listar membros
 * [ ] Alterar permissões
@@ -157,6 +157,9 @@ Cada milestone representa um conjunto de funcionalidades relacionadas.
 - [x] WorkspacePage
 - [x] Breadcrumb de navegação
 - [x] Cards de resumo do Workspace
+- [x] Modal de edição de Workspace
+- [x] Atualização automática da interface após edição
+- [x] Controle de permissões para edição
 - [ ] Criar componentes reutilizáveis
 - [ ] Criar estados de carregamento
 - [ ] Criar empty states

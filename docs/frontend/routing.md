@@ -85,7 +85,7 @@ AppRoutes
 | /register | Visitante | ✅ | Cadastro |
 | /dashboard | Autenticado | ✅ | Dashboard |
 | * | Público | ✅ | Redirecionamento |
-| `/workspaces/:id` | Autenticado | ✅ | Visualização de Workspace |
+| `/workspaces/:id` | Autenticado | ✅ | Visualização e atualização de Workspace |
 
 
 ---
@@ -249,18 +249,30 @@ Abrir
 
 ↓
 
-RequireAuthentication
-
-↓
-
-AuthenticatedLayout
+GET /workspaces/:id
 
 ↓
 
 WorkspacePage
+
+↓
+
+Editar Workspace
+
+↓
+
+PATCH /workspaces/:id
+
+↓
+
+Workspace atualizado
 ```
 
 A página somente é exibida caso o usuário possua acesso ao Workspace solicitado.
+
+Usuários com permissão `OWNER` ou `ADMIN` também podem atualizar o nome e a descrição do Workspace através de um modal de edição.
+
+A autorização é validada tanto no frontend quanto no backend.
 
 ---
 
@@ -547,6 +559,8 @@ WorkspacePage
 
 # Rotas Planejadas
 
+A rota do Workspace continuará evoluindo nas próximas milestones, incorporando gerenciamento de membros, convites, Boards e configurações sem alteração da URL principal.
+
 ## Boards
 
 ```
@@ -636,6 +650,9 @@ Estão planejadas para as próximas milestones:
 - Rota `/workspaces/:id`.
 - WorkspacePage protegida.
 - Navegação Dashboard → Workspace.
+- Atualização de Workspace.
+- Controle de edição baseado na role do usuário.
+- Atualização da interface sem recarregar a página.
 
 ## Planejado
 

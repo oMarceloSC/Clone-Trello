@@ -621,7 +621,9 @@ Auth
 
 ├── Listagem de Workspaces
 
-└── Criação de Workspaces
+├── Criação de Workspaces
+
+└── Atualização de Workspaces
 ```
 
 ---
@@ -704,10 +706,16 @@ Cada módulo seguirá exatamente a mesma arquitetura.
 - Criação de Workspaces.
 - Visualização de Workspace.
 - Navegação entre Dashboard e Workspace.
+- Atualização de Workspace.
+- Modal de edição de Workspace.
+- Atualização automática da interface após edição.
+- Controle de edição baseado nas permissões `OWNER` e `ADMIN`.
 
 ## Em desenvolvimento
 
-- CRUD completo de Workspaces.
+- Exclusão de Workspaces.
+- Gerenciamento de membros.
+- Gerenciamento de convites.
 - Componentes reutilizáveis.
 - Design System.
 - Tema escuro.
@@ -721,13 +729,15 @@ A arquitetura continuará crescendo mantendo o mesmo padrão.
 
 As próximas implementações serão:
 
-1. CRUD completo de Workspaces.
-2. Feature Boards.
-3. Feature Lists.
-4. Feature Cards.
-5. Componentes compartilhados.
-6. Sistema de permissões visuais.
-7. Integração em tempo real com Socket.IO.
+1. Exclusão de Workspaces.
+2. Gerenciamento de membros.
+3. Gerenciamento de convites.
+4. Feature Boards.
+5. Feature Lists.
+6. Feature Cards.
+7. Componentes compartilhados.
+8. Sistema de permissões visuais.
+9. Integração em tempo real com Socket.IO.
 
 Todas as novas páginas autenticadas utilizarão o `AuthenticatedLayout`, mantendo Sidebar e Header compartilhados em toda a aplicação.
 
