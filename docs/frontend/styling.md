@@ -4,9 +4,9 @@
 
 O frontend do Clone do Trello utiliza atualmente **CSS puro** para estilização da interface.
 
-O objetivo desta abordagem é manter a configuração inicial simples durante a integração entre frontend e backend.
+O objetivo desta abordagem é manter a configuração inicial simples durante a integração entre frontend e backend, permitindo total controle sobre os estilos sem adicionar dependências extras.
 
-Conforme o projeto evoluir, a estrutura de estilos continuará organizada e preparada para migração gradual para um Design System mais robusto.
+Conforme o projeto evoluir, a estrutura de estilos continuará organizada e preparada para uma possível migração para um Design System mais robusto.
 
 ---
 
@@ -29,13 +29,13 @@ src/
 └── styles/
 ```
 
-Atualmente, os estilos globais estão concentrados no arquivo:
+Atualmente todos os estilos globais encontram-se em:
 
 ```
 src/index.css
 ```
 
-No futuro, novos arquivos poderão ser adicionados dentro da pasta `styles`.
+No futuro os estilos serão separados por responsabilidade.
 
 ---
 
@@ -46,31 +46,23 @@ Os estilos seguem uma organização baseada em responsabilidades.
 Atualmente existem estilos para:
 
 - Layout de autenticação.
-- Dashboard inicial.
-- Campos de formulário.
+- Login.
+- Cadastro.
+- Dashboard.
+- Cards de Workspace.
 - Botões.
+- Inputs.
+- Formulários.
 - Mensagens de erro.
 - Mensagens de sucesso.
+- Estado vazio.
 - Tela de carregamento.
-
----
-
-# Estilos Globais
-
-O arquivo `index.css` é responsável por definir:
-
-- Reset básico.
-- Tipografia.
-- Layout principal.
-- Componentes utilizados pelas páginas atuais.
-
-Todos os componentes reutilizam essas classes.
 
 ---
 
 # Convenções
 
-As classes utilizam nomes descritivos.
+As classes possuem nomes descritivos.
 
 Exemplos:
 
@@ -97,70 +89,173 @@ dashboard-header
 
 dashboard-content
 
+dashboard-section-header
+
+workspace-grid
+
+workspace-card
+
+workspace-card-content
+
+workspace-card-footer
+
+workspace-feedback
+
+workspace-empty-state
+
+primary-button
+
 loading-page
 ```
 
-A nomenclatura busca facilitar a leitura e manutenção do código.
+A nomenclatura busca facilitar leitura e manutenção.
+
+---
+
+# Layout de Autenticação
+
+Atualmente existe um layout compartilhado entre Login e Cadastro.
+
+Características:
+
+- Card centralizado.
+- Formulários padronizados.
+- Campos reutilizando as mesmas classes.
+- Mensagens de erro.
+- Mensagens de sucesso.
+
+---
+
+# Dashboard
+
+O Dashboard utiliza um layout próprio.
+
+Possui:
+
+- Cabeçalho.
+- Informações do usuário.
+- Botão de logout.
+- Área principal.
+- Seção de Workspaces.
+
+---
+
+# Cards de Workspace
+
+Os Workspaces são exibidos em formato de cards.
+
+Cada card apresenta:
+
+- Nome.
+- Descrição.
+- Quantidade de membros.
+- Botão "Abrir".
+
+Os cards são organizados utilizando CSS Grid.
+
+```
+Workspace Grid
+
+┌─────────────┐ ┌─────────────┐
+│ Workspace A │ │ Workspace B │
+└─────────────┘ └─────────────┘
+
+┌─────────────┐
+│ Workspace C │
+└─────────────┘
+```
+
+---
+
+# Estados Visuais
+
+O Dashboard possui três estados distintos.
+
+## Carregamento
+
+```
+Carregando Workspaces...
+```
+
+---
+
+## Lista vazia
+
+```
+Nenhum Workspace encontrado.
+```
+
+---
+
+## Erro
+
+```
+Não foi possível carregar os Workspaces.
+```
+
+Todos utilizam estilos padronizados.
+
+---
+
+# Botões
+
+Atualmente existem dois estilos principais.
+
+## Botão padrão
+
+Utilizado em Login e Cadastro.
+
+---
+
+## Primary Button
+
+Classe:
+
+```
+primary-button
+```
+
+Utilizado para ações principais.
+
+Exemplo:
+
+```
+Criar Workspace
+```
 
 ---
 
 # Responsividade
 
-A responsividade completa ainda não foi implementada.
+Já existe uma adaptação inicial para telas menores.
 
-Atualmente os layouts foram desenvolvidos priorizando a visualização em desktop.
+Atualmente:
 
-A adaptação para dispositivos móveis será realizada em uma milestone futura.
+- Dashboard reorganiza os elementos.
+- Cabeçalho passa para coluna.
+- Botões ocupam largura total.
+- Ajuste do espaçamento interno.
 
----
-
-# Componentes Estilizados
-
-Atualmente existem estilos para:
-
-## Login
-
-- Página.
-- Card.
-- Formulário.
-- Inputs.
-- Botões.
-- Mensagens.
+Outras melhorias serão implementadas futuramente.
 
 ---
 
-## Cadastro
+# Estilos Globais
 
-- Página.
-- Card.
-- Formulário.
-- Inputs.
-- Botões.
-- Mensagens.
+O arquivo `index.css` também define:
 
----
+- Reset básico.
+- Tipografia.
+- Espaçamentos.
+- Layout principal.
 
-## Dashboard
-
-- Cabeçalho.
-- Conteúdo principal.
-- Botão de logout.
-
----
-
-## Loading
-
-Tela exibida durante a recuperação da sessão.
-
-```
-Carregando sessão...
-```
+Todos os componentes reutilizam essas definições.
 
 ---
 
 # Organização Futura
 
-Com o crescimento da aplicação, os estilos serão divididos por responsabilidade.
+Com o crescimento da aplicação os estilos serão divididos.
 
 Exemplo:
 
@@ -177,6 +272,10 @@ forms.css
 
 buttons.css
 
+dashboard.css
+
+workspace.css
+
 animations.css
 
 utilities.css
@@ -190,34 +289,30 @@ Essa separação reduzirá o tamanho do arquivo principal e facilitará a manute
 
 O projeto ainda não possui um Design System.
 
-Entretanto, todos os componentes serão desenvolvidos pensando em reutilização.
+Entretanto, todos os componentes estão sendo desenvolvidos pensando em reutilização.
 
-Exemplos futuros:
+Os primeiros componentes serão:
 
 - Button.
 - Input.
-- TextArea.
-- Select.
+- FormField.
+- Card.
+- Spinner.
+- EmptyState.
 - Modal.
 - Avatar.
 - Badge.
-- Tooltip.
 - Dropdown.
-- Sidebar.
-- Navbar.
-- Dialog.
 
 ---
 
 # Tema Escuro
 
-O suporte a Dark Mode ainda não foi implementado.
+Ainda não implementado.
 
 Está previsto para uma milestone futura.
 
-A estratégia planejada consiste em utilizar variáveis CSS para facilitar a troca entre temas.
-
-Exemplo:
+A estratégia planejada consiste em utilizar variáveis CSS para permitir alternância entre temas.
 
 ```
 Light Theme
@@ -235,30 +330,29 @@ Dark Theme
 
 # Acessibilidade
 
-Durante o desenvolvimento dos componentes serão considerados:
+Os estilos atuais seguem as seguintes práticas:
 
+- Labels associadas aos inputs.
+- Estados visuais de erro.
 - Contraste adequado.
+- Estrutura semântica.
 - Navegação por teclado.
-- Labels em formulários.
-- Estados de foco.
-- Mensagens acessíveis.
-- Compatibilidade com leitores de tela.
+
+Novas melhorias serão adicionadas conforme a evolução da interface.
 
 ---
 
 # Próximas Melhorias
 
-As próximas evoluções previstas para a camada de estilos são:
-
 - Responsividade completa.
 - Design System.
 - Tema escuro.
+- Sistema de variáveis.
 - Animações.
 - Skeleton Loading.
 - Componentes reutilizáveis.
-- Sistema de espaçamento.
 - Tokens de design.
-- Variáveis globais.
+- Sistema de espaçamento.
 
 ---
 
@@ -268,19 +362,21 @@ As próximas evoluções previstas para a camada de estilos são:
 
 - CSS global.
 - Layout de autenticação.
-- Dashboard inicial.
-- Inputs.
-- Botões.
+- Dashboard.
+- Grid de Workspaces.
+- Cards de Workspace.
+- Estados de carregamento.
+- Estado vazio.
 - Mensagens de erro.
 - Mensagens de sucesso.
-- Tela de carregamento.
+- Botões.
+- Inputs.
+- Responsividade inicial.
 
 ## Planejado
 
 - Design System.
 - Componentes reutilizáveis.
-- Responsividade.
 - Dark Mode.
-- Animações.
-- Sistema de variáveis.
+- Sistema de animações.
 - Organização modular dos estilos.

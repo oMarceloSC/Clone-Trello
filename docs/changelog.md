@@ -38,6 +38,8 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Serviço inicial de autenticação.
 * Endpoint `/auth/me`.
 * Recuperação automática da sessão.
+* Serviço de Workspaces.
+* Listagem de Workspaces.
 
 ### Autenticação no Frontend
 
@@ -61,6 +63,7 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Estado global de autenticação.
 * Bloqueio de páginas públicas para usuários autenticados.
 * Validação automática da sessão durante a inicialização da aplicação.
+* Dashboard integrado ao AuthContext.
 
 ### Estilização
 
@@ -71,6 +74,9 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Feedback visual de cadastro concluído.
 * Layout inicial do dashboard.
 * Tela de carregamento da recuperação de sessão.
+* Cards de Workspaces.
+* Estado vazio para listagem de Workspaces.
+* Estado de carregamento dos Workspaces.
 
 ### Documentação
 

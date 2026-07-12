@@ -130,7 +130,7 @@ Cada milestone representa um conjunto de funcionalidades relacionadas.
 
 ## Workspaces
 
-* [ ] Listar Workspaces no Dashboard
+* [x] Listar Workspaces no Dashboard
 * [ ] Criar Workspace
 * [ ] Visualizar Workspace
 * [ ] Atualizar Workspace
@@ -143,14 +143,16 @@ Cada milestone representa um conjunto de funcionalidades relacionadas.
 
 ## Interface
 
-* [x] Criar estilos globais iniciais
-* [x] Criar layout de autenticação
-* [x] Criar feedback de erro
-* [x] Criar feedback de sucesso
-* [ ] Criar componentes reutilizáveis
-* [ ] Criar estados de carregamento
-* [ ] Criar empty states
-* [ ] Criar sistema de mensagens ou toasts
+- [x] Criar estilos globais iniciais
+- [x] Criar layout de autenticação
+- [x] Criar feedback de erro
+- [x] Criar feedback de sucesso
+- [x] Estado de carregamento de Workspaces
+- [x] Estado vazio de Workspaces
+- [ ] Criar componentes reutilizáveis
+- [ ] Criar estados de carregamento
+- [ ] Criar empty states
+- [ ] Criar sistema de mensagens ou toasts
 
 ---
 

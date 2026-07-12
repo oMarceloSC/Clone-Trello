@@ -24,9 +24,13 @@ src/
 │   └── api.ts
 │
 └── features/
-    └── auth/
+    ├── auth/
+    │   └── services/
+    │       └── auth.service.ts
+    │
+    └── workspaces/
         └── services/
-            └── auth.service.ts
+            └── workspace.service.ts
 ```
 
 Novas funcionalidades possuirão seus próprios serviços.
@@ -36,9 +40,6 @@ Exemplo:
 ```text
 features/
 
-workspaces/
-    services/
-
 boards/
     services/
 
@@ -47,11 +48,14 @@ lists/
 
 cards/
     services/
+
+notifications/
+    services/
 ```
 
 ---
 
-# API
+# Instância da API
 
 ## Arquivo
 
@@ -59,15 +63,13 @@ cards/
 src/services/api.ts
 ```
 
----
-
 ## Responsabilidades
 
-- Criar instância única do Axios.
-- Definir URL da API.
+- Criar uma instância única do Axios.
+- Definir a URL base do backend.
 - Configurar cabeçalhos padrão.
 - Adicionar automaticamente o JWT.
-- Ser reutilizada por todos os módulos.
+- Ser reutilizada por todos os módulos do frontend.
 
 ---
 
@@ -76,7 +78,6 @@ src/services/api.ts
 ```ts
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
-
   headers: {
     "Content-Type": "application/json",
   },
@@ -99,15 +100,15 @@ Exemplo:
 VITE_API_URL=http://localhost:3333
 ```
 
-O arquivo `.env.example` documenta todas as variáveis necessárias para execução do projeto.
+O arquivo `.env.example` documenta as variáveis necessárias para executar o frontend sem expor informações privadas.
 
 ---
 
 # Interceptor de Requisição
 
-Antes de cada requisição, o Axios verifica a existência de um token JWT.
+Antes de cada requisição, o Axios verifica se existe um token JWT armazenado.
 
-Caso exista, é enviado automaticamente:
+Caso exista, o header abaixo é adicionado automaticamente:
 
 ```text
 Authorization: Bearer TOKEN
@@ -115,7 +116,7 @@ Authorization: Bearer TOKEN
 
 Fluxo:
 
-```
+```text
 Serviço
 
 ↓
@@ -151,6 +152,16 @@ src/features/auth/services/auth.service.ts
 
 Responsável por toda comunicação relacionada à autenticação.
 
+Atualmente disponibiliza:
+
+```text
+login()
+
+registerUser()
+
+getCurrentUser()
+```
+
 ---
 
 # login()
@@ -161,36 +172,29 @@ Responsável por toda comunicação relacionada à autenticação.
 POST /auth/login
 ```
 
----
-
 ## Entrada
 
 ```ts
 {
-    email: string;
-    password: string;
+  email: string;
+  password: string;
 }
 ```
-
----
 
 ## Resposta
 
 ```ts
 {
-    token: string;
-
-    user: User;
+  token: string;
+  user: User;
 }
 ```
 
----
-
 ## Responsabilidades
 
-- Enviar credenciais.
-- Receber JWT.
-- Receber usuário autenticado.
+- Enviar email e senha.
+- Receber o token JWT.
+- Receber os dados do usuário autenticado.
 
 O armazenamento da sessão é responsabilidade do `AuthContext`.
 
@@ -204,36 +208,30 @@ O armazenamento da sessão é responsabilidade do `AuthContext`.
 POST /auth/register
 ```
 
----
-
 ## Entrada
 
 ```ts
 {
-    name: string;
-    email: string;
-    password: string;
+  name: string;
+  email: string;
+  password: string;
 }
 ```
-
----
 
 ## Resposta
 
 ```ts
 {
-    message: string;
-
-    user: User;
+  message: string;
+  user: User;
 }
 ```
 
----
-
 ## Responsabilidades
 
-- Criar novo usuário.
-- Retornar usuário criado.
+- Criar um novo usuário.
+- Retornar os dados do usuário criado.
+- Não enviar a confirmação de senha para o backend.
 
 ---
 
@@ -245,8 +243,6 @@ POST /auth/register
 GET /auth/me
 ```
 
----
-
 ## Headers
 
 ```text
@@ -255,44 +251,153 @@ Authorization: Bearer TOKEN
 
 O JWT é enviado automaticamente pelo interceptor do Axios.
 
+## Resposta
+
+```ts
+{
+  user: User;
+}
+```
+
+## Responsabilidades
+
+- Validar o token armazenado.
+- Recuperar o usuário autenticado.
+- Restaurar a sessão ao iniciar a aplicação.
+- Permitir que o `AuthProvider` mantenha o estado atualizado.
+
 ---
+
+# Serviço de Workspaces
+
+## Arquivo
+
+```text
+src/features/workspaces/services/workspace.service.ts
+```
+
+Responsável por toda comunicação relacionada aos Workspaces.
+
+Atualmente disponibiliza:
+
+```text
+listWorkspaces()
+```
+
+---
+
+# listWorkspaces()
+
+## Endpoint
+
+```http
+GET /workspaces
+```
+
+## Headers
+
+```text
+Authorization: Bearer TOKEN
+```
+
+O JWT é enviado automaticamente pela instância compartilhada do Axios.
 
 ## Resposta
 
 ```ts
 {
-    user: User;
+  workspaces: Workspace[];
 }
+```
+
+O serviço retorna diretamente:
+
+```ts
+Workspace[]
+```
+
+para simplificar o consumo pelas páginas.
+
+---
+
+## Estrutura de Workspace
+
+```ts
+type Workspace = {
+  id: string;
+  name: string;
+  description: string | null;
+  createdAt: string;
+  updatedAt: string;
+  members: WorkspaceMember[];
+};
+```
+
+---
+
+## Estrutura de WorkspaceMember
+
+```ts
+type WorkspaceMember = {
+  id: string;
+  role: WorkspaceRole;
+  createdAt: string;
+  user: WorkspaceMemberUser;
+};
+```
+
+---
+
+## Estrutura de WorkspaceMemberUser
+
+```ts
+type WorkspaceMemberUser = {
+  id: string;
+  name: string;
+  email: string;
+  avatarUrl: string | null;
+};
+```
+
+---
+
+## Roles
+
+```ts
+type WorkspaceRole =
+  | "OWNER"
+  | "ADMIN"
+  | "MEMBER"
+  | "VIEWER";
 ```
 
 ---
 
 ## Responsabilidades
 
-- Validar token.
-- Recuperar usuário autenticado.
-- Restaurar a sessão durante a inicialização da aplicação.
-
-Esse método é utilizado exclusivamente pelo `AuthProvider`.
+- Buscar todos os Workspaces do usuário autenticado.
+- Retornar os dados dos Workspaces.
+- Retornar os membros relacionados.
+- Fornecer os dados necessários ao Dashboard.
 
 ---
 
-# Fluxo da Autenticação
+# Fluxo da Listagem de Workspaces
 
-```
-LoginPage
-
-↓
-
-signIn()
+```text
+DashboardPage
 
 ↓
 
-auth.service
+listWorkspaces()
 
 ↓
 
 Axios
+
+↓
+
+GET /workspaces
 
 ↓
 
@@ -300,43 +405,11 @@ Backend
 
 ↓
 
-JWT
+Workspace[]
 
 ↓
 
-AuthContext
-```
-
----
-
-# Fluxo de Recuperação da Sessão
-
-```
-Aplicação
-
-↓
-
-AuthProvider
-
-↓
-
-getCurrentUser()
-
-↓
-
-Axios
-
-↓
-
-GET /auth/me
-
-↓
-
-Usuário
-
-↓
-
-AuthContext
+Atualização da interface
 ```
 
 ---
@@ -347,80 +420,78 @@ AuthContext
 
 ```ts
 type User = {
-    id: string;
-    name: string;
-    email: string;
-    avatarUrl: string | null;
-    createdAt?: string;
-}
+  id: string;
+  name: string;
+  email: string;
+  avatarUrl: string | null;
+  createdAt?: string;
+};
 ```
-
----
 
 ## LoginRequest
 
 ```ts
 type LoginRequest = {
-    email: string;
-    password: string;
-}
+  email: string;
+  password: string;
+};
 ```
-
----
 
 ## LoginResponse
 
 ```ts
 type LoginResponse = {
-    token: string;
-    user: User;
-}
+  token: string;
+  user: User;
+};
 ```
-
----
 
 ## RegisterRequest
 
 ```ts
 type RegisterRequest = {
-    name: string;
-    email: string;
-    password: string;
-}
+  name: string;
+  email: string;
+  password: string;
+};
 ```
-
----
 
 ## RegisterResponse
 
 ```ts
 type RegisterResponse = {
-    message: string;
-    user: User;
-}
+  message: string;
+  user: User;
+};
 ```
-
----
 
 ## CurrentUserResponse
 
 ```ts
 type CurrentUserResponse = {
-    user: User;
-}
+  user: User;
+};
+```
+
+## ListWorkspacesResponse
+
+```ts
+type ListWorkspacesResponse = {
+  workspaces: Workspace[];
+};
 ```
 
 ---
 
 # Tratamento de Erros
 
-Os serviços apenas propagam os erros recebidos da API.
+Os serviços apenas propagam os erros retornados pela API.
 
-A responsabilidade pela exibição das mensagens pertence às páginas.
+A responsabilidade pela exibição das mensagens pertence às páginas ou aos hooks responsáveis pelo fluxo.
 
 Exemplo:
 
-```
+```text
 API
 
 ↓
@@ -429,11 +500,17 @@ AxiosError
 
 ↓
 
-Página
+DashboardPage
 
 ↓
 
 Mensagem ao usuário
+```
+
+Na listagem de Workspaces, caso a API não retorne uma mensagem específica, é exibido:
+
+```text
+Não foi possível carregar os Workspaces.
 ```
 
 ---
@@ -443,22 +520,41 @@ Mensagem ao usuário
 Os serviços devem:
 
 - Não acessar diretamente componentes React.
-- Não manipular interface.
+- Não manipular elementos da interface.
 - Não acessar o DOM.
 - Não executar navegação.
+- Não manter estados visuais.
 - Apenas comunicar com a API.
-
-Toda lógica de interface permanece nas páginas ou nos hooks.
+- Retornar dados tipados.
+- Propagar erros para a camada responsável.
 
 ---
 
-# Próximos Serviços
-
-Serão implementados conforme novas funcionalidades forem desenvolvidas.
+# Serviços Planejados
 
 ```text
-workspace.service.ts
+createWorkspace()
 
+getWorkspaceById()
+
+updateWorkspace()
+
+deleteWorkspace()
+
+listWorkspaceMembers()
+
+inviteWorkspaceMember()
+
+updateWorkspaceMemberRole()
+
+removeWorkspaceMember()
+
+acceptWorkspaceInvitation()
+```
+
+Também serão adicionados futuramente:
+
+```text
 board.service.ts
 
 list.service.ts
@@ -472,15 +568,15 @@ notification.service.ts
 
 # Melhorias Futuras
 
-Estão planejadas para as próximas milestones:
-
-- Interceptor global de respostas.
-- Tratamento automático de respostas `401 Unauthorized`.
-- Cancelamento de requisições.
-- Refresh Token.
-- Retry automático de requisições.
-- Cache de consultas.
-- Integração com TanStack Query (caso necessário).
+- Criar interceptor global de respostas.
+- Tratar respostas `401 Unauthorized`.
+- Limpar automaticamente sessões inválidas.
+- Padronizar os erros da API.
+- Criar serviço completo de Workspaces.
+- Adicionar cancelamento de requisições.
+- Adicionar cache de consultas.
+- Avaliar TanStack Query conforme a complexidade crescer.
+- Implementar retry automático quando necessário.
 
 ---
 
@@ -491,17 +587,22 @@ Estão planejadas para as próximas milestones:
 - Instância compartilhada do Axios.
 - Configuração por variável de ambiente.
 - Interceptor JWT.
-- login().
-- registerUser().
-- getCurrentUser().
+- `login()`.
+- `registerUser()`.
+- `getCurrentUser()`.
+- `listWorkspaces()`.
 
 ## Planejado
 
-- workspace.service.ts.
-- board.service.ts.
-- list.service.ts.
-- card.service.ts.
-- notification.service.ts.
+- Criação de Workspace.
+- Busca de Workspace por ID.
+- Atualização de Workspace.
+- Exclusão de Workspace.
+- Gerenciamento de membros.
+- Gerenciamento de convites.
+- Serviços de Boards.
+- Serviços de Lists.
+- Serviços de Cards.
 - Interceptor de respostas.
 - Refresh Token.
 - Cache de requisições.

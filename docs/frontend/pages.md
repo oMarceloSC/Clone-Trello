@@ -2,21 +2,21 @@
 
 ## Visão Geral
 
-Este documento descreve todas as páginas do frontend do Clone do Trello.
+Este documento descreve todas as páginas implementadas e planejadas do frontend do Clone do Trello.
 
-Cada página possui uma responsabilidade específica e deve conter apenas a lógica necessária para composição da interface e interação com o usuário. Toda regra de negócio permanece centralizada nos serviços e no contexto de autenticação.
+As páginas possuem apenas responsabilidades relacionadas à interface do usuário. Toda regra de negócio permanece centralizada em Contexts, Hooks e Services.
 
 ---
 
 # Organização
 
-As páginas são organizadas por funcionalidade.
+As páginas estão organizadas por domínio.
 
-Atualmente:
-
-```text
+```
 src/
+
 ├── features/
+│
 │   └── auth/
 │       └── pages/
 │           ├── LoginPage.tsx
@@ -26,7 +26,7 @@ src/
     └── DashboardPage.tsx
 ```
 
-Conforme o projeto crescer, novas páginas serão adicionadas às suas respectivas features.
+Conforme novas funcionalidades forem implementadas, novas páginas serão adicionadas às respectivas features.
 
 ---
 
@@ -34,13 +34,13 @@ Conforme o projeto crescer, novas páginas serão adicionadas às suas respectiv
 
 ## Arquivo
 
-```text
+```
 src/features/auth/pages/LoginPage.tsx
 ```
 
 ## Rota
 
-```text
+```
 /login
 ```
 
@@ -48,9 +48,9 @@ src/features/auth/pages/LoginPage.tsx
 
 Público.
 
-Caso exista uma sessão válida, o usuário é automaticamente redirecionado para:
+Caso o usuário já esteja autenticado:
 
-```text
+```
 /dashboard
 ```
 
@@ -58,21 +58,19 @@ Caso exista uma sessão válida, o usuário é automaticamente redirecionado par
 
 ## Objetivos
 
-Permitir que um usuário existente realize login na plataforma.
+Permitir autenticação utilizando email e senha.
 
 ---
 
 ## Responsabilidades
 
-- Exibir formulário de login.
+- Exibir formulário.
 - Validar email.
 - Validar senha.
-- Enviar credenciais para a API.
-- Exibir erros de validação.
-- Exibir erros retornados pelo backend.
-- Executar `signIn()`.
-- Redirecionar para o Dashboard.
-- Exibir confirmação após cadastro concluído.
+- Executar login.
+- Atualizar AuthContext.
+- Exibir erros.
+- Redirecionar para Dashboard.
 
 ---
 
@@ -87,8 +85,6 @@ Permitir que um usuário existente realize login na plataforma.
 
 ## Estados
 
-A página pode assumir os seguintes estados:
-
 ### Inicial
 
 Campos vazios.
@@ -97,27 +93,19 @@ Campos vazios.
 
 ### Carregando
 
-Botão:
-
-```text
+```
 Entrando...
 ```
 
 ---
 
-### Erro de validação
+### Erro
 
-Mensagens do Zod.
-
----
-
-### Erro da API
-
-Mensagem retornada pelo backend.
+Mensagens retornadas pelo backend.
 
 Exemplo:
 
-```text
+```
 Email ou senha inválidos
 ```
 
@@ -125,9 +113,7 @@ Email ou senha inválidos
 
 ### Cadastro concluído
 
-Mensagem:
-
-```text
+```
 Conta criada com sucesso. Agora você pode entrar.
 ```
 
@@ -135,16 +121,12 @@ Conta criada com sucesso. Agora você pode entrar.
 
 ## Fluxo
 
-```text
-Usuário acessa Login
+```
+Usuário
 
 ↓
 
-Preenche email
-
-↓
-
-Preenche senha
+Formulário
 
 ↓
 
@@ -152,7 +134,7 @@ React Hook Form
 
 ↓
 
-Validação Zod
+Zod
 
 ↓
 
@@ -164,11 +146,11 @@ POST /auth/login
 
 ↓
 
-JWT recebido
+JWT
 
 ↓
 
-AuthContext atualizado
+AuthContext
 
 ↓
 
@@ -181,13 +163,13 @@ Dashboard
 
 ## Arquivo
 
-```text
+```
 src/features/auth/pages/RegisterPage.tsx
 ```
 
 ## Rota
 
-```text
+```
 /register
 ```
 
@@ -195,9 +177,9 @@ src/features/auth/pages/RegisterPage.tsx
 
 Público.
 
-Caso exista uma sessão válida:
+Usuários autenticados são redirecionados para:
 
-```text
+```
 /dashboard
 ```
 
@@ -212,9 +194,9 @@ Permitir criação de novos usuários.
 ## Responsabilidades
 
 - Exibir formulário.
-- Validar todos os campos.
+- Validar dados.
 - Confirmar senha.
-- Enviar dados para API.
+- Executar cadastro.
 - Exibir erros.
 - Redirecionar para Login.
 
@@ -241,30 +223,19 @@ Formulário vazio.
 
 ### Carregando
 
-Botão:
-
-```text
+```
 Criando conta...
 ```
 
 ---
 
-### Erros de validação
+### Erros
 
-- Nome curto.
+- Nome inválido.
 - Email inválido.
 - Senha curta.
 - Senhas diferentes.
-
----
-
-### Erros da API
-
-Exemplo:
-
-```text
-Email já está em uso
-```
+- Email já cadastrado.
 
 ---
 
@@ -272,17 +243,17 @@ Email já está em uso
 
 Após cadastro:
 
-```text
+```
 /login
 ```
 
-com mensagem de sucesso.
+com mensagem de confirmação.
 
 ---
 
 ## Fluxo
 
-```text
+```
 Usuário
 
 ↓
@@ -303,10 +274,6 @@ POST /auth/register
 
 ↓
 
-Conta criada
-
-↓
-
 Login
 ```
 
@@ -316,23 +283,23 @@ Login
 
 ## Arquivo
 
-```text
+```
 src/pages/DashboardPage.tsx
 ```
 
 ## Rota
 
-```text
+```
 /dashboard
 ```
 
 ## Acesso
 
-Autenticado.
+Somente usuários autenticados.
 
-Caso não exista uma sessão válida:
+Caso não exista sessão válida:
 
-```text
+```
 /login
 ```
 
@@ -340,60 +307,141 @@ Caso não exista uma sessão válida:
 
 ## Objetivos
 
-Servir como página principal do usuário autenticado.
+Servir como página inicial do usuário autenticado.
 
-Inicialmente funciona como ponto de entrada para os futuros módulos do sistema.
+Nesta etapa do projeto, o Dashboard também funciona como ponto de entrada para os Workspaces.
 
 ---
 
 ## Responsabilidades
 
-- Exibir boas-vindas.
-- Exibir nome do usuário.
+- Exibir informações do usuário autenticado.
 - Permitir logout.
-- Servir como base para Workspaces.
+- Listar Workspaces.
+- Exibir estados de carregamento.
+- Exibir estado vazio.
+- Exibir erros da API.
 
 ---
 
-## Informações exibidas
+## Dados Exibidos
 
-Atualmente:
+Para cada Workspace são apresentados:
 
-- Nome da aplicação.
-- Nome do usuário autenticado.
-- Botão de logout.
+- Nome.
+- Descrição.
+- Quantidade de membros.
+
+Também existe o botão:
+
+```
+Abrir
+```
+
+A navegação para a página do Workspace já está preparada, porém a rota será implementada em uma próxima milestone.
 
 ---
 
-## Próximas funcionalidades
+## Estados
 
-Nesta página serão adicionados:
+### Recuperação da sessão
 
-- Lista de Workspaces.
-- Botão para criar Workspace.
-- Convites pendentes.
-- Atividades recentes.
-- Dashboard inicial.
+Enquanto o AuthProvider valida a sessão:
+
+```
+Carregando sessão...
+```
+
+---
+
+### Carregando Workspaces
+
+Após a autenticação:
+
+```
+Carregando Workspaces...
+```
+
+---
+
+### Lista carregada
+
+Exibição em formato de cards.
+
+Cada card contém:
+
+- Nome.
+- Descrição.
+- Quantidade de membros.
+- Botão "Abrir".
+
+---
+
+### Lista vazia
+
+Caso o usuário não participe de nenhum Workspace:
+
+```
+Nenhum Workspace encontrado
+
+Você ainda não participa de nenhum Workspace.
+```
+
+---
+
+### Erro
+
+Caso a API não possa ser acessada:
+
+```
+Não foi possível carregar os Workspaces.
+```
+
+---
+
+## Fluxo
+
+```
+Dashboard
+
+↓
+
+AuthContext
+
+↓
+
+listWorkspaces()
+
+↓
+
+GET /workspaces
+
+↓
+
+Resposta
+
+↓
+
+Renderização dos cards
+```
 
 ---
 
 # Página de Carregamento
 
-A autenticação possui um estado intermediário durante a recuperação da sessão.
+Enquanto a aplicação executa:
 
-Enquanto o frontend verifica:
-
-```http
+```
 GET /auth/me
 ```
 
-é exibida a tela:
+é exibida:
 
-```text
+```
 Carregando sessão...
 ```
 
-Essa página evita que o usuário visualize rapidamente telas incorretas durante a restauração da autenticação.
+Essa tela impede que rotas protegidas sejam exibidas antes da validação do token.
 
 ---
 
@@ -401,43 +449,44 @@ Essa página evita que o usuário visualize rapidamente telas incorretas durante
 
 ## WorkspacePage
 
-```text
+```
 /workspaces/:id
 ```
 
 Responsabilidades:
 
-- Exibir informações do Workspace.
-- Gerenciar membros.
-- Gerenciar convites.
+- Informações do Workspace.
+- Boards.
 - Configurações.
+- Membros.
+- Convites.
 
 ---
 
 ## BoardPage
 
-```text
+```
 /boards/:id
 ```
 
 Responsabilidades:
 
-- Exibir Lists.
-- Exibir Cards.
+- Lists.
+- Cards.
 - Drag and Drop.
-- Atualização em tempo real.
+- Atualizações em tempo real.
 
 ---
 
 ## ProfilePage
 
-```text
+```
 /profile
 ```
 
 Responsabilidades:
 
-- Dados do usuário.
+- Perfil.
 - Avatar.
 - Alteração de senha.
 
@@ -445,27 +494,27 @@ Responsabilidades:
 
 ## NotificationPage
 
-```text
+```
 /notifications
 ```
 
 Responsabilidades:
 
-- Listar notificações.
-- Marcar notificações como lidas.
+- Notificações.
+- Marcar como lida.
 
 ---
 
 ## NotFoundPage
 
-```text
+```
 *
 ```
 
 Responsabilidades:
 
 - Página 404.
-- Link para Dashboard.
+- Navegação para Dashboard.
 
 ---
 
@@ -476,7 +525,11 @@ Responsabilidades:
 - LoginPage.
 - RegisterPage.
 - DashboardPage.
-- Tela de carregamento da sessão.
+- Recuperação automática da sessão.
+- Listagem de Workspaces.
+- Estados de carregamento.
+- Estado vazio.
+- Tratamento de erros.
 
 ## Planejado
 
@@ -485,4 +538,3 @@ Responsabilidades:
 - NotificationPage.
 - ProfilePage.
 - NotFoundPage.
-- Dashboard completo.
