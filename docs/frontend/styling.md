@@ -54,6 +54,10 @@ Atualmente existem estilos para:
 - Header.
 - Cards de Workspace.
 - Modal de criação de Workspace.
+- WorkspacePage.
+- Breadcrumb.
+- Cards de resumo do Workspace.
+- Área de Boards.
 - Botões.
 - Inputs.
 - Textareas.
@@ -180,6 +184,24 @@ Possui:
 
 ---
 
+# WorkspacePage
+
+A WorkspacePage reutiliza o `AuthenticatedLayout`, compartilhando a Sidebar e o Header.
+
+A página possui:
+
+- Breadcrumb.
+- Cabeçalho do Workspace.
+- Cards de resumo.
+- Área destinada aos Boards.
+- Botão para retornar ao Dashboard.
+- Estados de carregamento.
+- Estados de erro.
+
+A organização visual segue o mesmo padrão utilizado nas demais páginas autenticadas.
+
+---
+
 # AuthenticatedLayout
 
 Todas as páginas autenticadas compartilham um mesmo layout.
@@ -262,6 +284,20 @@ Workspace Grid
 ```
 
 A quantidade de colunas se adapta automaticamente ao espaço disponível.
+
+---
+
+# Cards de Resumo do Workspace
+
+Na WorkspacePage são exibidos cards contendo informações gerais do Workspace.
+
+Atualmente são apresentados:
+
+- Quantidade de membros.
+- Permissão do usuário autenticado.
+- Data de criação.
+
+Esses cards utilizam o mesmo padrão visual adotado pelos demais elementos da aplicação para manter consistência na interface.
 
 ---
 
@@ -463,6 +499,50 @@ Não foi possível criar o Workspace.
 
 ---
 
+# Estados da WorkspacePage
+
+A WorkspacePage possui estados específicos durante a busca de um Workspace.
+
+---
+
+## Carregando
+
+Enquanto a API consulta:
+
+```http
+GET /workspaces/:id
+```
+
+é exibida a mensagem:
+
+```text
+Carregando Workspace...
+```
+
+---
+
+## Sucesso
+
+Quando o Workspace é encontrado são exibidos:
+
+- Informações gerais.
+- Cards de resumo.
+- Área destinada aos Boards.
+
+---
+
+## Erro
+
+Caso a API retorne erro ou o usuário não possua acesso:
+
+```text
+Não foi possível abrir o Workspace.
+```
+
+A interface disponibiliza ações para retornar ao Dashboard ou realizar uma nova tentativa.
+
+---
+
 # Botões
 
 Atualmente existem três estilos principais de botões.
@@ -620,6 +700,9 @@ Atualmente:
 - Sidebar passa para o topo em telas menores.
 - Navegação da Sidebar torna-se horizontal.
 - Header reorganiza seus elementos verticalmente quando necessário.
+- WorkspacePage adapta seus cards para uma única coluna em telas menores.
+- Área destinada aos Boards ocupa toda a largura disponível.
+- Breadcrumb reorganiza seu espaçamento em dispositivos móveis.
 
 Outras melhorias serão implementadas futuramente.
 
@@ -765,6 +848,11 @@ As próximas evoluções previstas para a camada de estilos são:
 - AuthenticatedLayout.
 - Sidebar compartilhada.
 - Header compartilhado.
+- WorkspacePage.
+- Breadcrumb.
+- Cards de resumo do Workspace.
+- Estados de carregamento da WorkspacePage.
+- Estados de erro da WorkspacePage.
 
 ## Planejado
 

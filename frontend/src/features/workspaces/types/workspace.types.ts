@@ -33,6 +33,10 @@ export type ListWorkspacesResponse = {
   workspaces: Workspace[];
 };
 
+export type GetWorkspaceResponse = {
+  workspace: Workspace;
+};
+
 export type CreateWorkspaceRequest = {
   name: string;
   description?: string;

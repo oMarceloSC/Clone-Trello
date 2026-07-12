@@ -17,10 +17,14 @@ src/
 
 ├── features/
 │
-│   └── auth/
+│   ├── auth/
+│   │   └── pages/
+│   │       ├── LoginPage.tsx
+│   │       └── RegisterPage.tsx
+│   │
+│   └── workspaces/
 │       └── pages/
-│           ├── LoginPage.tsx
-│           └── RegisterPage.tsx
+│           └── WorkspacePage.tsx
 │
 └── pages/
     └── DashboardPage.tsx
@@ -323,6 +327,7 @@ Nesta etapa do projeto, ele também funciona como ponto de entrada para os Works
 - Criar novos Workspaces.
 - Validar formulário de criação.
 - Atualizar a lista sem recarregar a página.
+- Navegar para a página de detalhes do Workspace.
 - Exibir estados de carregamento.
 - Exibir estado vazio.
 - Exibir erros da API.
@@ -338,13 +343,14 @@ Para cada Workspace são apresentados:
 - Descrição.
 - Quantidade de membros.
 
-Também existe o botão:
+Ao clicar em:
 
 ```
 Abrir
 ```
 
-A navegação para a página do Workspace já está preparada, porém a rota será implementada em uma próxima milestone.
+o usuário é redirecionado para:
+onde pode visualizar os detalhes do Workspace.
 
 Também existe o botão:
 
@@ -460,18 +466,153 @@ Renderização da lista
 ↓
 
 Usuário cria Workspace
-
-↓
-
+          │
+          ▼
 POST /workspaces
-
-↓
-
+          │
+          ▼
 Workspace criado
+          │
+          ▼
+Atualização automática da lista
+
+ou
+
+Usuário abre Workspace
+          │
+          ▼
+GET /workspaces/:id
+          │
+          ▼
+WorkspacePage
+
+---
+
+# WorkspacePage
+
+## Arquivo
+
+```
+src/features/workspaces/pages/WorkspacePage.tsx
+```
+
+## Rota
+
+```
+/workspaces/:id
+```
+
+## Acesso
+
+Somente usuários autenticados.
+
+O usuário também deve ser membro do Workspace solicitado.
+
+---
+
+## Objetivos
+
+Exibir as informações gerais de um Workspace.
+
+Esta página servirá como ponto de entrada para todas as funcionalidades futuras relacionadas ao Workspace.
+
+---
+
+## Responsabilidades
+
+- Buscar o Workspace pelo ID.
+- Exibir informações gerais.
+- Exibir a quantidade de membros.
+- Exibir a permissão do usuário autenticado.
+- Exibir a data de criação.
+- Exibir estados de carregamento.
+- Exibir mensagens de erro.
+- Permitir nova tentativa.
+- Preparar a área destinada aos Boards.
+
+---
+
+## Dados Exibidos
+
+- Nome.
+- Descrição.
+- Quantidade de membros.
+- Permissão atual.
+- Data de criação.
+
+Também apresenta:
+
+- Breadcrumb.
+- Botão "Voltar".
+- Área reservada para os Boards.
+
+---
+
+## Estados
+
+### Carregando
+
+```
+Carregando Workspace...
+```
+
+---
+
+### Workspace encontrado
+
+São exibidos:
+
+- Informações gerais.
+- Cards de resumo.
+- Área de Boards.
+
+---
+
+### Workspace não encontrado
+
+Caso o backend retorne erro:
+
+```
+Não foi possível abrir o Workspace.
+```
+
+São exibidos:
+
+- Botão "Voltar ao Dashboard".
+- Botão "Tentar novamente".
+
+---
+
+## Fluxo
+
+```
+Dashboard
 
 ↓
 
-Atualização automática da lista
+Abrir
+
+↓
+
+GET /workspaces/:id
+
+↓
+
+WorkspacePage
+```
+
+---
+
+## Próximas Evoluções
+
+Esta página será expandida para suportar:
+
+- Atualização do Workspace.
+- Exclusão do Workspace.
+- Boards.
+- Convites.
+- Gerenciamento de membros.
+- Configurações.
 
 ---
 
@@ -568,22 +709,6 @@ Essa tela impede que rotas protegidas sejam exibidas antes da validação do tok
 
 # Páginas Planejadas
 
-## WorkspacePage
-
-```
-/workspaces/:id
-```
-
-Responsabilidades:
-
-- Informações do Workspace.
-- Boards.
-- Configurações.
-- Membros.
-- Convites.
-
----
-
 ## BoardPage
 
 ```
@@ -659,10 +784,14 @@ Responsabilidades:
 - Estados de carregamento.
 - Estado vazio.
 - Tratamento de erros.
+- WorkspacePage.
+- Visualização de Workspace.
+- Breadcrumb.
+- Cards de resumo do Workspace.
+- Área inicial para Boards.
 
 ## Planejado
 
-- WorkspacePage.
 - BoardPage.
 - NotificationPage.
 - ProfilePage.

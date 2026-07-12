@@ -47,6 +47,9 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Criação de Workspaces pelo frontend.
 * Integração com o endpoint `POST /workspaces`.
 * Atualização imediata da lista após criação.
+* Serviço `getWorkspaceById()`.
+* Integração com o endpoint `GET /workspaces/:id`.
+* Busca individual de Workspaces.
 
 ### Autenticação no Frontend
 
@@ -81,6 +84,15 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Associação automática do usuário criador como `OWNER`.
 * Inserção do novo Workspace no início da lista sem recarregar a página.
 * Estado vazio com opção para criar o primeiro Workspace.
+* Página de visualização de Workspace.
+* Navegação do Dashboard para a WorkspacePage.
+* Exibição do nome, descrição e data de criação.
+* Exibição da quantidade de membros.
+* Exibição da permissão do usuário autenticado.
+* Breadcrumb para navegação.
+* Área inicial destinada aos Boards.
+* Tratamento de erros ao carregar um Workspace.
+* Botão para nova tentativa em caso de falha.
 
 ### Estilização
 
@@ -105,6 +117,12 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Sidebar responsiva.
 * Header compartilhado.
 * Navegação adaptativa para dispositivos móveis.
+* Layout da WorkspacePage.
+* Cards de resumo do Workspace.
+* Breadcrumb.
+* Área de Boards.
+* Estados de carregamento da WorkspacePage.
+* Estados de erro da WorkspacePage.
 
 ### Documentação
 
@@ -124,6 +142,12 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Atualização da documentação de rotas para incluir o `Outlet`.
 * Atualização da documentação dos componentes compartilhados.
 * Atualização da documentação das páginas autenticadas.
+* Documentação da WorkspacePage.
+* Atualização da documentação dos serviços com `getWorkspaceById()`.
+* Atualização da arquitetura do frontend.
+* Atualização da documentação de rotas.
+* Atualização da documentação de componentes compartilhados.
+* Atualização da documentação de estilização da WorkspacePage.
 
 ---
 

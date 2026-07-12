@@ -66,7 +66,6 @@ Axios
 ↓
 
 Backend API
-```d API
 ```
 
 ---
@@ -272,20 +271,22 @@ Responsável por:
 
 Os Services realizam toda comunicação HTTP.
 
-Exemplo:
+Exemplos atualmente implementados:
 
 ```
 auth.service.ts
+
+workspace.service.ts
 ```
 
 Futuramente:
 
 ```
-workspace.service.ts
-
 board.service.ts
 
 card.service.ts
+
+notification.service.ts
 ```
 
 ---
@@ -616,6 +617,8 @@ Auth
 
 ├── Dashboard
 
+├── WorkspacePage
+
 ├── Listagem de Workspaces
 
 └── Criação de Workspaces
@@ -699,10 +702,11 @@ Cada módulo seguirá exatamente a mesma arquitetura.
 - Header compartilhado.
 - Listagem de Workspaces.
 - Criação de Workspaces.
+- Visualização de Workspace.
+- Navegação entre Dashboard e Workspace.
 
 ## Em desenvolvimento
 
-- Visualização de Workspace.
 - CRUD completo de Workspaces.
 - Componentes reutilizáveis.
 - Design System.
@@ -717,7 +721,7 @@ A arquitetura continuará crescendo mantendo o mesmo padrão.
 
 As próximas implementações serão:
 
-1. WorkspacePage.
+1. CRUD completo de Workspaces.
 2. Feature Boards.
 3. Feature Lists.
 4. Feature Cards.

@@ -280,11 +280,11 @@ Responsável por toda comunicação relacionada aos Workspaces.
 
 Atualmente disponibiliza:
 
-```text
 listWorkspaces()
 
+getWorkspaceById()
+
 createWorkspace()
-```
 
 ---
 
@@ -353,6 +353,84 @@ Workspace[]
 ↓
 
 Renderização dos cards
+```
+
+---
+
+# getWorkspaceById()
+
+## Endpoint
+
+```http
+GET /workspaces/:id
+```
+
+## Headers
+
+```text
+Authorization: Bearer TOKEN
+```
+
+O JWT é enviado automaticamente pela instância compartilhada do Axios.
+
+---
+
+## Parâmetros
+
+```ts
+workspaceId: string
+```
+
+---
+
+## Resposta
+
+```ts
+{
+  workspace: Workspace;
+}
+```
+
+O serviço retorna diretamente:
+
+```ts
+Workspace
+```
+
+para simplificar o consumo pelas páginas.
+
+---
+
+## Responsabilidades
+
+- Buscar um Workspace específico.
+- Validar o acesso do usuário através do backend.
+- Retornar todas as informações necessárias para a WorkspacePage.
+- Disponibilizar os membros do Workspace.
+- Disponibilizar a permissão do usuário autenticado.
+
+---
+
+## Fluxo
+
+```text
+WorkspacePage
+
+↓
+
+getWorkspaceById()
+
+↓
+
+GET /workspaces/:id
+
+↓
+
+Workspace
+
+↓
+
+Renderização da página
 ```
 
 ---
@@ -524,6 +602,22 @@ Resposta
 
 Atualização da Interface
 ```
+Os serviços são reutilizados por múltiplas páginas.
+
+Exemplo:
+
+```text
+DashboardPage
+
+↓
+
+listWorkspaces()
+
+WorkspacePage
+
+↓
+
+getWorkspaceById()
 
 ---
 
@@ -666,6 +760,12 @@ Na criação de Workspaces, caso a API não retorne uma mensagem específica, é
 Não foi possível criar o Workspace.
 ```
 
+Na visualização de um Workspace, caso a API não retorne uma mensagem específica, é exibido:
+
+```text
+Não foi possível abrir o Workspace.
+´´´
+
 ---
 
 # Boas Práticas
@@ -686,7 +786,6 @@ Os serviços devem:
 # Serviços Planejados
 
 ```text
-getWorkspaceById()
 
 updateWorkspace()
 
@@ -734,15 +833,15 @@ notification.service.ts
 - Instância compartilhada do Axios.
 - Configuração por variável de ambiente.
 - Interceptor JWT.
-- `login()`.
-- `registerUser()`.
-- `getCurrentUser()`.
-- `listWorkspaces()`.
-- `createWorkspace()`.
+- login().
+- registerUser().
+- getCurrentUser().
+- listWorkspaces().
+- getWorkspaceById().
+- createWorkspace().
 
 ## Planejado
 
-- Busca de Workspace por ID.
 - Atualização de Workspace.
 - Exclusão de Workspace.
 - Gerenciamento de membros.

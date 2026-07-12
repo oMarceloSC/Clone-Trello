@@ -107,9 +107,13 @@ Atualmente ele contém:
 - Informações do usuário autenticado.
 - Logout.
 
-Essa abordagem prepara a aplicação para futuras páginas como:
+Essa abordagem já é utilizada pelas seguintes páginas:
 
+- Dashboard.
 - Workspace.
+
+Também prepara a aplicação para futuras páginas como:
+
 - Board.
 - Perfil.
 - Notificações.
@@ -123,8 +127,16 @@ Atualmente a maior parte dos elementos da interface permanece dentro das página
 - LoginPage.
 - RegisterPage.
 - DashboardPage.
+- WorkspacePage.
 
 Entretanto, a aplicação já possui um Layout compartilhado (`AuthenticatedLayout`) responsável por reutilizar a estrutura das páginas autenticadas.
+
+Atualmente esse layout já é compartilhado entre:
+
+- DashboardPage.
+- WorkspacePage.
+
+Isso garante consistência visual e reduz duplicação de código à medida que novas páginas autenticadas são adicionadas.
 
 Essa decisão reduz duplicação de código e prepara a arquitetura para as próximas funcionalidades.
 
@@ -132,7 +144,7 @@ Essa decisão reduz duplicação de código e prepara a arquitetura para as pró
 
 # Próximas Implementações
 
-Os próximos componentes compartilhados serão:
+Além do `AuthenticatedLayout`, os próximos componentes compartilhados serão:
 
 - Button.
 - Input.

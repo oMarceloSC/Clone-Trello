@@ -69,7 +69,8 @@ AppRoutes
 ├── /login
 ├── /register
 ├── (AuthenticatedLayout)
-│   └── /dashboard
+│   ├── /dashboard
+│   └── /workspaces/:id
 └── *
 ```
 
@@ -84,6 +85,8 @@ AppRoutes
 | /register | Visitante | ✅ | Cadastro |
 | /dashboard | Autenticado | ✅ | Dashboard |
 | * | Público | ✅ | Redirecionamento |
+| `/workspaces/:id` | Autenticado | ✅ | Visualização de Workspace |
+
 
 ---
 
@@ -225,6 +228,42 @@ Dashboard
 
 ---
 
+## Workspace
+
+```
+/workspaces/:id
+```
+
+Fluxo:
+
+```
+Usuário
+
+↓
+
+Dashboard
+
+↓
+
+Abrir
+
+↓
+
+RequireAuthentication
+
+↓
+
+AuthenticatedLayout
+
+↓
+
+WorkspacePage
+```
+
+A página somente é exibida caso o usuário possua acesso ao Workspace solicitado.
+
+---
+
 # AuthenticatedLayout
 
 O layout autenticado é responsável por compartilhar toda a estrutura visual das páginas privadas.
@@ -255,9 +294,12 @@ AuthenticatedLayout
 └── Outlet
 ```
 
-Atualmente apenas o Dashboard utiliza esse layout.
+Atualmente utilizam esse layout:
 
-No futuro todas as páginas privadas compartilharão essa mesma estrutura.
+- DashboardPage.
+- WorkspacePage.
+
+Todas as futuras páginas autenticadas continuarão reutilizando essa mesma estrutura.
 
 ---
 
@@ -365,11 +407,14 @@ Outlet
 ↓
 
 DashboardPage
+
+ou
+
+WorkspacePage
 ```
 
 No futuro também renderizará:
 
-- WorkspacePage
 - BoardPage
 - NotificationPage
 - ProfilePage
@@ -492,20 +537,15 @@ Outlet
 ↓
 
 Dashboard
+
+ou
+
+WorkspacePage
 ```
 
 ---
 
 # Rotas Planejadas
-
-## Workspace
-
-```
-/workspaces/:id
-Será renderizada dentro do `AuthenticatedLayout`.
-```
-
----
 
 ## Boards
 
@@ -593,11 +633,13 @@ Estão planejadas para as próximas milestones:
 - Sidebar compartilhada.
 - Header compartilhado.
 - Outlet.
+- Rota `/workspaces/:id`.
+- WorkspacePage protegida.
+- Navegação Dashboard → Workspace.
 
 ## Planejado
 
 - Página 404.
-- Rotas dos Workspaces.
 - Rotas dos Boards.
 - Rotas de Perfil.
 - Recuperação de senha.

@@ -5,9 +5,10 @@ import {
   Routes,
 } from "react-router";
 
+import { useAuth } from "../features/auth/hooks/useAuth";
 import { LoginPage } from "../features/auth/pages/LoginPage";
 import { RegisterPage } from "../features/auth/pages/RegisterPage";
-import { useAuth } from "../features/auth/hooks/useAuth";
+import { WorkspacePage } from "../features/workspaces/pages/WorkspacePage";
 import { AuthenticatedLayout } from "../layouts/AuthenticatedLayout";
 import { DashboardPage } from "../pages/DashboardPage";
 
@@ -97,6 +98,11 @@ export function AppRoutes() {
         <Route
           path="/dashboard"
           element={<DashboardPage />}
+        />
+
+        <Route
+          path="/workspaces/:id"
+          element={<WorkspacePage />}
         />
       </Route>
 
