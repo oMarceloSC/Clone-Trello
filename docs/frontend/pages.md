@@ -318,6 +318,9 @@ Nesta etapa do projeto, o Dashboard também funciona como ponto de entrada para 
 - Exibir informações do usuário autenticado.
 - Permitir logout.
 - Listar Workspaces.
+- Criar novos Workspaces.
+- Validar formulário de criação.
+- Atualizar a lista sem recarregar a página.
 - Exibir estados de carregamento.
 - Exibir estado vazio.
 - Exibir erros da API.
@@ -340,6 +343,13 @@ Abrir
 
 A navegação para a página do Workspace já está preparada, porém a rota será implementada em uma próxima milestone.
 
+Também existe o botão:
+
+```
+Criar Workspace
+```
+
+que abre um modal para criação de novos Workspaces.
 ---
 
 ## Estados
@@ -377,6 +387,25 @@ Cada card contém:
 
 ---
 
+### Modal de criação
+
+Ao clicar em:
+
+```
+Criar Workspace
+```
+
+é exibido um modal contendo:
+
+- Nome.
+- Descrição.
+- Botão Cancelar.
+- Botão Criar Workspace.
+
+O formulário utiliza React Hook Form e validação com Zod.
+
+---
+
 ### Lista vazia
 
 Caso o usuário não participe de nenhum Workspace:
@@ -399,9 +428,18 @@ Não foi possível carregar os Workspaces.
 
 ---
 
+### Criação concluída
+
+Após a criação com sucesso:
+
+- O modal é fechado automaticamente.
+- O novo Workspace é adicionado ao início da lista.
+- Não é necessário recarregar a página.
+
+---
+
 ## Fluxo
 
-```
 Dashboard
 
 ↓
@@ -410,20 +448,27 @@ AuthContext
 
 ↓
 
-listWorkspaces()
-
-↓
-
 GET /workspaces
 
 ↓
 
-Resposta
+Renderização da lista
 
 ↓
 
-Renderização dos cards
-```
+Usuário cria Workspace
+
+↓
+
+POST /workspaces
+
+↓
+
+Workspace criado
+
+↓
+
+Atualização automática da lista
 
 ---
 
@@ -527,6 +572,11 @@ Responsabilidades:
 - DashboardPage.
 - Recuperação automática da sessão.
 - Listagem de Workspaces.
+- Criação de Workspaces.
+- Modal de criação.
+- Validação com React Hook Form.
+- Validação com Zod.
+- Atualização automática da lista.
 - Estados de carregamento.
 - Estado vazio.
 - Tratamento de erros.

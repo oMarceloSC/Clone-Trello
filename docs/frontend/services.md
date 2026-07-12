@@ -282,6 +282,8 @@ Atualmente disponibiliza:
 
 ```text
 listWorkspaces()
+
+createWorkspace()
 ```
 
 ---
@@ -302,6 +304,8 @@ Authorization: Bearer TOKEN
 
 O JWT é enviado automaticamente pela instância compartilhada do Axios.
 
+---
+
 ## Resposta
 
 ```ts
@@ -320,7 +324,123 @@ para simplificar o consumo pelas páginas.
 
 ---
 
-## Estrutura de Workspace
+## Responsabilidades
+
+- Buscar todos os Workspaces do usuário autenticado.
+- Retornar os dados dos Workspaces.
+- Retornar os membros relacionados.
+- Fornecer os dados necessários ao Dashboard.
+
+---
+
+## Fluxo
+
+```text
+DashboardPage
+
+↓
+
+listWorkspaces()
+
+↓
+
+GET /workspaces
+
+↓
+
+Workspace[]
+
+↓
+
+Renderização dos cards
+```
+
+---
+
+# createWorkspace()
+
+## Endpoint
+
+```http
+POST /workspaces
+```
+
+## Headers
+
+```text
+Authorization: Bearer TOKEN
+```
+
+O JWT é enviado automaticamente pela instância compartilhada do Axios.
+
+---
+
+## Entrada
+
+```ts
+type CreateWorkspaceRequest = {
+  name: string;
+  description?: string;
+}
+```
+
+---
+
+## Resposta
+
+```ts
+type CreateWorkspaceResponse = {
+  message: string;
+  workspace: Workspace;
+}
+```
+
+---
+
+## Responsabilidades
+
+- Criar um novo Workspace.
+- Associar automaticamente o usuário autenticado como OWNER.
+- Retornar o Workspace criado.
+- Atualizar imediatamente a interface sem necessidade de nova consulta à API.
+
+---
+
+## Fluxo
+
+```text
+DashboardPage
+
+↓
+
+Modal de criação
+
+↓
+
+React Hook Form
+
+↓
+
+createWorkspace()
+
+↓
+
+POST /workspaces
+
+↓
+
+Workspace criado
+
+↓
+
+Adicionado ao início da lista
+```
+
+---
+
+# Estruturas Utilizadas
+
+## Workspace
 
 ```ts
 type Workspace = {
@@ -330,25 +450,27 @@ type Workspace = {
   createdAt: string;
   updatedAt: string;
   members: WorkspaceMember[];
-};
+}
 ```
 
 ---
 
-## Estrutura de WorkspaceMember
+## WorkspaceMember
 
 ```ts
 type WorkspaceMember = {
   id: string;
+  userId?: string;
+  workspaceId?: string;
   role: WorkspaceRole;
   createdAt: string;
-  user: WorkspaceMemberUser;
-};
+  user?: WorkspaceMemberUser;
+}
 ```
 
 ---
 
-## Estrutura de WorkspaceMemberUser
+## WorkspaceMemberUser
 
 ```ts
 type WorkspaceMemberUser = {
@@ -356,12 +478,12 @@ type WorkspaceMemberUser = {
   name: string;
   email: string;
   avatarUrl: string | null;
-};
+}
 ```
 
 ---
 
-## Roles
+## WorkspaceRole
 
 ```ts
 type WorkspaceRole =
@@ -373,23 +495,14 @@ type WorkspaceRole =
 
 ---
 
-## Responsabilidades
-
-- Buscar todos os Workspaces do usuário autenticado.
-- Retornar os dados dos Workspaces.
-- Retornar os membros relacionados.
-- Fornecer os dados necessários ao Dashboard.
-
----
-
-# Fluxo da Listagem de Workspaces
+# Fluxo Geral dos Serviços
 
 ```text
-DashboardPage
+Page
 
 ↓
 
-listWorkspaces()
+Service
 
 ↓
 
@@ -397,7 +510,7 @@ Axios
 
 ↓
 
-GET /workspaces
+Interceptor
 
 ↓
 
@@ -405,11 +518,11 @@ Backend
 
 ↓
 
-Workspace[]
+Resposta
 
 ↓
 
-Atualização da interface
+Atualização da Interface
 ```
 
 ---
@@ -425,8 +538,10 @@ type User = {
   email: string;
   avatarUrl: string | null;
   createdAt?: string;
-};
+}
 ```
+
+---
 
 ## LoginRequest
 
@@ -434,8 +549,10 @@ type User = {
 type LoginRequest = {
   email: string;
   password: string;
-};
+}
 ```
+
+---
 
 ## LoginResponse
 
@@ -443,8 +560,10 @@ type LoginRequest = {
 type LoginResponse = {
   token: string;
   user: User;
-};
+}
 ```
+
+---
 
 ## RegisterRequest
 
@@ -453,8 +572,10 @@ type RegisterRequest = {
   name: string;
   email: string;
   password: string;
-};
+}
 ```
+
+---
 
 ## RegisterResponse
 
@@ -462,23 +583,49 @@ type RegisterRequest = {
 type RegisterResponse = {
   message: string;
   user: User;
-};
+}
 ```
+
+---
 
 ## CurrentUserResponse
 
 ```ts
 type CurrentUserResponse = {
   user: User;
-};
+}
 ```
+
+---
 
 ## ListWorkspacesResponse
 
 ```ts
 type ListWorkspacesResponse = {
   workspaces: Workspace[];
-};
+}
+```
+
+---
+
+## CreateWorkspaceRequest
+
+```ts
+type CreateWorkspaceRequest = {
+  name: string;
+  description?: string;
+}
+```
+
+---
+
+## CreateWorkspaceResponse
+
+```ts
+type CreateWorkspaceResponse = {
+  message: string;
+  workspace: Workspace;
+}
 ```
 
 ---
@@ -513,6 +660,12 @@ Na listagem de Workspaces, caso a API não retorne uma mensagem específica, é 
 Não foi possível carregar os Workspaces.
 ```
 
+Na criação de Workspaces, caso a API não retorne uma mensagem específica, é exibido:
+
+```text
+Não foi possível criar o Workspace.
+```
+
 ---
 
 # Boas Práticas
@@ -533,8 +686,6 @@ Os serviços devem:
 # Serviços Planejados
 
 ```text
-createWorkspace()
-
 getWorkspaceById()
 
 updateWorkspace()
@@ -550,11 +701,7 @@ updateWorkspaceMemberRole()
 removeWorkspaceMember()
 
 acceptWorkspaceInvitation()
-```
 
-Também serão adicionados futuramente:
-
-```text
 board.service.ts
 
 list.service.ts
@@ -572,7 +719,7 @@ notification.service.ts
 - Tratar respostas `401 Unauthorized`.
 - Limpar automaticamente sessões inválidas.
 - Padronizar os erros da API.
-- Criar serviço completo de Workspaces.
+- Completar o CRUD de Workspaces.
 - Adicionar cancelamento de requisições.
 - Adicionar cache de consultas.
 - Avaliar TanStack Query conforme a complexidade crescer.
@@ -591,10 +738,10 @@ notification.service.ts
 - `registerUser()`.
 - `getCurrentUser()`.
 - `listWorkspaces()`.
+- `createWorkspace()`.
 
 ## Planejado
 
-- Criação de Workspace.
 - Busca de Workspace por ID.
 - Atualização de Workspace.
 - Exclusão de Workspace.

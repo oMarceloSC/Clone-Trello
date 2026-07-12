@@ -131,7 +131,7 @@ Cada milestone representa um conjunto de funcionalidades relacionadas.
 ## Workspaces
 
 * [x] Listar Workspaces no Dashboard
-* [ ] Criar Workspace
+* [x] Criar Workspace
 * [ ] Visualizar Workspace
 * [ ] Atualizar Workspace
 * [ ] Excluir Workspace
@@ -149,6 +149,9 @@ Cada milestone representa um conjunto de funcionalidades relacionadas.
 - [x] Criar feedback de sucesso
 - [x] Estado de carregamento de Workspaces
 - [x] Estado vazio de Workspaces
+- [x] Modal de criação de Workspace
+- [x] Formulário de criação de Workspace
+- [x] Atualização automática da lista após criação
 - [ ] Criar componentes reutilizáveis
 - [ ] Criar estados de carregamento
 - [ ] Criar empty states

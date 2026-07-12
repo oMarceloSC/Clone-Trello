@@ -13,9 +13,11 @@ export type WorkspaceMemberUser = {
 
 export type WorkspaceMember = {
   id: string;
+  userId?: string;
+  workspaceId?: string;
   role: WorkspaceRole;
   createdAt: string;
-  user: WorkspaceMemberUser;
+  user?: WorkspaceMemberUser;
 };
 
 export type Workspace = {
@@ -29,4 +31,14 @@ export type Workspace = {
 
 export type ListWorkspacesResponse = {
   workspaces: Workspace[];
+};
+
+export type CreateWorkspaceRequest = {
+  name: string;
+  description?: string;
+};
+
+export type CreateWorkspaceResponse = {
+  message: string;
+  workspace: Workspace;
 };

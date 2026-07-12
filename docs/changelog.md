@@ -40,6 +40,9 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Recuperação automática da sessão.
 * Serviço de Workspaces.
 * Listagem de Workspaces.
+* Criação de Workspaces pelo frontend.
+* Integração com o endpoint `POST /workspaces`.
+* Atualização imediata da lista após criação.
 
 ### Autenticação no Frontend
 
@@ -65,6 +68,16 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Validação automática da sessão durante a inicialização da aplicação.
 * Dashboard integrado ao AuthContext.
 
+### Workspaces no Frontend
+
+* Listagem de Workspaces no Dashboard.
+* Criação de Workspaces por modal.
+* Validação do formulário com React Hook Form e Zod.
+* Descrição opcional do Workspace.
+* Associação automática do usuário criador como `OWNER`.
+* Inserção do novo Workspace no início da lista sem recarregar a página.
+* Estado vazio com opção para criar o primeiro Workspace.
+
 ### Estilização
 
 * Estilos globais iniciais.
@@ -77,6 +90,13 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Cards de Workspaces.
 * Estado vazio para listagem de Workspaces.
 * Estado de carregamento dos Workspaces.
+* Modal de criação de Workspace.
+* Formulário de criação de Workspace.
+* Campo de descrição com textarea.
+* Botões primário e secundário no modal.
+* Estado de carregamento durante a criação.
+* Feedback visual de sucesso e erro.
+* Responsividade inicial do modal.
 
 ### Documentação
 
@@ -89,6 +109,9 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Documentação do gerenciamento de estado.
 * Documentação dos componentes compartilhados.
 * Documentação da estilização.
+* Atualização da documentação das páginas para incluir criação de Workspaces.
+* Atualização da documentação dos serviços com `createWorkspace()`.
+* Atualização da documentação de estilização com o modal de criação.
 
 ---
 
