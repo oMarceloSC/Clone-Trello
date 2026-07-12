@@ -249,19 +249,3 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Changelog.
 * Decisões arquiteturais.
 * Planejamento do WebSocket.
-
----
-
-# Próximas Versões
-
-## 0.4.0 — Frontend de Workspaces
-
-Planejado:
-
-* AuthContext.
-* Recuperação da sessão.
-* Dashboard com Workspaces.
-* Criação de Workspace.
-* Página de detalhes do Workspace.
-* Gerenciamento de membros.
-* Gerenciamento de convites.
