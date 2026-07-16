@@ -128,6 +128,8 @@ Atualmente a maior parte dos elementos da interface permanece dentro das página
 - RegisterPage.
 - DashboardPage.
 - WorkspacePage.
+- Modal de edição de Workspace (implementado na WorkspacePage).
+- Modal de confirmação de exclusão (implementado na WorkspacePage).
 
 Entretanto, a aplicação já possui um Layout compartilhado (`AuthenticatedLayout`) responsável por reutilizar a estrutura das páginas autenticadas.
 
@@ -135,6 +137,10 @@ Atualmente esse layout já é compartilhado entre:
 
 - DashboardPage.
 - WorkspacePage.
+
+Atualmente os modais de edição e exclusão ainda fazem parte da própria WorkspacePage.
+
+Eles deverão ser extraídos para componentes reutilizáveis conforme novas funcionalidades forem adicionadas ao sistema.
 
 Isso garante consistência visual e reduz duplicação de código à medida que novas páginas autenticadas são adicionadas.
 
@@ -144,7 +150,7 @@ Essa decisão reduz duplicação de código e prepara a arquitetura para as pró
 
 # Próximas Implementações
 
-Além do `AuthenticatedLayout`, os próximos componentes compartilhados serão:
+Além do `AuthenticatedLayout`, os próximos componentes compartilhados planejados são:
 
 - Button.
 - Input.
@@ -157,6 +163,14 @@ Além do `AuthenticatedLayout`, os próximos componentes compartilhados serão:
 - Avatar.
 - Badge.
 - Dropdown.
+
+Também está prevista a criação de componentes reutilizáveis para ações destrutivas, como:
+
+- ConfirmDialog.
+- DeleteModal.
+- LoadingButton.
+
+Esses componentes substituirão as implementações atualmente existentes na WorkspacePage.
 
 Após isso, novas páginas poderão reutilizar esses componentes mantendo uma interface consistente.
 
@@ -174,3 +188,6 @@ Após a implementação do Design System, este documento será atualizado conten
 - Regras de composição.
 - Convenções de nomenclatura.
 - Diretrizes de acessibilidade.
+- Componentes específicos para confirmação de ações destrutivas.
+- Padronização dos modais de edição.
+- Padronização dos botões de carregamento.

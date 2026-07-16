@@ -288,6 +288,8 @@ createWorkspace()
 
 updateWorkspace()
 
+deleteWorkspace()
+
 ---
 
 # listWorkspaces()
@@ -607,6 +609,83 @@ Atualização automática da interface
 
 ---
 
+# deleteWorkspace()
+
+## Endpoint
+
+```http
+DELETE /workspaces/:id
+```
+
+## Headers
+
+```text
+Authorization: Bearer TOKEN
+```
+
+O JWT é enviado automaticamente pela instância compartilhada do Axios.
+
+---
+
+## Parâmetros
+
+```ts
+workspaceId: string
+```
+
+---
+
+## Resposta
+
+```ts
+{
+  message: string;
+}
+```
+
+---
+
+## Responsabilidades
+
+- Excluir um Workspace.
+- Remover o Workspace do backend.
+- Atualizar automaticamente a lista de Workspaces.
+- Não exigir recarregamento da página.
+
+---
+
+## Fluxo
+
+```text
+WorkspacePage
+
+↓
+
+Botão Excluir
+
+↓
+
+Confirmação
+
+↓
+
+deleteWorkspace()
+
+↓
+
+DELETE /workspaces/:id
+
+↓
+
+Workspace removido
+
+↓
+
+Dashboard atualizado
+```
+
+---
+
 # Estruturas Utilizadas
 
 ## Workspace
@@ -715,6 +794,10 @@ getWorkspaceById()
 ↓
 
 updateWorkspace()
+
+↓
+
+deleteWorkspace()
 
 ---
 
@@ -869,6 +952,13 @@ Não foi possível atualizar o Workspace.
 
 ---
 
+Na exclusão de um Workspace, caso a API não retorne uma mensagem específica, é exibido:
+
+```text
+Não foi possível excluir o Workspace.
+```
+---
+
 # Boas Práticas
 
 Os serviços devem:
@@ -887,8 +977,6 @@ Os serviços devem:
 # Serviços Planejados
 
 ```text
-
-deleteWorkspace()
 
 listWorkspaceMembers()
 
@@ -939,10 +1027,10 @@ notification.service.ts
 - getWorkspaceById().
 - createWorkspace().
 - updateWorkspace().
+- deleteWorkspace().
 
 ## Planejado
 
-- Exclusão de Workspace.
 - Gerenciamento de membros.
 - Gerenciamento de convites.
 - Serviços de Boards.

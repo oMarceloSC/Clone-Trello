@@ -53,6 +53,9 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Serviço `updateWorkspace()`.
 * Integração com o endpoint `PATCH /workspaces/:id`.
 * Atualização de Workspaces pelo frontend.
+* Serviço `deleteWorkspace()`.
+* Integração com o endpoint `DELETE /workspaces/:id`.
+* Exclusão de Workspaces pelo frontend.
 
 ### Autenticação no Frontend
 
@@ -102,6 +105,13 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Atualização automática da interface após edição.
 * Controle de edição baseado nas permissões `OWNER` e `ADMIN`.
 * Atualização dinâmica do Breadcrumb após alteração do nome.
+* Exclusão de Workspace disponível exclusivamente para o `OWNER`.
+* Botão de exclusão condicionado à permissão do usuário.
+* Modal de confirmação antes da exclusão.
+* Aviso sobre a remoção permanente dos dados relacionados.
+* Estado de carregamento durante a exclusão.
+* Tratamento de erros sem fechar o modal.
+* Redirecionamento automático para o Dashboard após a exclusão.
 
 ### Estilização
 
@@ -136,6 +146,11 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Formulário de atualização.
 * Feedback visual durante a atualização.
 * Mensagens de sucesso após edição.
+* Botão destrutivo para exclusão de Workspace.
+* Modal de confirmação de exclusão.
+* Aviso visual para ações irreversíveis.
+* Estados visuais de confirmação, carregamento, sucesso e erro.
+* Responsividade das ações de edição e exclusão.
 
 ### Documentação
 
@@ -165,6 +180,11 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Atualização da documentação da WorkspacePage para incluir edição.
 * Atualização da arquitetura para refletir o fluxo de atualização de Workspaces.
 * Atualização da documentação de roteamento.
+* Atualização da documentação das páginas com a exclusão de Workspace.
+* Atualização da documentação dos serviços com `deleteWorkspace()`.
+* Atualização da arquitetura global com o fluxo de exclusão.
+* Atualização da documentação de estilização para ações destrutivas.
+* Atualização da documentação de componentes planejados para confirmação.
 
 ---
 

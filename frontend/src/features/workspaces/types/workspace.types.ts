@@ -60,3 +60,7 @@ export type UpdateWorkspaceResponse = {
   message: string;
   workspace: UpdatedWorkspace;
 };
+
+export type DeleteWorkspaceResponse = {
+  message: string;
+}

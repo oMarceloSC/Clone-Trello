@@ -14,6 +14,7 @@ import {
   type UpdateWorkspaceFormData,
 } from "../schemas/update-workspace.schema";
 import {
+  deleteWorkspace,
   getWorkspaceById,
   updateWorkspace,
 } from "../services/workspace.service";
@@ -50,6 +51,17 @@ export function WorkspacePage() {
     useState<string | null>(null);
 
   const [updateSuccess, setUpdateSuccess] =
+    useState<string | null>(null);
+
+  const [isDeleteModalOpen, setIsDeleteModalOpen] =
+    useState(false);
+
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const [deleteError, setDeleteError] =
+    useState<string | null>(null);
+
+  const [deleteSuccess, setDeleteSuccess] =
     useState<string | null>(null);
 
   const {
@@ -117,6 +129,9 @@ export function WorkspacePage() {
   const canUpdateWorkspace =
     currentMember?.role === "OWNER" ||
     currentMember?.role === "ADMIN";
+
+  const canDeleteWorkspace =
+    currentMember?.role === "OWNER";
 
   function openEditModal() {
     if (!workspace || !canUpdateWorkspace) {
@@ -187,12 +202,6 @@ export function WorkspacePage() {
       }, 800);
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        console.error("Erro ao atualizar Workspace:", {
-          status: error.response?.status,
-          data: error.response?.data,
-          payload: data,
-        });
-
         const message =
           error.response?.data?.message ??
           "Não foi possível atualizar o Workspace.";
@@ -201,14 +210,67 @@ export function WorkspacePage() {
         return;
       }
 
-      console.error(
-        "Erro inesperado ao atualizar Workspace:",
-        error,
-      );
-
       setUpdateError(
         "Ocorreu um erro inesperado ao atualizar o Workspace.",
       );
+    }
+  }
+
+  function openDeleteModal() {
+    if (!canDeleteWorkspace) {
+      return;
+    }
+
+    setDeleteError(null);
+    setDeleteSuccess(null);
+    setIsDeleteModalOpen(true);
+  }
+
+  function closeDeleteModal() {
+    if (isDeleting) {
+      return;
+    }
+
+    setIsDeleteModalOpen(false);
+    setDeleteError(null);
+    setDeleteSuccess(null);
+  }
+
+  async function handleDeleteWorkspace() {
+    if (!id) {
+      setDeleteError("ID do Workspace não informado.");
+      return;
+    }
+
+    try {
+      setIsDeleting(true);
+      setDeleteError(null);
+      setDeleteSuccess(null);
+
+      const response = await deleteWorkspace(id);
+
+      setDeleteSuccess(response.message);
+
+      window.setTimeout(() => {
+        navigate("/dashboard", {
+          replace: true,
+        });
+      }, 800);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const message =
+          error.response?.data?.message ??
+          "Não foi possível excluir o Workspace.";
+
+        setDeleteError(message);
+        return;
+      }
+
+      setDeleteError(
+        "Ocorreu um erro inesperado ao excluir o Workspace.",
+      );
+    } finally {
+      setIsDeleting(false);
     }
   }
 
@@ -333,6 +395,16 @@ export function WorkspacePage() {
               onClick={openEditModal}
             >
               Editar Workspace
+            </button>
+          )}
+
+          {canDeleteWorkspace && (
+            <button
+              type="button"
+              className="danger-button"
+              onClick={openDeleteModal}
+            >
+              Excluir Workspace
             </button>
           )}
 
@@ -536,6 +608,99 @@ export function WorkspacePage() {
                 </button>
               </footer>
             </form>
+          </section>
+        </div>
+      )}
+
+      {isDeleteModalOpen && (
+        <div
+          className="modal-backdrop"
+          role="presentation"
+          onMouseDown={closeDeleteModal}
+        >
+          <section
+            className="modal-card"
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="delete-workspace-title"
+            aria-describedby="delete-workspace-description"
+            onMouseDown={(event) => event.stopPropagation()}
+          >
+            <header className="modal-header">
+              <div>
+                <h2 id="delete-workspace-title">
+                  Excluir Workspace
+                </h2>
+
+                <p id="delete-workspace-description">
+                  Esta ação não poderá ser desfeita.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                className="modal-close-button"
+                onClick={closeDeleteModal}
+                disabled={isDeleting}
+                aria-label="Fechar modal"
+              >
+                ×
+              </button>
+            </header>
+
+            <div className="delete-workspace-content">
+              <div className="delete-workspace-warning">
+                <strong>
+                  Você está prestes a excluir:
+                </strong>
+
+                <span>{workspace.name}</span>
+
+                <p>
+                  Todos os dados vinculados a este Workspace serão
+                  removidos permanentemente.
+                </p>
+              </div>
+
+              {deleteError && (
+                <div className="api-error" role="alert">
+                  {deleteError}
+                </div>
+              )}
+
+              {deleteSuccess && (
+                <div
+                  className="success-message"
+                  role="status"
+                >
+                  {deleteSuccess}
+                </div>
+              )}
+
+              <footer className="modal-actions">
+                <button
+                  type="button"
+                  className="secondary-button"
+                  onClick={closeDeleteModal}
+                  disabled={isDeleting}
+                >
+                  Cancelar
+                </button>
+
+                <button
+                  type="button"
+                  className="danger-button"
+                  onClick={() => {
+                    void handleDeleteWorkspace();
+                  }}
+                  disabled={isDeleting}
+                >
+                  {isDeleting
+                    ? "Excluindo..."
+                    : "Excluir definitivamente"}
+                </button>
+              </footer>
+            </div>
           </section>
         </div>
       )}

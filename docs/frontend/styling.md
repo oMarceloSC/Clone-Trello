@@ -54,6 +54,10 @@ Atualmente existem estilos para:
 - Header.
 - Cards de Workspace.
 - Modal de criação de Workspace.
+- Modal de edição de Workspace.
+- Modal de confirmação de exclusão.
+- Botão de ação destrutiva.
+- Aviso visual de exclusão.
 - WorkspacePage.
 - Breadcrumb.
 - Cards de resumo do Workspace.
@@ -115,6 +119,12 @@ workspace-empty-state
 primary-button
 
 secondary-button
+
+danger-button
+
+delete-workspace-content
+
+delete-workspace-warning
 
 modal-backdrop
 
@@ -336,6 +346,59 @@ O modal pode ser fechado através de:
 
 ---
 
+# Modal de Edição de Workspace
+
+A atualização de Workspaces utiliza o mesmo padrão visual do modal de criação.
+
+O modal contém:
+
+- Campo de nome.
+- Campo de descrição.
+- Botão `Cancelar`.
+- Botão `Salvar alterações`.
+- Botão de fechamento `×`.
+- Mensagens de erro.
+- Mensagem de sucesso.
+
+Durante a atualização, o botão principal exibe:
+
+```text
+Salvando...
+```
+
+Os controles permanecem desabilitados até a conclusão da requisição.
+
+---
+
+# Modal de Exclusão de Workspace
+
+A exclusão utiliza um modal de confirmação com destaque visual para a ação destrutiva.
+
+O modal contém:
+
+- Nome do Workspace.
+- Aviso de que a ação não pode ser desfeita.
+- Informação sobre a remoção permanente dos dados relacionados.
+- Botão `Cancelar`.
+- Botão `Excluir definitivamente`.
+- Botão de fechamento `×`.
+- Mensagens de erro e sucesso.
+
+Durante a exclusão, o botão destrutivo exibe:
+
+```text
+Excluindo...
+```
+
+Enquanto a requisição está em andamento:
+
+- O botão Cancelar fica desabilitado.
+- O botão de fechamento fica desabilitado.
+- O botão de exclusão fica desabilitado.
+- O modal não pode ser fechado acidentalmente.
+
+---
+
 # Formulários
 
 Os formulários utilizam estilos compartilhados.
@@ -499,6 +562,66 @@ Não foi possível criar o Workspace.
 
 ---
 
+# Estados de Atualização
+
+A atualização do Workspace possui três estados.
+
+## Salvando
+
+```text
+Salvando...
+```
+
+Os controles ficam temporariamente desabilitados.
+
+## Sucesso
+
+A mensagem retornada pela API é exibida.
+
+Após alguns instantes:
+
+- O modal é fechado.
+- O nome e a descrição são atualizados.
+- O Breadcrumb reflete o novo nome.
+- A página permanece aberta.
+
+## Erro
+
+Caso a API retorne um problema, a mensagem é exibida dentro do modal sem fechá-lo.
+
+---
+
+# Estados de Exclusão
+
+A exclusão do Workspace possui três estados.
+
+## Confirmação
+
+Antes da exclusão, é exibido um aviso visual contendo o nome do Workspace e a irreversibilidade da ação.
+
+## Excluindo
+
+```text
+Excluindo...
+```
+
+Os controles ficam temporariamente desabilitados.
+
+## Sucesso
+
+A mensagem retornada pela API é exibida.
+
+Após alguns instantes:
+
+- O usuário é redirecionado ao Dashboard.
+- O Workspace deixa de aparecer na listagem.
+
+## Erro
+
+Caso a exclusão falhe, a mensagem é exibida dentro do modal e o usuário permanece na WorkspacePage.
+
+---
+
 # Estados da WorkspacePage
 
 A WorkspacePage possui estados específicos durante a busca de um Workspace.
@@ -545,7 +668,7 @@ A interface disponibiliza ações para retornar ao Dashboard ou realizar uma nov
 
 # Botões
 
-Atualmente existem três estilos principais de botões.
+Atualmente existem quatro estilos principais de botões.
 
 ---
 
@@ -615,6 +738,35 @@ Características:
 
 ---
 
+## Danger Button
+
+Classe:
+
+```text
+danger-button
+```
+
+Utilizado em ações destrutivas.
+
+Exemplos:
+
+```text
+Excluir Workspace
+
+Excluir definitivamente
+```
+
+Características:
+
+- Fundo vermelho.
+- Texto branco.
+- Destaque visual de risco.
+- Estado de hover.
+- Estado desabilitado.
+- Uso restrito a ações irreversíveis.
+
+---
+
 ## Botão de Fechamento do Modal
 
 Classe:
@@ -678,6 +830,8 @@ Exemplos:
 
 - Cadastro concluído.
 - Workspace criado.
+- Workspace atualizado.
+- Workspace excluído.
 
 ---
 
@@ -703,6 +857,9 @@ Atualmente:
 - WorkspacePage adapta seus cards para uma única coluna em telas menores.
 - Área destinada aos Boards ocupa toda a largura disponível.
 - Breadcrumb reorganiza seu espaçamento em dispositivos móveis.
+- Ações do cabeçalho do Workspace passam para coluna em telas menores.
+- Botão de exclusão ocupa toda a largura disponível.
+- Ações do modal de exclusão passam para coluna.
 
 Outras melhorias serão implementadas futuramente.
 
@@ -722,6 +879,8 @@ Entre elas:
 - Uso de `role="alert"`.
 - Uso de `role="status"`.
 - Uso de `role="dialog"`.
+- Uso de `role="alertdialog"` para confirmação de exclusão.
+- Uso de `aria-describedby` no aviso de exclusão.
 - Uso de `aria-modal`.
 - Uso de `aria-labelledby`.
 - Botão de fechamento com `aria-label`.
@@ -816,7 +975,7 @@ As próximas evoluções previstas para a camada de estilos são:
 - Skeleton Loading.
 - Sistema de espaçamento.
 - Toasts.
-- Dialogs de confirmação.
+- Extração do modal de confirmação para componente reutilizável.
 - Estados de hover e focus padronizados.
 
 ---
@@ -853,6 +1012,13 @@ As próximas evoluções previstas para a camada de estilos são:
 - Cards de resumo do Workspace.
 - Estados de carregamento da WorkspacePage.
 - Estados de erro da WorkspacePage.
+- Modal de edição de Workspace.
+- Modal de confirmação de exclusão.
+- Botão destrutivo.
+- Estados de atualização.
+- Estados de exclusão.
+- Aviso visual para ações irreversíveis.
+- Redirecionamento após exclusão.
 
 ## Planejado
 
@@ -864,7 +1030,7 @@ As próximas evoluções previstas para a camada de estilos são:
 - Tokens de design.
 - Toasts.
 - Skeleton Loading.
-- Dialogs de confirmação.
+- Componente reutilizável de confirmação.
 - Colapso da Sidebar.
 - Navegação móvel.
 - Menu lateral retrátil.

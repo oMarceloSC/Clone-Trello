@@ -915,3 +915,70 @@ button {
     width: 100%;
   }
 }
+
+.danger-button {
+  padding: 12px 18px;
+  border: 0;
+  border-radius: 6px;
+  background: #c9372c;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.danger-button:hover:not(:disabled) {
+  background: #ae2e24;
+}
+
+.danger-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.delete-workspace-content {
+  display: grid;
+  gap: 20px;
+  padding: 24px;
+}
+
+.delete-workspace-warning {
+  padding: 18px;
+  border: 1px solid #ffd5d2;
+  border-radius: 8px;
+  background: #fff2f1;
+}
+
+.delete-workspace-warning strong,
+.delete-workspace-warning span {
+  display: block;
+}
+
+.delete-workspace-warning strong {
+  color: #ae2e24;
+}
+
+.delete-workspace-warning span {
+  margin-top: 8px;
+  color: #172b4d;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.delete-workspace-warning p {
+  margin: 10px 0 0;
+  color: #5e6c84;
+  line-height: 1.5;
+}
+
+@media (max-width: 700px) {
+  .workspace-header-actions .danger-button {
+    width: 100%;
+  }
+
+  .delete-workspace-content .modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .delete-workspace-content .modal-actions button {
+    width: 100%;
+  }
+}

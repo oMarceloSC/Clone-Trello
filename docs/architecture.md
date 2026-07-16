@@ -18,11 +18,19 @@ A comunicação entre ambos acontece através de uma API REST e, futuramente, po
 # Arquitetura Geral
 
 ```
-                 React + TypeScript
+                  React + TypeScript
+                        │
+                 Pages / Layouts
+                        │
+                 Frontend Services
                         │
                         │ HTTP / WebSocket
                         ▼
               Fastify REST API
+                        │
+                    Routes
+                        │
+                 Middlewares
                         │
                 Controllers
                         │
@@ -54,7 +62,7 @@ A comunicação entre ambos acontece através de uma API REST e, futuramente, po
 - React
 - TypeScript
 - Vite
-- Tailwind CSS
+- CSS
 - Socket.IO Client
 
 ---
@@ -97,6 +105,58 @@ backend
 │   ├── app.ts
 │   └── server.ts
 ```
+
+---
+
+# Arquitetura do Frontend
+
+O frontend utiliza uma arquitetura baseada em funcionalidades.
+
+```text
+frontend
+│
+├── src
+│   ├── assets
+│   ├── components
+│   ├── features
+│   ├── layouts
+│   ├── pages
+│   ├── routes
+│   ├── services
+│   ├── styles
+│   ├── App.tsx
+│   ├── index.css
+│   └── main.tsx
+```
+
+As funcionalidades são organizadas por domínio.
+
+Exemplo:
+
+```text
+features
+│
+├── auth
+└── workspaces
+```
+
+Cada feature pode possuir:
+
+```text
+contexts
+
+hooks
+
+pages
+
+schemas
+
+services
+
+types
+```
+
+O frontend também utiliza um `AuthenticatedLayout`, responsável por compartilhar Sidebar, Header e área de conteúdo entre as páginas privadas.
 
 ---
 
@@ -344,6 +404,46 @@ Response
 
 ---
 
+# Fluxo de uma Ação no Frontend
+
+```text
+Usuário
+
+↓
+
+Página React
+
+↓
+
+Validação com Zod
+
+↓
+
+Service
+
+↓
+
+Axios
+
+↓
+
+Fastify API
+
+↓
+
+Resposta
+
+↓
+
+Atualização da Interface
+```
+
+As páginas não acessam diretamente o backend.
+
+Toda comunicação HTTP é centralizada na camada de Services.
+
+---
+
 # Estrutura das Rotas
 
 Cada módulo possui seu próprio arquivo de rotas.
@@ -420,6 +520,46 @@ WorkspaceMember (OWNER)
 
 ---
 
+## Fluxo de exclusão de Workspace
+
+```text
+OWNER
+
+↓
+
+WorkspacePage
+
+↓
+
+Botão Excluir Workspace
+
+↓
+
+Modal de confirmação
+
+↓
+
+DELETE /workspaces/:id
+
+↓
+
+Use Case de exclusão
+
+↓
+
+Workspace removido
+
+↓
+
+Redirecionamento para Dashboard
+```
+
+A exclusão somente está disponível para o proprietário do Workspace.
+
+A interface oculta a ação para usuários sem permissão, enquanto o backend realiza a validação definitiva da autorização.
+
+---
+
 ## Fluxo de Convites
 
 ```
@@ -461,7 +601,8 @@ OWNER
 ├── Excluir Workspace
 ├── Convidar membros
 ├── Listar membros
-└── Alterar permissões
+├── Alterar permissões
+└── Remover membros
 
 ADMIN
 │
@@ -592,16 +733,39 @@ Sem alterar módulos existentes.
 - Listagem de membros.
 - Atualização de permissões.
 
+### Frontend
+
+- React com TypeScript.
+- React Router.
+- Axios.
+- React Hook Form.
+- Zod.
+- AuthContext.
+- AuthenticatedLayout.
+- Login.
+- Cadastro.
+- Recuperação automática da sessão.
+- Dashboard.
+- Listagem de Workspaces.
+- Criação de Workspaces.
+- Visualização de Workspace.
+- Atualização de Workspace.
+- Exclusão de Workspace.
+- Controle visual de permissões.
+- Modal de confirmação para exclusão.
+
 ---
 
 ## Em desenvolvimento
 
+- Gerenciamento de membros no frontend.
+- Gerenciamento de convites no frontend.
 - Boards.
 - Lists.
 - Cards.
 - Socket.IO.
 - Upload de arquivos.
-- Dashboard.
+- Dashboard avançado.
 - Busca Global.
 - Notificações.
 
@@ -611,16 +775,18 @@ Sem alterar módulos existentes.
 
 A evolução da arquitetura seguirá a seguinte ordem:
 
-1. Boards
-2. Lists
-3. Cards
-4. Comentários
-5. Etiquetas
-6. Checklists
-7. Uploads
-8. Socket.IO
-9. Notificações
-10. Dashboard
-11. Busca Global
+1. Gerenciamento de membros no frontend
+2. Gerenciamento de convites no frontend
+3. Boards
+4. Lists
+5. Cards
+6. Comentários
+7. Etiquetas
+8. Checklists
+9. Uploads
+10. Socket.IO
+11. Notificações
+12. Dashboard avançado
+13. Busca Global
 
 Cada novo módulo seguirá exatamente a arquitetura descrita neste documento.

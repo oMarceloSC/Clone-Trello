@@ -134,7 +134,7 @@ Cada milestone representa um conjunto de funcionalidades relacionadas.
 * [x] Criar Workspace
 * [x] Visualizar Workspace
 * [x] Atualizar Workspace
-* [ ] Excluir Workspace
+* [x] Excluir Workspace
 * [ ] Listar membros
 * [ ] Alterar permissões
 * [ ] Remover membro
@@ -160,6 +160,10 @@ Cada milestone representa um conjunto de funcionalidades relacionadas.
 - [x] Modal de edição de Workspace
 - [x] Atualização automática da interface após edição
 - [x] Controle de permissões para edição
+- [x] Botão destrutivo para exclusão
+- [x] Modal de confirmação de exclusão
+- [x] Controle de permissão para exclusão
+- [x] Redirecionamento após exclusão
 - [ ] Criar componentes reutilizáveis
 - [ ] Criar estados de carregamento
 - [ ] Criar empty states

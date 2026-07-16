@@ -3,6 +3,7 @@ import { api } from "../../../services/api";
 import type {
   CreateWorkspaceRequest,
   CreateWorkspaceResponse,
+  DeleteWorkspaceResponse,
   GetWorkspaceResponse,
   ListWorkspacesResponse,
   UpdateWorkspaceRequest,
@@ -45,6 +46,16 @@ export async function updateWorkspace(
   const response = await api.patch<UpdateWorkspaceResponse>(
     `/workspaces/${workspaceId}`,
     data,
+  );
+
+  return response.data;
+}
+
+export async function deleteWorkspace(
+  workspaceId: string,
+): Promise<DeleteWorkspaceResponse> {
+  const response = await api.delete<DeleteWorkspaceResponse>(
+    `/workspaces/${workspaceId}`,
   );
 
   return response.data;

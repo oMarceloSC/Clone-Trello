@@ -332,6 +332,9 @@ Nesta etapa do projeto, ele também funciona como ponto de entrada para os Works
 - Exibir estado vazio.
 - Exibir erros da API.
 - Ser renderizado dentro do AuthenticatedLayout.
+- Excluir Workspaces.
+- Solicitar confirmação antes da exclusão.
+- Atualizar automaticamente a lista após excluir um Workspace.
 
 ---
 
@@ -345,7 +348,9 @@ Para cada Workspace são apresentados:
 
 Também existe o botão:
 
+```
 Abrir
+```
 
 Ao clicar no botão, o usuário é redirecionado para a página de detalhes do Workspace.
 
@@ -358,6 +363,16 @@ Criar Workspace
 ```
 
 que abre um modal para criação de novos Workspaces.
+
+Também existe o botão:
+
+```
+Excluir
+```
+
+Ao clicar, é exibida uma confirmação antes da remoção do Workspace.
+
+Após a confirmação, o Workspace é removido da API e desaparece imediatamente da lista sem necessidade de recarregar a página.
 ---
 
 ## Estados
@@ -444,6 +459,14 @@ Após a criação com sucesso:
 - O novo Workspace é adicionado ao início da lista.
 - Não é necessário recarregar a página.
 
+### Exclusão concluída
+
+Após confirmar a exclusão:
+
+- O Workspace é removido da API.
+- A lista é atualizada automaticamente.
+- Não é necessário recarregar a página.
+
 ---
 
 ## Fluxo
@@ -484,6 +507,19 @@ GET /workspaces/:id
           │
           ▼
 WorkspacePage
+
+ou
+
+Usuário exclui Workspace
+          │
+          ▼
+Confirma exclusão
+          │
+          ▼
+DELETE /workspaces/:id
+          │
+          ▼
+Lista atualizada
 
 ---
 
@@ -841,6 +877,8 @@ Responsabilidades:
 - Modal de edição.
 - Atualização automática da interface após edição.
 - Controle de edição baseado em permissões (OWNER e ADMIN).
+- Exclusão de Workspaces.
+- Confirmação antes da exclusão.
 
 ## Planejado
 
