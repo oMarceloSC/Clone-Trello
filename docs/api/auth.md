@@ -45,27 +45,34 @@ Cria um novo usuário na plataforma.
 
 ### Possíveis Erros
 
-#### Email já cadastrado
+#### Token não informado
 
-**409 Conflict**
-
-```json
-{
-  "statusCode": 409,
-  "message": "Email já está em uso"
-}
-```
-
-#### Erro de validação
-
-**400 Bad Request**
+**401 Unauthorized**
 
 ```json
 {
-  "statusCode": 400,
-  "message": "Erro de validação"
+  "message": "Token não informado"
 }
 ```
+
+---
+
+#### Token inválido ou expirado
+
+**401 Unauthorized**
+
+```json
+{
+  "message": "Token inválido ou expirado"
+}
+```
+
+Quando esse erro ocorre, o frontend:
+
+- Remove o token do `localStorage`.
+- Remove o usuário armazenado.
+- Limpa o `AuthContext`.
+- Redireciona automaticamente para a página de Login.
 
 ---
 
@@ -183,3 +190,120 @@ Authorization: Bearer TOKEN
   "message": "Token inválido ou expirado"
 }
 ```
+
+### Utilização
+
+O endpoint `/auth/me` é utilizado pelo frontend para restaurar automaticamente a sessão do usuário.
+
+Sempre que a aplicação é iniciada:
+
+```text
+Aplicação inicia
+
+↓
+
+Existe token salvo?
+
+↓
+
+Sim
+
+↓
+
+GET /auth/me
+
+↓
+
+Token válido?
+
+↓
+
+Sim
+
+↓
+
+Atualiza AuthContext
+
+↓
+
+Renderiza Dashboard
+
+↓
+
+Não
+
+↓
+
+Remove sessão
+
+↓
+
+Redireciona para Login
+```
+
+Essa abordagem garante que o frontend sempre possua informações atualizadas do usuário autenticado antes de liberar o acesso às rotas protegidas.
+
+---
+
+# Fluxo Completo da Autenticação
+
+```text
+Cadastro
+
+↓
+
+POST /auth/register
+
+↓
+
+Login
+
+↓
+
+POST /auth/login
+
+↓
+
+JWT
+
+↓
+
+localStorage
+
+↓
+
+Inicialização da aplicação
+
+↓
+
+GET /auth/me
+
+↓
+
+AuthContext
+
+↓
+
+Rotas protegidas
+```
+
+---
+
+# Estado Atual
+
+## Implementado
+
+- Cadastro de usuários.
+- Login.
+- JWT.
+- Endpoint `/auth/me`.
+- Recuperação automática da sessão.
+- Validação de token.
+- Integração com o AuthContext do frontend.
+
+## Planejado
+
+- Recuperação de senha.
+- Refresh Token.
+- Revogação de sessão.
+- Logout global.

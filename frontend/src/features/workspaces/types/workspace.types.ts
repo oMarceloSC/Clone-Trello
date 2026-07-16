@@ -64,3 +64,7 @@ export type UpdateWorkspaceResponse = {
 export type DeleteWorkspaceResponse = {
   message: string;
 }
+
+export type ListWorkspaceMembersResponse = {
+  members: WorkspaceMember[];
+};

@@ -4,9 +4,11 @@
 
 O frontend do Clone do Trello utiliza a **Context API** do React para gerenciamento do estado global da aplicação.
 
-Atualmente apenas a autenticação utiliza estado global.
+Atualmente o único estado global da aplicação é responsável pela autenticação dos usuários.
 
-Essa abordagem reduz o acoplamento entre componentes e evita a necessidade de bibliotecas externas para gerenciamento de estado nesta fase do projeto.
+Os demais estados permanecem locais às páginas e componentes, sendo compartilhados através de Props quando necessário.
+
+Essa abordagem reduz o acoplamento entre componentes e evita a necessidade de bibliotecas externas de gerenciamento de estado nesta fase do projeto.
 
 ---
 
@@ -15,32 +17,33 @@ Essa abordagem reduz o acoplamento entre componentes e evita a necessidade de bi
 | Tecnologia | Finalidade |
 |------------|------------|
 | React Context API | Estado global |
-| React Hooks | Manipulação do estado |
+| React Hooks | Gerenciamento de estado |
 | localStorage | Persistência da sessão |
 
 ---
 
 # Estado Atual
 
-Atualmente existe um contexto global.
+Atualmente existe apenas um contexto global.
 
 ```text
 AuthContext
 ```
 
-No futuro serão adicionados outros contextos conforme a evolução do projeto.
+As demais informações da aplicação são controladas por estados locais.
 
-Exemplo:
+Exemplos:
 
-```text
-WorkspaceContext
+- Lista de Workspaces.
+- Workspace atualmente aberto.
+- Modal de criação.
+- Modal de edição.
+- Modal de exclusão.
+- Lista de membros.
+- Estados de carregamento.
+- Estados de erro.
 
-BoardContext
-
-NotificationContext
-
-ThemeContext
-```
+Essa divisão mantém o estado global enxuto e evita compartilhamentos desnecessários.
 
 ---
 
@@ -50,7 +53,9 @@ ThemeContext
 
 ```text
 src/features/auth/contexts/
+
 ├── auth-context.ts
+
 └── AuthProvider.tsx
 ```
 
@@ -60,31 +65,37 @@ src/features/auth/contexts/
 
 Centralizar todas as informações relacionadas à autenticação.
 
-O restante da aplicação não precisa acessar diretamente o `localStorage` ou realizar chamadas ao endpoint `/auth/me`.
+Nenhum outro módulo da aplicação precisa acessar diretamente:
+
+- localStorage;
+- Token JWT;
+- endpoint `/auth/me`.
+
+Toda a autenticação passa pelo AuthContext.
 
 ---
 
-## Dados Disponíveis
+# Dados Disponíveis
 
 ```ts
 type AuthContextData = {
-    user: User | null;
+  user: User | null;
 
-    isAuthenticated: boolean;
+  isAuthenticated: boolean;
 
-    isLoading: boolean;
+  isLoading: boolean;
 
-    signIn(
-        credentials: LoginRequest
-    ): Promise<void>;
+  signIn(
+    credentials: LoginRequest
+  ): Promise<void>;
 
-    signOut(): void;
+  signOut(): void;
 }
 ```
 
 ---
 
-## user
+# user
 
 Representa o usuário autenticado.
 
@@ -96,7 +107,7 @@ user === null
 
 ---
 
-## isAuthenticated
+# isAuthenticated
 
 Indica se existe um usuário autenticado.
 
@@ -104,32 +115,37 @@ Indica se existe um usuário autenticado.
 Boolean(user)
 ```
 
+É utilizado pelas rotas protegidas.
+
 ---
 
-## isLoading
+# isLoading
 
 Indica que a aplicação ainda está restaurando a sessão.
 
-Durante esse período é exibida a tela:
+Enquanto esse estado permanece verdadeiro é exibida a tela:
 
 ```text
 Carregando sessão...
 ```
 
+Nenhuma página protegida é renderizada antes da conclusão dessa validação.
+
 ---
 
-## signIn()
+# signIn()
 
 Responsável por:
 
 - autenticar usuário;
 - salvar token;
 - salvar usuário;
-- atualizar contexto.
+- atualizar contexto;
+- disponibilizar a sessão para toda a aplicação.
 
 Fluxo:
 
-```
+```text
 Login
 
 ↓
@@ -146,23 +162,28 @@ AuthContext
 
 ↓
 
+AuthenticatedLayout
+
+↓
+
 Dashboard
 ```
 
 ---
 
-## signOut()
+# signOut()
 
 Responsável por:
 
 - remover token;
 - remover usuário;
-- limpar contexto.
+- limpar contexto;
+- redirecionar para Login.
 
 Fluxo:
 
-```
-Dashboard
+```text
+Workspace
 
 ↓
 
@@ -179,9 +200,9 @@ Login
 
 ---
 
-# Persistência
+# Persistência da Sessão
 
-A sessão é persistida utilizando:
+A autenticação permanece salva utilizando:
 
 ```text
 localStorage
@@ -199,11 +220,11 @@ localStorage
 
 ---
 
-## Recuperação
+# Recuperação da Sessão
 
-Quando o frontend inicia:
+Sempre que o frontend inicia:
 
-```
+```text
 App
 
 ↓
@@ -214,49 +235,41 @@ AuthProvider
 
 Existe token?
 
-↓
+├── Não
+│
+│   ↓
+│
+│   Login
+│
+└── Sim
 
-Não
+    ↓
 
-↓
+    GET /auth/me
 
-Login
+    ↓
 
-↓
+    Sessão válida?
 
-Sim
+    ├── Sim
+    │
+    │   ↓
+    │
+    │   Atualiza usuário
+    │
+    │   ↓
+    │
+    │   Dashboard
+    │
+    └── Não
 
-↓
+        ↓
 
-GET /auth/me
+        Remove sessão
 
-↓
+        ↓
 
-Sessão válida?
-
-↓
-
-Sim
-
-↓
-
-Atualiza usuário
-
-↓
-
-Dashboard
-
-↓
-
-Não
-
-↓
-
-Remove sessão
-
-↓
-
-Login
+        Login
 ```
 
 ---
@@ -269,17 +282,17 @@ Login
 src/features/auth/hooks/useAuth.ts
 ```
 
-O hook encapsula o acesso ao contexto.
+O hook encapsula todo acesso ao AuthContext.
 
 Exemplo:
 
 ```ts
 const {
-    user,
-    isAuthenticated,
-    isLoading,
-    signIn,
-    signOut,
+  user,
+  isAuthenticated,
+  isLoading,
+  signIn,
+  signOut,
 } = useAuth();
 ```
 
@@ -287,9 +300,113 @@ Isso evita chamadas diretas ao `useContext`.
 
 ---
 
-# Fluxo da Sessão
+# Estados Locais
 
+Embora exista apenas um contexto global, diversas páginas utilizam estados locais através do `useState`.
+
+Essa estratégia evita tornar global um estado que pertence apenas a uma tela específica.
+
+---
+
+## DashboardPage
+
+Controla:
+
+- Lista de Workspaces.
+- Estado de carregamento.
+- Estado vazio.
+- Modal de criação.
+- Atualização imediata após criação.
+
+Fluxo:
+
+```text
+Dashboard
+
+↓
+
+listWorkspaces()
+
+↓
+
+useState
+
+↓
+
+Renderização
 ```
+
+---
+
+## WorkspacePage
+
+Controla:
+
+- Workspace carregado.
+- Estado de carregamento.
+- Estado de erro.
+- Modal de edição.
+- Modal de exclusão.
+- Atualização após edição.
+- Redirecionamento após exclusão.
+
+Fluxo:
+
+```text
+WorkspacePage
+
+↓
+
+getWorkspaceById()
+
+↓
+
+useState
+
+↓
+
+Renderização
+```
+
+---
+
+## WorkspaceMembersSection
+
+Este componente possui estado próprio.
+
+Ele controla:
+
+- Lista de membros.
+- Carregamento.
+- Estado vazio.
+- Estado de erro.
+- Nova tentativa.
+
+Fluxo:
+
+```text
+WorkspaceMembersSection
+
+↓
+
+listWorkspaceMembers()
+
+↓
+
+useState
+
+↓
+
+Lista de membros
+```
+
+Esse estado não precisa ser compartilhado com outras páginas.
+
+---
+
+# Fluxo Geral do Estado
+
+```text
 BrowserRouter
 
 ↓
@@ -302,65 +419,75 @@ AuthContext
 
 ↓
 
+AuthenticatedLayout
+
+↓
+
 Pages
 
 ↓
 
 Components
+
+↓
+
+useState
 ```
 
-Todos os componentes podem acessar a autenticação utilizando:
+Apenas a autenticação é global.
 
-```ts
-useAuth()
-```
+Os demais estados permanecem locais.
 
 ---
 
 # Benefícios
 
-A utilização do Context proporciona:
+A arquitetura atual oferece:
 
-- Estado único da autenticação.
-- Reutilização.
-- Código desacoplado.
-- Eliminação de duplicação.
-- Facilidade para testes.
+- Estado global mínimo.
+- Separação de responsabilidades.
+- Baixo acoplamento.
+- Componentes independentes.
+- Melhor desempenho.
+- Menor quantidade de renderizações.
+- Facilidade para manutenção.
 - Escalabilidade.
 
 ---
 
 # Próximos Contextos
 
-Conforme o projeto evoluir, serão adicionados:
+Conforme a aplicação crescer poderão ser adicionados:
 
 ```text
 WorkspaceContext
 
 BoardContext
 
-ThemeContext
-
 NotificationContext
+
+ThemeContext
 ```
 
-Cada contexto será responsável apenas por seu domínio.
+Esses Contexts somente serão criados quando realmente houver necessidade de compartilhamento global.
+
+Até esse momento, estados locais continuam sendo a abordagem preferida.
 
 ---
 
 # Evolução Planejada
 
-Nas próximas milestones o AuthContext receberá novas responsabilidades.
+O AuthContext continuará evoluindo.
 
-Entre elas:
+Próximas funcionalidades previstas:
 
 - Refresh Token.
-- Atualização automática do usuário.
-- Alteração de avatar.
-- Alteração de perfil.
-- Recuperação de senha.
-- Revogação de sessão.
+- Atualização automática da sessão.
 - Logout automático após token expirado.
+- Alteração de perfil.
+- Alteração de avatar.
+- Recuperação de senha.
+- Sessões simultâneas.
 
 ---
 
@@ -376,6 +503,15 @@ Entre elas:
 - Estado de carregamento.
 - Login.
 - Logout.
+- Estados locais para Dashboard.
+- Estados locais para WorkspacePage.
+- Estados locais para WorkspaceMembersSection.
+- Atualização automática após criação de Workspace.
+- Atualização automática após edição de Workspace.
+- Atualização automática após exclusão de Workspace.
+- Carregamento independente da lista de membros.
+- Tratamento local de erros.
+- Controle local dos modais.
 
 ## Planejado
 
@@ -385,3 +521,6 @@ Entre elas:
 - ThemeContext.
 - Refresh Token.
 - Sessão compartilhada entre abas.
+- Sincronização automática entre múltiplas janelas.
+- Cache de consultas.
+- Integração futura com TanStack Query, caso a complexidade da aplicação justifique.

@@ -10,6 +10,7 @@ Todos os serviços utilizam uma instância compartilhada do Axios, responsável 
 - Envio automático do JWT.
 - Padronização das requisições.
 - Centralização da comunicação HTTP.
+- Tratamento uniforme das respostas.
 
 A organização segue a arquitetura baseada em funcionalidades.
 
@@ -280,15 +281,19 @@ Responsável por toda comunicação relacionada aos Workspaces.
 
 Atualmente disponibiliza:
 
+```text
 listWorkspaces()
 
-getWorkspaceById()
-
 createWorkspace()
+
+getWorkspaceById()
 
 updateWorkspace()
 
 deleteWorkspace()
+
+listWorkspaceMembers()
+```
 
 ---
 
@@ -308,8 +313,6 @@ Authorization: Bearer TOKEN
 
 O JWT é enviado automaticamente pela instância compartilhada do Axios.
 
----
-
 ## Resposta
 
 ```ts
@@ -326,16 +329,12 @@ Workspace[]
 
 para simplificar o consumo pelas páginas.
 
----
-
 ## Responsabilidades
 
 - Buscar todos os Workspaces do usuário autenticado.
 - Retornar os dados dos Workspaces.
 - Retornar os membros relacionados.
 - Fornecer os dados necessários ao Dashboard.
-
----
 
 ## Fluxo
 
@@ -361,84 +360,6 @@ Renderização dos cards
 
 ---
 
-# getWorkspaceById()
-
-## Endpoint
-
-```http
-GET /workspaces/:id
-```
-
-## Headers
-
-```text
-Authorization: Bearer TOKEN
-```
-
-O JWT é enviado automaticamente pela instância compartilhada do Axios.
-
----
-
-## Parâmetros
-
-```ts
-workspaceId: string
-```
-
----
-
-## Resposta
-
-```ts
-{
-  workspace: Workspace;
-}
-```
-
-O serviço retorna diretamente:
-
-```ts
-Workspace
-```
-
-para simplificar o consumo pelas páginas.
-
----
-
-## Responsabilidades
-
-- Buscar um Workspace específico.
-- Validar o acesso do usuário através do backend.
-- Retornar todas as informações necessárias para a WorkspacePage.
-- Disponibilizar os membros do Workspace.
-- Disponibilizar a permissão do usuário autenticado.
-
----
-
-## Fluxo
-
-```text
-WorkspacePage
-
-↓
-
-getWorkspaceById()
-
-↓
-
-GET /workspaces/:id
-
-↓
-
-Workspace
-
-↓
-
-Renderização da página
-```
-
----
-
 # createWorkspace()
 
 ## Endpoint
@@ -455,8 +376,6 @@ Authorization: Bearer TOKEN
 
 O JWT é enviado automaticamente pela instância compartilhada do Axios.
 
----
-
 ## Entrada
 
 ```ts
@@ -465,8 +384,6 @@ type CreateWorkspaceRequest = {
   description?: string;
 }
 ```
-
----
 
 ## Resposta
 
@@ -477,16 +394,12 @@ type CreateWorkspaceResponse = {
 }
 ```
 
----
-
 ## Responsabilidades
 
 - Criar um novo Workspace.
 - Associar automaticamente o usuário autenticado como OWNER.
 - Retornar o Workspace criado.
 - Atualizar imediatamente a interface sem necessidade de nova consulta à API.
-
----
 
 ## Fluxo
 
@@ -520,6 +433,52 @@ Adicionado ao início da lista
 
 ---
 
+# getWorkspaceById()
+
+## Endpoint
+
+```http
+GET /workspaces/:id
+```
+
+## Headers
+
+```text
+Authorization: Bearer TOKEN
+```
+
+## Resposta
+
+```ts
+Workspace
+```
+
+## Responsabilidades
+
+- Buscar um Workspace específico.
+- Exibir as informações gerais do Workspace.
+- Permitir o carregamento da WorkspacePage.
+
+## Fluxo
+
+```text
+WorkspacePage
+
+↓
+
+getWorkspaceById()
+
+↓
+
+GET /workspaces/:id
+
+↓
+
+Workspace
+```
+
+---
+
 # updateWorkspace()
 
 ## Endpoint
@@ -534,18 +493,6 @@ PATCH /workspaces/:id
 Authorization: Bearer TOKEN
 ```
 
-O JWT é enviado automaticamente pela instância compartilhada do Axios.
-
----
-
-## Parâmetros
-
-```ts
-workspaceId: string
-```
-
----
-
 ## Entrada
 
 ```ts
@@ -554,8 +501,6 @@ type UpdateWorkspaceRequest = {
   description?: string;
 }
 ```
-
----
 
 ## Resposta
 
@@ -566,16 +511,11 @@ type UpdateWorkspaceResponse = {
 }
 ```
 
----
-
 ## Responsabilidades
 
-- Atualizar o nome do Workspace.
-- Atualizar a descrição.
+- Atualizar nome e descrição.
 - Retornar o Workspace atualizado.
-- Permitir atualização imediata da interface sem recarregar a página.
-
----
+- Atualizar imediatamente a WorkspacePage.
 
 ## Fluxo
 
@@ -585,10 +525,6 @@ WorkspacePage
 ↓
 
 Modal de edição
-
-↓
-
-React Hook Form
 
 ↓
 
@@ -623,36 +559,19 @@ DELETE /workspaces/:id
 Authorization: Bearer TOKEN
 ```
 
-O JWT é enviado automaticamente pela instância compartilhada do Axios.
-
----
-
-## Parâmetros
-
-```ts
-workspaceId: string
-```
-
----
-
 ## Resposta
 
 ```ts
-{
+type DeleteWorkspaceResponse = {
   message: string;
 }
 ```
 
----
-
 ## Responsabilidades
 
-- Excluir um Workspace.
-- Remover o Workspace do backend.
-- Atualizar automaticamente a lista de Workspaces.
-- Não exigir recarregamento da página.
-
----
+- Excluir permanentemente um Workspace.
+- Permitir apenas usuários OWNER.
+- Redirecionar o usuário ao Dashboard após sucesso.
 
 ## Fluxo
 
@@ -661,11 +580,7 @@ WorkspacePage
 
 ↓
 
-Botão Excluir
-
-↓
-
-Confirmação
+Modal de confirmação
 
 ↓
 
@@ -681,7 +596,59 @@ Workspace removido
 
 ↓
 
-Dashboard atualizado
+Dashboard
+```
+
+---
+
+# listWorkspaceMembers()
+
+## Endpoint
+
+```http
+GET /workspaces/:id/members
+```
+
+## Headers
+
+```text
+Authorization: Bearer TOKEN
+```
+
+O JWT é enviado automaticamente pelo interceptor do Axios.
+
+## Resposta
+
+```ts
+WorkspaceMember[]
+```
+
+## Responsabilidades
+
+- Buscar todos os membros do Workspace.
+- Retornar nome, email e cargo.
+- Exibir a lista de participantes na WorkspacePage.
+
+## Fluxo
+
+```text
+WorkspacePage
+
+↓
+
+listWorkspaceMembers()
+
+↓
+
+GET /workspaces/:id/members
+
+↓
+
+WorkspaceMember[]
+
+↓
+
+Renderização da lista de membros
 ```
 
 ---
@@ -772,32 +739,6 @@ Resposta
 
 Atualização da Interface
 ```
-Os serviços são reutilizados por múltiplas páginas.
-
-Exemplo:
-
-```text
-DashboardPage
-
-↓
-
-listWorkspaces()
-
-↓
-
-WorkspacePage
-
-↓
-
-getWorkspaceById()
-
-↓
-
-updateWorkspace()
-
-↓
-
-deleteWorkspace()
 
 ---
 
@@ -904,6 +845,38 @@ type CreateWorkspaceResponse = {
 
 ---
 
+## UpdateWorkspaceRequest
+
+```ts
+type UpdateWorkspaceRequest = {
+  name: string;
+  description?: string;
+}
+```
+
+---
+
+## UpdateWorkspaceResponse
+
+```ts
+type UpdateWorkspaceResponse = {
+  message: string;
+  workspace: Workspace;
+}
+```
+
+---
+
+## DeleteWorkspaceResponse
+
+```ts
+type DeleteWorkspaceResponse = {
+  message: string;
+}
+```
+
+---
+
 # Tratamento de Erros
 
 Os serviços apenas propagam os erros retornados pela API.
@@ -921,42 +894,21 @@ AxiosError
 
 ↓
 
-DashboardPage
+WorkspacePage
 
 ↓
 
 Mensagem ao usuário
 ```
 
-Na listagem de Workspaces, caso a API não retorne uma mensagem específica, é exibido:
+Mensagens utilizadas atualmente:
 
-```text
-Não foi possível carregar os Workspaces.
-```
+- Não foi possível carregar os Workspaces.
+- Não foi possível carregar o Workspace.
+- Não foi possível atualizar o Workspace.
+- Não foi possível excluir o Workspace.
+- Não foi possível criar o Workspace.
 
-Na criação de Workspaces, caso a API não retorne uma mensagem específica, é exibido:
-
-```text
-Não foi possível criar o Workspace.
-```
-
-Na visualização de um Workspace, caso a API não retorne uma mensagem específica, é exibido:
-
-```text
-Não foi possível abrir o Workspace.
-´´´
-
-Na atualização de um Workspace, caso a API não retorne uma mensagem específica, é exibido:
-
-Não foi possível atualizar o Workspace.
-
----
-
-Na exclusão de um Workspace, caso a API não retorne uma mensagem específica, é exibido:
-
-```text
-Não foi possível excluir o Workspace.
-```
 ---
 
 # Boas Práticas
@@ -977,14 +929,11 @@ Os serviços devem:
 # Serviços Planejados
 
 ```text
-
-listWorkspaceMembers()
-
-inviteWorkspaceMember()
-
 updateWorkspaceMemberRole()
 
 removeWorkspaceMember()
+
+inviteWorkspaceMember()
 
 acceptWorkspaceInvitation()
 
@@ -1005,7 +954,8 @@ notification.service.ts
 - Tratar respostas `401 Unauthorized`.
 - Limpar automaticamente sessões inválidas.
 - Padronizar os erros da API.
-- Completar o CRUD de Workspaces.
+- Completar o gerenciamento de membros.
+- Completar o sistema de convites.
 - Adicionar cancelamento de requisições.
 - Adicionar cache de consultas.
 - Avaliar TanStack Query conforme a complexidade crescer.
@@ -1020,19 +970,21 @@ notification.service.ts
 - Instância compartilhada do Axios.
 - Configuração por variável de ambiente.
 - Interceptor JWT.
-- login().
-- registerUser().
-- getCurrentUser().
-- listWorkspaces().
-- getWorkspaceById().
-- createWorkspace().
-- updateWorkspace().
-- deleteWorkspace().
+- `login()`.
+- `registerUser()`.
+- `getCurrentUser()`.
+- `listWorkspaces()`.
+- `createWorkspace()`.
+- `getWorkspaceById()`.
+- `updateWorkspace()`.
+- `deleteWorkspace()`.
+- `listWorkspaceMembers()`.
 
 ## Planejado
 
-- Gerenciamento de membros.
-- Gerenciamento de convites.
+- Alteração de permissões.
+- Remoção de membros.
+- Convites.
 - Serviços de Boards.
 - Serviços de Lists.
 - Serviços de Cards.

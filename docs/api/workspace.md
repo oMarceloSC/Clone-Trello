@@ -1062,7 +1062,7 @@ Roles permitidas:
 
 # Próximos Endpoints
 
-Os seguintes endpoints serão implementados nas próximas etapas do desenvolvimento.
+Os próximos endpoints previstos para o módulo de Workspaces são:
 
 ---
 
@@ -1071,6 +1071,40 @@ Os seguintes endpoints serão implementados nas próximas etapas do desenvolvime
 ```
 DELETE /workspaces/:id/members/:memberId
 ```
+
+Remove um membro do Workspace.
+
+Apenas o `OWNER` poderá realizar esta operação.
+
+---
+
+## Listar Convites
+
+```
+GET /workspaces/:id/invitations
+```
+
+Retorna todos os convites enviados para o Workspace.
+
+---
+
+## Cancelar Convite
+
+```
+DELETE /workspaces/:id/invitations/:invitationId
+```
+
+Cancela um convite pendente.
+
+---
+
+## Reenviar Convite
+
+```
+POST /workspaces/:id/invitations/:invitationId/resend
+```
+
+Reenvia um convite existente, renovando sua data de expiração.
 
 ---
 
@@ -1118,28 +1152,28 @@ Esse fluxo será utilizado em todas as operações futuras do módulo de Workspa
 
 ## Implementado
 
-- ✅ Criar Workspace
-- ✅ Listar Workspaces
-- ✅ Buscar Workspace por ID
-- ✅ Associação automática do OWNER
-- ✅ Validação de acesso através da tabela WorkspaceMember
-- ✅ Atualizar Workspace
-- ✅ Controle de permissões para atualização (OWNER e ADMIN)
-- ✅ Excluir Workspace
-- ✅ Controle de permissão OWNER para exclusão
-- ✅ Convites para Workspace
-- ✅ Geração de token único para convites
-- ✅ Expiração automática em 7 dias
-- ✅ Listagem de membros do Workspace
-- ✅ Alteração de permissões dos membros
+- ✅ Criar Workspace.
+- ✅ Listar Workspaces.
+- ✅ Buscar Workspace por ID.
+- ✅ Atualizar Workspace.
+- ✅ Excluir Workspace.
+- ✅ Associação automática do criador como `OWNER`.
+- ✅ Validação de acesso através da tabela `WorkspaceMember`.
+- ✅ Controle de permissões (`OWNER`, `ADMIN`, `MEMBER` e `VIEWER`).
+- ✅ Criar convites.
+- ✅ Aceitar convites.
+- ✅ Geração de token único para convites.
+- ✅ Expiração automática em 7 dias.
+- ✅ Listagem de membros do Workspace.
+- ✅ Alteração de permissões dos membros.
 
 ---
 
 ## Próximas Funcionalidades
 
-- Atualizar Workspace
-- Excluir Workspace
-- Convites
-- Gerenciamento de membros
-- Sistema de permissões
-- Auditoria de atividades
+- Remoção de membros.
+- Listagem de convites.
+- Cancelamento de convites.
+- Reenvio de convites.
+- Auditoria de atividades do Workspace.
+- Integração com Boards.

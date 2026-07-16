@@ -13,22 +13,22 @@ Toda comunicação com o backend é realizada através da API REST.
 # Tecnologias
 
 | Tecnologia | Finalidade |
-|------------|------------|
-| React | Interface |
-| TypeScript | Tipagem |
+|---|---|
+| React | Construção da interface |
+| TypeScript | Tipagem estática |
 | Vite | Build Tool |
 | React Router | Navegação |
 | Axios | Comunicação HTTP |
-| React Hook Form | Formulários |
+| React Hook Form | Gerenciamento de formulários |
 | Zod | Validação |
-| Context API | Estado Global |
+| Context API | Estado global |
 | CSS | Estilização |
 
 ---
 
 # Arquitetura Geral
 
-```
+```text
 Browser
 
 ↓
@@ -49,11 +49,15 @@ RequireAuthentication / RequireGuest
 
 ↓
 
-AuthenticatedLayout (rotas privadas)
+AuthenticatedLayout
 
 ↓
 
 Pages
+
+↓
+
+Components
 
 ↓
 
@@ -72,39 +76,26 @@ Backend API
 
 # Estrutura do Projeto
 
-```
+```text
 frontend/
 
 ├── public/
-
+│
 ├── src/
-
 │   ├── assets/
-
 │   ├── components/
-
 │   ├── features/
-
 │   ├── layouts/
-
 │   ├── pages/
-
 │   ├── routes/
-
 │   ├── services/
-
 │   ├── styles/
-
 │   ├── App.tsx
-
 │   ├── index.css
-
 │   └── main.tsx
-
+│
 ├── .env
-
 ├── .env.example
-
 └── vite.config.ts
 ```
 
@@ -114,20 +105,26 @@ frontend/
 
 Cada domínio da aplicação possui sua própria estrutura.
 
-Exemplo:
+Atualmente existem:
 
-```
+```text
 features/
 
-auth/
+├── auth/
+└── workspaces/
+```
 
-workspaces/
+Futuramente serão adicionadas:
 
-boards/
+```text
+features/
 
-lists/
-
-cards/
+├── boards/
+├── lists/
+├── cards/
+├── comments/
+├── notifications/
+└── profile/
 ```
 
 Cada feature possui autonomia para organizar seus próprios arquivos.
@@ -136,27 +133,38 @@ Cada feature possui autonomia para organizar seus próprios arquivos.
 
 # Estrutura de uma Feature
 
-Todas seguem o mesmo padrão.
+As features seguem uma estrutura baseada em responsabilidade.
 
+Exemplo:
+
+```text
+workspaces/
+
+├── components/
+│   └── WorkspaceMembersSection.tsx
+│
+├── pages/
+│   └── WorkspacePage.tsx
+│
+├── schemas/
+│   └── update-workspace.schema.ts
+│
+├── services/
+│   └── workspace.service.ts
+│
+└── types/
+    └── workspace.types.ts
 ```
-auth/
 
-controllers (quando necessário)
+Dependendo da necessidade, uma feature também pode possuir:
 
-contexts
+```text
+contexts/
 
-hooks
+hooks/
 
-pages
-
-schemas
-
-services
-
-types
+utils/
 ```
-
-Novas funcionalidades deverão manter essa organização.
 
 ---
 
@@ -164,12 +172,16 @@ Novas funcionalidades deverão manter essa organização.
 
 A arquitetura foi dividida em responsabilidades bem definidas.
 
-```
+```text
 Pages
 
 ↓
 
-Hooks
+Components
+
+↓
+
+Hooks / Contexts
 
 ↓
 
@@ -184,61 +196,139 @@ Axios
 API
 ```
 
-Cada camada possui apenas uma responsabilidade.
+Cada camada possui uma responsabilidade específica.
 
 ---
 
 # Pages
 
-Responsáveis por:
+As páginas são responsáveis por:
 
 - Construir a interface.
-- Capturar interação do usuário.
-- Chamar hooks.
-- Chamar serviços.
-- Exibir mensagens.
+- Organizar os componentes.
+- Capturar interações do usuário.
+- Controlar estados visuais locais.
+- Chamar Services.
+- Exibir mensagens de erro e sucesso.
+- Executar navegação.
 
-As páginas **não possuem regras de negócio complexas**.
+As páginas não devem concentrar regras de negócio complexas.
+
+Atualmente existem:
+
+```text
+LoginPage
+
+RegisterPage
+
+DashboardPage
+
+WorkspacePage
+```
+
+---
+
+# Components
+
+Os componentes encapsulam partes específicas e reutilizáveis da interface.
+
+Atualmente existe dentro da feature de Workspaces:
+
+```text
+WorkspaceMembersSection
+```
+
+Esse componente é responsável por:
+
+- Buscar os membros do Workspace.
+- Exibir nome e email.
+- Exibir o cargo de cada participante.
+- Identificar o usuário autenticado.
+- Exibir estados de carregamento.
+- Exibir estado vazio.
+- Exibir estado de erro.
+- Permitir nova tentativa após falha.
+
+Fluxo:
+
+```text
+WorkspacePage
+
+↓
+
+WorkspaceMembersSection
+
+↓
+
+listWorkspaceMembers()
+
+↓
+
+GET /workspaces/:id/members
+
+↓
+
+Lista de membros
+```
 
 ---
 
 # Layouts
 
-Os Layouts são responsáveis por compartilhar estruturas visuais entre múltiplas páginas.
-
-Isso evita duplicação de código e mantém uma navegação consistente.
+Os Layouts compartilham estruturas visuais entre múltiplas páginas.
 
 Atualmente existe:
 
-```
+```text
 AuthenticatedLayout
 ```
 
-Responsável por:
+Responsabilidades:
 
-- Sidebar.
-- Header.
-- Logout.
-- Informações do usuário.
-- Renderização das páginas privadas através do `Outlet`.
+- Renderizar a Sidebar.
+- Renderizar o Header.
+- Exibir informações do usuário.
+- Disponibilizar Logout.
+- Renderizar páginas privadas através do `Outlet`.
 
-Todas as páginas autenticadas passarão a utilizar esse layout.
+Estrutura:
+
+```text
+AuthenticatedLayout
+
+├── Sidebar
+├── Header
+└── Outlet
+```
+
+Atualmente utilizam esse layout:
+
+- DashboardPage.
+- WorkspacePage.
 
 ---
 
 # Hooks
 
-Os hooks encapsulam comportamentos reutilizáveis.
+Os Hooks encapsulam comportamentos reutilizáveis.
 
-Atualmente:
+Atualmente existe:
 
-```
+```text
 useAuth()
 ```
 
-No futuro existirão:
+Responsabilidades:
 
-```
+- Acessar o AuthContext.
+- Recuperar o usuário autenticado.
+- Consultar o estado da sessão.
+- Executar login.
+- Executar logout.
+
+Futuramente poderão existir:
+
+```text
 useWorkspace()
 
 useBoard()
@@ -252,37 +342,67 @@ useNotification()
 
 Os Contexts armazenam estados globais.
 
-Atualmente:
+Atualmente existe:
 
-```
+```text
 AuthContext
 ```
 
-Responsável por:
+Responsabilidades:
 
-- usuário
-- login
-- logout
-- recuperação da sessão
+- Armazenar o usuário autenticado.
+- Armazenar o estado da sessão.
+- Executar login.
+- Executar logout.
+- Restaurar a sessão.
+- Validar o token através de `/auth/me`.
 
 ---
 
 # Services
 
-Os Services realizam toda comunicação HTTP.
+Os Services realizam a comunicação HTTP com o backend.
 
-Exemplos atualmente implementados:
+Atualmente existem:
 
-```
+```text
 auth.service.ts
 
 workspace.service.ts
 ```
 
-Futuramente:
+O `auth.service.ts` disponibiliza:
 
+```text
+login()
+
+registerUser()
+
+getCurrentUser()
 ```
+
+O `workspace.service.ts` disponibiliza:
+
+```text
+listWorkspaces()
+
+createWorkspace()
+
+getWorkspaceById()
+
+updateWorkspace()
+
+deleteWorkspace()
+
+listWorkspaceMembers()
+```
+
+Futuramente serão criados:
+
+```text
 board.service.ts
+
+list.service.ts
 
 card.service.ts
 
@@ -293,27 +413,38 @@ notification.service.ts
 
 # Schemas
 
-Todos os formulários utilizam validação através do Zod.
+Os formulários utilizam Zod para validação.
 
-Exemplo:
+Atualmente existem schemas para:
 
-```
+- Login.
+- Cadastro.
+- Criação de Workspace.
+- Atualização de Workspace.
+
+Exemplos:
+
+```text
 login.schema.ts
 
 register.schema.ts
+
+create-workspace.schema.ts
+
+update-workspace.schema.ts
 ```
 
-Isso garante que dados inválidos não sejam enviados para a API.
+O Zod impede que dados inválidos sejam enviados para a API.
 
 ---
 
 # Types
 
-Todos os tipos TypeScript ficam centralizados dentro da feature.
+Os tipos TypeScript ficam centralizados dentro de cada feature.
 
-Exemplo:
+Exemplos da autenticação:
 
-```
+```text
 User
 
 LoginRequest
@@ -325,40 +456,68 @@ RegisterRequest
 RegisterResponse
 ```
 
+Exemplos de Workspaces:
+
+```text
+Workspace
+
+WorkspaceMember
+
+WorkspaceMemberUser
+
+WorkspaceRole
+
+CreateWorkspaceRequest
+
+CreateWorkspaceResponse
+
+UpdateWorkspaceRequest
+
+UpdateWorkspaceResponse
+
+DeleteWorkspaceResponse
+
+ListWorkspaceMembersResponse
+```
+
 ---
 
 # Rotas
 
 As rotas são centralizadas em:
 
-```
+```text
 src/routes/AppRoutes.tsx
 ```
 
 Atualmente existem dois tipos de proteção.
 
+---
+
 ## RequireAuthentication
 
 Protege páginas privadas.
 
-Exemplo:
+Exemplos:
 
-```
-Dashboard
+```text
+/dashboard
+
+/workspaces/:id
 ```
 
 ---
 
 ## RequireGuest
 
-Impede acesso de usuários autenticados às páginas públicas.
+Impede que usuários autenticados acessem páginas públicas.
 
-Exemplo:
+Exemplos:
 
-```
-Login
+```text
+/login
 
-Cadastro
+/register
 ```
 
 ---
@@ -369,7 +528,7 @@ As rotas privadas utilizam um layout compartilhado.
 
 Fluxo:
 
-```
+```text
 React Router
 
 ↓
@@ -389,15 +548,15 @@ Outlet
 Página
 ```
 
-Essa abordagem garante que Sidebar e Header sejam reutilizados por todas as páginas autenticadas.
+Essa abordagem garante que Sidebar e Header sejam reutilizados pelas páginas autenticadas.
 
 ---
 
 # AuthProvider
 
-O AuthProvider envolve toda a aplicação.
+O `AuthProvider` envolve toda a aplicação.
 
-```
+```text
 BrowserRouter
 
 ↓
@@ -409,18 +568,19 @@ AuthProvider
 App
 ```
 
-Ele é responsável por:
+Responsabilidades:
 
-- recuperar sessão
-- validar token
-- armazenar usuário
-- disponibilizar autenticação
+- Recuperar sessão.
+- Validar token.
+- Armazenar usuário.
+- Disponibilizar autenticação.
+- Limpar sessão inválida.
 
 ---
 
 # Fluxo da Autenticação
 
-```
+```text
 Usuário
 
 ↓
@@ -466,8 +626,8 @@ Dashboard
 
 Sempre que o frontend inicia:
 
-```
-App
+```text
+Aplicação
 
 ↓
 
@@ -475,37 +635,24 @@ AuthProvider
 
 ↓
 
-Existe Token?
+Existe token?
 
-↓
-
-GET /auth/me
-
-↓
-
-Sessão válida?
-
-↓
-
-Atualiza usuário
-
-↓
-
-Renderiza aplicação
-```
-
-Caso o token seja inválido:
-
-```
-Remove Token
-
-↓
-
-Remove Usuário
-
-↓
-
-Login
+├── Não
+│   ↓
+│   Visitante
+│
+└── Sim
+    ↓
+    GET /auth/me
+    ↓
+    Sessão válida?
+    ├── Sim
+    │   ↓
+    │   Atualiza usuário
+    │
+    └── Não
+        ↓
+        Remove sessão
 ```
 
 ---
@@ -514,8 +661,8 @@ Login
 
 Toda comunicação passa pela instância compartilhada do Axios.
 
-```
-Page
+```text
+Page ou Component
 
 ↓
 
@@ -536,7 +683,7 @@ Backend
 
 O interceptor adiciona automaticamente:
 
-```
+```text
 Authorization: Bearer TOKEN
 ```
 
@@ -544,15 +691,15 @@ Authorization: Bearer TOKEN
 
 # Variáveis de Ambiente
 
-A URL da API é configurada através de:
+A URL da API é configurada por:
 
-```
+```env
 VITE_API_URL
 ```
 
 Exemplo:
 
-```
+```env
 VITE_API_URL=http://localhost:3333
 ```
 
@@ -560,7 +707,7 @@ VITE_API_URL=http://localhost:3333
 
 # Fluxo de uma Requisição
 
-```
+```text
 Usuário
 
 ↓
@@ -569,7 +716,7 @@ Page
 
 ↓
 
-Hook (quando necessário)
+Component, quando necessário
 
 ↓
 
@@ -594,43 +741,219 @@ Atualização da Interface
 
 ---
 
+# Fluxo de Workspaces
+
+## Listagem
+
+```text
+DashboardPage
+
+↓
+
+listWorkspaces()
+
+↓
+
+GET /workspaces
+
+↓
+
+Cards de Workspace
+```
+
+---
+
+## Criação
+
+```text
+DashboardPage
+
+↓
+
+Modal de criação
+
+↓
+
+createWorkspace()
+
+↓
+
+POST /workspaces
+
+↓
+
+Lista atualizada
+```
+
+---
+
+## Visualização
+
+```text
+DashboardPage
+
+↓
+
+Abrir Workspace
+
+↓
+
+GET /workspaces/:id
+
+↓
+
+WorkspacePage
+```
+
+---
+
+## Atualização
+
+```text
+WorkspacePage
+
+↓
+
+Modal de edição
+
+↓
+
+updateWorkspace()
+
+↓
+
+PATCH /workspaces/:id
+
+↓
+
+Interface atualizada
+```
+
+---
+
+## Exclusão
+
+```text
+WorkspacePage
+
+↓
+
+Modal de confirmação
+
+↓
+
+deleteWorkspace()
+
+↓
+
+DELETE /workspaces/:id
+
+↓
+
+Dashboard
+```
+
+---
+
+## Listagem de membros
+
+```text
+WorkspacePage
+
+↓
+
+WorkspaceMembersSection
+
+↓
+
+listWorkspaceMembers()
+
+↓
+
+GET /workspaces/:id/members
+
+↓
+
+Cards de membros
+```
+
+---
+
+# Controle Visual de Permissões
+
+O frontend utiliza a role do usuário para controlar quais ações são exibidas.
+
+## OWNER
+
+Pode visualizar:
+
+- Editar Workspace.
+- Excluir Workspace.
+- Lista de membros.
+
+## ADMIN
+
+Pode visualizar:
+
+- Editar Workspace.
+- Lista de membros.
+
+## MEMBER
+
+Pode visualizar:
+
+- Workspace.
+- Lista de membros.
+
+## VIEWER
+
+Pode visualizar:
+
+- Workspace.
+- Lista de membros.
+
+O controle visual melhora a experiência do usuário, mas a validação definitiva permanece no backend.
+
+---
+
 # Estrutura Atual
 
 Atualmente o frontend possui:
 
-```
+```text
 Auth
 
 ├── Login
-
 ├── Cadastro
+├── Recuperação da sessão
+└── AuthContext
 
-├── Recuperação da Sessão
-
-├── AuthContext
+Layout
 
 ├── AuthenticatedLayout
-
 ├── Sidebar
+└── Header
 
-├── Header
-
-├── Dashboard
-
-├── WorkspacePage
+Dashboard
 
 ├── Listagem de Workspaces
+└── Criação de Workspaces
 
-├── Criação de Workspaces
+Workspaces
 
-└── Atualização de Workspaces
+├── WorkspacePage
+├── Visualização de Workspace
+├── Atualização de Workspace
+├── Exclusão de Workspace
+├── Controle visual de permissões
+└── Listagem de membros
 ```
 
 ---
 
 # Estrutura Planejada
 
-```
+```text
 Auth
 
 ↓
@@ -659,10 +982,10 @@ Notificações
 
 ↓
 
-Dashboard
+Dashboard avançado
 ```
 
-Cada módulo seguirá exatamente a mesma arquitetura.
+Cada módulo seguirá a mesma organização baseada em features.
 
 ---
 
@@ -673,9 +996,11 @@ Cada módulo seguirá exatamente a mesma arquitetura.
 - Alta coesão.
 - Componentização.
 - Organização por funcionalidades.
-- Código reutilizável.
+- Tipagem estática.
+- Reutilização de código.
 - Escalabilidade.
 - Manutenção simplificada.
+- Comunicação centralizada com a API.
 
 ---
 
@@ -695,7 +1020,7 @@ Cada módulo seguirá exatamente a mesma arquitetura.
 - Dashboard.
 - Recuperação automática da sessão.
 - Organização por Features.
-- Serviços.
+- Services.
 - Hooks.
 - Schemas.
 - Types.
@@ -705,40 +1030,49 @@ Cada módulo seguirá exatamente a mesma arquitetura.
 - Listagem de Workspaces.
 - Criação de Workspaces.
 - Visualização de Workspace.
-- Navegação entre Dashboard e Workspace.
 - Atualização de Workspace.
-- Modal de edição de Workspace.
-- Atualização automática da interface após edição.
-- Controle de edição baseado nas permissões `OWNER` e `ADMIN`.
+- Exclusão de Workspace.
+- Navegação entre Dashboard e Workspace.
+- Controle visual de permissões.
+- WorkspaceMembersSection.
+- Listagem de membros.
+- Estados de carregamento dos membros.
+- Estado vazio dos membros.
+- Tratamento de erros dos membros.
+- Nova tentativa após falha.
 
 ## Em desenvolvimento
 
-- Exclusão de Workspaces.
-- Gerenciamento de membros.
-- Gerenciamento de convites.
+- Alteração de permissões dos membros.
+- Remoção de membros.
+- Criação de convites.
+- Aceitação de convites.
 - Componentes reutilizáveis.
+- Interceptor global de respostas.
+- Tratamento de sessão expirada.
+- Página 404.
 - Design System.
-- Tema escuro.
 - Responsividade avançada.
 
 ---
 
 # Próximas Evoluções
 
-A arquitetura continuará crescendo mantendo o mesmo padrão.
-
 As próximas implementações serão:
 
-1. Exclusão de Workspaces.
-2. Gerenciamento de membros.
-3. Gerenciamento de convites.
-4. Feature Boards.
-5. Feature Lists.
-6. Feature Cards.
-7. Componentes compartilhados.
-8. Sistema de permissões visuais.
-9. Integração em tempo real com Socket.IO.
+1. Alteração de permissões dos membros.
+2. Remoção de membros.
+3. Criação de convites.
+4. Aceitação de convites.
+5. Interceptor de respostas.
+6. Tratamento de sessão expirada.
+7. Página 404.
+8. Componentes compartilhados.
+9. Feature Boards.
+10. Feature Lists.
+11. Feature Cards.
+12. Integração em tempo real com Socket.IO.
 
-Todas as novas páginas autenticadas utilizarão o `AuthenticatedLayout`, mantendo Sidebar e Header compartilhados em toda a aplicação.
+Todas as novas páginas autenticadas utilizarão o `AuthenticatedLayout`.
 
-Cada nova feature deverá seguir exatamente a organização descrita neste documento.
+Cada nova feature deverá seguir a organização descrita neste documento.

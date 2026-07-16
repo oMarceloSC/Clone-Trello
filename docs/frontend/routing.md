@@ -10,12 +10,15 @@ As rotas são centralizadas no arquivo:
 src/routes/AppRoutes.tsx
 ```
 
-A proteção das rotas é realizada através do `AuthContext`, permitindo diferenciar usuários autenticados de visitantes.
+A proteção das rotas utiliza o `AuthContext`, permitindo diferenciar usuários autenticados de visitantes.
+
+As páginas privadas são renderizadas dentro do `AuthenticatedLayout`.
 
 ---
 
 # Arquitetura
 
+```text
 BrowserRouter
 
 ↓
@@ -51,12 +54,15 @@ Outlet
 ↓
 
 Página
+```
 
-O `BrowserRouter` é responsável pela navegação.
+O `BrowserRouter` controla a navegação da aplicação.
 
-O `AuthProvider` disponibiliza o estado da autenticação para toda a aplicação.
+O `AuthProvider` disponibiliza o estado da autenticação.
 
 O `AppRoutes` define todas as rotas disponíveis.
+
+O `AuthenticatedLayout` compartilha Sidebar e Header entre as páginas privadas.
 
 ---
 
@@ -79,14 +85,13 @@ AppRoutes
 # Rotas Implementadas
 
 | Rota | Acesso | Status | Descrição |
-|--------|--------|---------|-----------------------------|
-| / | Público | ✅ | Redireciona para Dashboard |
-| /login | Visitante | ✅ | Login |
-| /register | Visitante | ✅ | Cadastro |
-| /dashboard | Autenticado | ✅ | Dashboard |
-| * | Público | ✅ | Redirecionamento |
-| `/workspaces/:id` | Autenticado | ✅ | Visualização e atualização de Workspace |
-
+|---|---|---|---|
+| `/` | Público | ✅ | Redireciona para o Dashboard |
+| `/login` | Visitante | ✅ | Login |
+| `/register` | Visitante | ✅ | Cadastro |
+| `/dashboard` | Autenticado | ✅ | Dashboard |
+| `/workspaces/:id` | Autenticado | ✅ | Visualização e gerenciamento do Workspace |
+| `*` | Público | ✅ | Redirecionamento temporário |
 
 ---
 
@@ -98,15 +103,13 @@ Quando o usuário acessa:
 /
 ```
 
-é realizado automaticamente:
+é redirecionado para:
 
 ```text
-↓
-
 /dashboard
 ```
 
-O próprio sistema decide se o usuário continuará no Dashboard ou será enviado para Login.
+O sistema verifica a autenticação e decide se o usuário pode continuar ou se deve ser enviado para o Login.
 
 ---
 
@@ -120,7 +123,7 @@ Atualmente existem duas rotas públicas.
 /login
 ```
 
-Responsável pela autenticação.
+Responsável pela autenticação do usuário.
 
 ---
 
@@ -130,40 +133,32 @@ Responsável pela autenticação.
 /register
 ```
 
-Responsável pela criação de usuários.
+Responsável pela criação de novos usuários.
 
 ---
 
 # RequireGuest
 
-As páginas públicas utilizam o componente:
+As páginas públicas utilizam:
 
 ```text
 RequireGuest
 ```
 
-Objetivo:
-
-Impedir que usuários autenticados retornem às páginas de Login ou Cadastro.
+Esse componente impede que usuários autenticados acessem Login ou Cadastro.
 
 Fluxo:
 
-```
+```text
 Usuário autenticado
 
 ↓
 
-/login
+/login ou /register
 
 ↓
 
-Dashboard
-```
-
-O mesmo ocorre para:
-
-```
-/register
+/dashboard
 ```
 
 ---
@@ -176,15 +171,11 @@ As páginas privadas utilizam:
 RequireAuthentication
 ```
 
-Objetivo:
-
-Garantir que apenas usuários autenticados tenham acesso.
-
-Após a autenticação, todas as páginas privadas passam a ser renderizadas dentro do `AuthenticatedLayout`.
+Esse componente garante que apenas usuários autenticados tenham acesso.
 
 Fluxo:
 
-```
+```text
 RequireAuthentication
 
 ↓
@@ -197,20 +188,26 @@ Outlet
 
 ↓
 
-Página
+Página privada
 ```
 
 ---
 
-## Dashboard
+# Dashboard
+
+## Rota
 
 ```text
 /dashboard
 ```
 
-Fluxo:
+## Acesso
 
-```
+Somente usuários autenticados.
+
+## Fluxo
+
+```text
 Usuário
 
 ↓
@@ -223,86 +220,163 @@ AuthenticatedLayout
 
 ↓
 
-Dashboard
+DashboardPage
 ```
+
+O Dashboard permite:
+
+- Listar Workspaces.
+- Criar Workspaces.
+- Abrir um Workspace.
+- Visualizar estados de carregamento e erro.
 
 ---
 
-## Workspace
+# Workspace
 
-```
+## Rota
+
+```text
 /workspaces/:id
 ```
 
-Fluxo:
+## Acesso
 
-```
-Usuário
+Somente usuários autenticados que participem do Workspace solicitado.
 
-↓
+A autorização definitiva é validada pelo backend.
 
+---
+
+## Fluxo de acesso
+
+```text
 Dashboard
 
 ↓
 
-Abrir
+Abrir Workspace
 
 ↓
 
-GET /workspaces/:id
+/workspaces/:id
+
+↓
+
+RequireAuthentication
+
+↓
+
+AuthenticatedLayout
 
 ↓
 
 WorkspacePage
-
-↓
-
-Editar Workspace
-
-↓
-
-PATCH /workspaces/:id
-
-↓
-
-Workspace atualizado
 ```
 
-A página somente é exibida caso o usuário possua acesso ao Workspace solicitado.
+---
 
-Usuários com permissão `OWNER` ou `ADMIN` também podem atualizar o nome e a descrição do Workspace através de um modal de edição.
+## Requisições realizadas
 
-A autorização é validada tanto no frontend quanto no backend.
+Ao carregar a página são realizadas duas requisições principais:
+
+```text
+GET /workspaces/:id
+
+↓
+
+Informações gerais do Workspace
+```
+
+e:
+
+```text
+GET /workspaces/:id/members
+
+↓
+
+Lista completa de membros
+```
+
+---
+
+## Funcionalidades disponíveis
+
+A rota permite:
+
+- Visualizar informações gerais.
+- Visualizar quantidade de membros.
+- Visualizar a permissão do usuário autenticado.
+- Listar membros.
+- Exibir nome, email e cargo de cada participante.
+- Atualizar o Workspace.
+- Excluir o Workspace.
+- Preparar a área para os futuros Boards.
+
+---
+
+## Controle de permissões
+
+### OWNER
+
+Pode:
+
+- Visualizar.
+- Atualizar.
+- Excluir.
+- Listar membros.
+
+### ADMIN
+
+Pode:
+
+- Visualizar.
+- Atualizar.
+- Listar membros.
+
+### MEMBER
+
+Pode:
+
+- Visualizar.
+- Listar membros.
+
+### VIEWER
+
+Pode:
+
+- Visualizar.
+- Listar membros.
+
+A interface oculta ações não permitidas, mas a proteção real permanece no backend.
 
 ---
 
 # AuthenticatedLayout
 
-O layout autenticado é responsável por compartilhar toda a estrutura visual das páginas privadas.
+## Arquivo
 
-Arquivo:
-
-```
+```text
 src/layouts/AuthenticatedLayout.tsx
 ```
 
+O layout autenticado compartilha a estrutura visual das páginas privadas.
+
 Responsabilidades:
 
-- Renderizar a Sidebar.
-- Renderizar o Header.
+- Renderizar Sidebar.
+- Renderizar Header.
 - Exibir informações do usuário autenticado.
-- Centralizar o botão de Logout.
-- Renderizar as páginas através do `Outlet`.
+- Disponibilizar Logout.
+- Renderizar páginas através do `Outlet`.
 
 Estrutura:
 
-```
+```text
 AuthenticatedLayout
 
 ├── Sidebar
-
 ├── Header
-
 └── Outlet
 ```
 
@@ -311,17 +385,55 @@ Atualmente utilizam esse layout:
 - DashboardPage.
 - WorkspacePage.
 
-Todas as futuras páginas autenticadas continuarão reutilizando essa mesma estrutura.
+---
+
+# Outlet
+
+O `Outlet` renderiza a página correspondente à rota atual dentro do `AuthenticatedLayout`.
+
+Fluxo:
+
+```text
+AuthenticatedLayout
+
+↓
+
+Outlet
+
+↓
+
+DashboardPage
+```
+
+ou:
+
+```text
+AuthenticatedLayout
+
+↓
+
+Outlet
+
+↓
+
+WorkspacePage
+```
+
+No futuro também renderizará:
+
+- BoardPage.
+- NotificationPage.
+- ProfilePage.
 
 ---
 
 # Recuperação da Sessão
 
-Antes de liberar qualquer rota protegida, o sistema verifica se existe uma sessão armazenada.
+Antes de liberar qualquer rota protegida, o sistema verifica a sessão armazenada.
 
 Fluxo:
 
-```
+```text
 Aplicação inicia
 
 ↓
@@ -330,51 +442,26 @@ AuthProvider
 
 ↓
 
-Existe Token?
+Existe token?
 
-↓
-
-Não
-
-↓
-
-Login
-
-↓
-
-Sim
-
-↓
-
-GET /auth/me
-
-↓
-
-Token válido?
-
-↓
-
-Sim
-
-↓
-
-AuthenticatedLayout
-
-↓
-
-Dashboard
-
-↓
-
-Não
-
-↓
-
-Limpa sessão
-
-↓
-
-Login
+├── Não
+│   ↓
+│   Login
+│
+└── Sim
+    ↓
+    GET /auth/me
+    ↓
+    Token válido?
+    ├── Sim
+    │   ↓
+    │   Renderiza a aplicação
+    │
+    └── Não
+        ↓
+        Limpa sessão
+        ↓
+        Login
 ```
 
 ---
@@ -387,96 +474,62 @@ Enquanto o frontend consulta:
 GET /auth/me
 ```
 
-é exibida uma tela de carregamento.
+é exibido:
 
-```
+```text
 Carregando sessão...
 ```
 
-Esse comportamento evita que páginas protegidas sejam exibidas antes da validação da sessão.
-
----
-
-# Outlet
-
-O `AuthenticatedLayout` utiliza o componente:
-
-```
-Outlet
-```
-
-O `Outlet` é responsável por renderizar a página correspondente à rota atual.
-
-Fluxo:
-
-```
-AuthenticatedLayout
-
-↓
-
-Outlet
-
-↓
-
-DashboardPage
-
-ou
-
-WorkspacePage
-```
-
-No futuro também renderizará:
-
-- BoardPage
-- NotificationPage
-- ProfilePage
+Esse estado evita que páginas privadas sejam exibidas antes da validação do token.
 
 ---
 
 # Redirecionamentos
 
-## Visitante
+## Visitante acessando uma rota privada
 
-```
-/
-
+```text
 /dashboard
+
+ou
+
+/workspaces/:id
 
 ↓
 
-Login
+/login
 ```
 
 ---
 
-## Usuário autenticado
+## Usuário autenticado acessando Login
 
-```
+```text
 /login
 
 ↓
 
-Dashboard
+/dashboard
 ```
 
 ---
 
-## Cadastro
+## Usuário autenticado acessando Cadastro
 
-```
+```text
 /register
 
 ↓
 
-Dashboard
+/dashboard
 ```
 
 ---
 
 ## Logout
 
-```
-Dashboard
+```text
+Página autenticada
 
 ↓
 
@@ -484,8 +537,28 @@ Logout
 
 ↓
 
-Login
+/login
 ```
+
+---
+
+## Workspace excluído
+
+Após excluir um Workspace:
+
+```text
+DELETE /workspaces/:id
+
+↓
+
+Workspace removido
+
+↓
+
+/dashboard
+```
+
+O redirecionamento utiliza navegação com substituição de histórico para evitar retorno a uma rota já excluída.
 
 ---
 
@@ -493,18 +566,20 @@ Login
 
 Atualmente qualquer rota inexistente é redirecionada para:
 
-```
+```text
 /dashboard
 ```
 
 O sistema então decide:
 
-```
+```text
 Autenticado
 
 ↓
 
 Dashboard
+
+ou
 
 Não autenticado
 
@@ -519,78 +594,98 @@ Futuramente será implementada uma página dedicada de erro 404.
 
 # Fluxo Completo da Navegação
 
-```
+```text
 BrowserRouter
 
 ↓
 
 AppRoutes
 
-↓
+├── RequireGuest
+│   ├── LoginPage
+│   └── RegisterPage
+│
+└── RequireAuthentication
+    ↓
+    AuthenticatedLayout
+    ↓
+    Outlet
+    ├── DashboardPage
+    └── WorkspacePage
+```
 
-RequireGuest
+---
 
-↓
+# Fluxo da WorkspacePage
 
-Login / Cadastro
-
-ou
-
-RequireAuthentication
-
-↓
-
-AuthenticatedLayout
-
-↓
-
-Outlet
-
-↓
-
+```text
 Dashboard
 
-ou
+↓
+
+Abrir Workspace
+
+↓
+
+/workspaces/:id
+
+↓
+
+GET /workspaces/:id
+
+↓
+
+GET /workspaces/:id/members
+
+↓
 
 WorkspacePage
+
+├── Informações gerais
+├── Cards de resumo
+├── Lista de membros
+├── Atualização
+├── Exclusão
+└── Área de Boards
 ```
 
 ---
 
 # Rotas Planejadas
 
-A rota do Workspace continuará evoluindo nas próximas milestones, incorporando gerenciamento de membros, convites, Boards e configurações sem alteração da URL principal.
-
 ## Boards
 
-```
+```text
 /boards/:id
-Será renderizada dentro do `AuthenticatedLayout`.
 ```
+
+Será renderizada dentro do `AuthenticatedLayout`.
 
 ---
 
 ## Perfil
 
-```
+```text
 /profile
-Será renderizada dentro do `AuthenticatedLayout`.
 ```
+
+Será renderizada dentro do `AuthenticatedLayout`.
 
 ---
 
 ## Notificações
 
-```
+```text
 /notifications
-Será renderizada dentro do `AuthenticatedLayout`.
 ```
+
+Será renderizada dentro do `AuthenticatedLayout`.
 
 ---
 
 ## Recuperação de senha
 
-```
+```text
 /forgot-password
 ```
 
@@ -598,7 +693,7 @@ Será renderizada dentro do `AuthenticatedLayout`.
 
 ## Redefinição de senha
 
-```
+```text
 /reset-password
 ```
 
@@ -606,7 +701,7 @@ Será renderizada dentro do `AuthenticatedLayout`.
 
 ## Página 404
 
-```
+```text
 *
 ```
 
@@ -614,18 +709,19 @@ Será renderizada dentro do `AuthenticatedLayout`.
 
 # Melhorias Futuras
 
-Estão planejadas para as próximas milestones:
+Estão planejadas:
 
 - Página 404.
 - Lazy Loading.
 - Code Splitting.
-- Breadcrumbs.
-- Proteção por permissões.
-- Rotas por Workspace.
+- Breadcrumbs reutilizáveis.
+- Proteção visual por permissões.
 - Rotas por Board.
-- Rotas dinâmicas.
+- Rotas dinâmicas adicionais.
 - Navegação baseada em permissões.
 - Layout administrativo.
+- Recuperação de senha.
+- Tratamento global de sessão expirada.
 
 ---
 
@@ -640,9 +736,9 @@ Estão planejadas para as próximas milestones:
 - Redirecionamento automático.
 - Recuperação da sessão.
 - Tela de carregamento.
-- Dashboard protegido.
 - Login.
 - Cadastro.
+- Dashboard protegido.
 - AuthenticatedLayout.
 - Sidebar compartilhada.
 - Header compartilhado.
@@ -650,17 +746,23 @@ Estão planejadas para as próximas milestones:
 - Rota `/workspaces/:id`.
 - WorkspacePage protegida.
 - Navegação Dashboard → Workspace.
+- Visualização de Workspace.
 - Atualização de Workspace.
-- Controle de edição baseado na role do usuário.
-- Atualização da interface sem recarregar a página.
+- Exclusão de Workspace.
+- Redirecionamento após exclusão.
+- Listagem de membros.
+- Requisição `GET /workspaces/:id/members`.
+- Controle visual de permissões.
 
 ## Planejado
 
 - Página 404.
 - Rotas dos Boards.
 - Rotas de Perfil.
+- Rotas de Notificações.
 - Recuperação de senha.
 - Lazy Loading.
 - Code Splitting.
 - Proteção baseada em permissões.
+- Tratamento global de sessão expirada.
 - Layout administrativo.

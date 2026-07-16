@@ -5,10 +5,12 @@ import type {
   CreateWorkspaceResponse,
   DeleteWorkspaceResponse,
   GetWorkspaceResponse,
+  ListWorkspaceMembersResponse,
   ListWorkspacesResponse,
   UpdateWorkspaceRequest,
   UpdateWorkspaceResponse,
   Workspace,
+  WorkspaceMember,
 } from "../types/workspace.types";
 
 export async function listWorkspaces(): Promise<Workspace[]> {
@@ -59,4 +61,15 @@ export async function deleteWorkspace(
   );
 
   return response.data;
+}
+
+export async function listWorkspaceMembers(
+  workspaceId: string,
+): Promise<WorkspaceMember[]> {
+  const response =
+    await api.get<ListWorkspaceMembersResponse>(
+      `/workspaces/${workspaceId}/members`,
+    );
+
+  return response.data.members;
 }

@@ -448,7 +448,7 @@ Response
 /auth/register
 ```
 
-Cadastro.
+Cadastro de novos usuários.
 
 ---
 
@@ -458,7 +458,7 @@ Cadastro.
 /auth/login
 ```
 
-Login.
+Autenticação e geração do JWT.
 
 ---
 
@@ -468,7 +468,112 @@ Login.
 /auth/me
 ```
 
-Retorna o usuário autenticado.
+Retorna os dados do usuário autenticado.
+
+---
+
+## Workspaces
+
+### POST
+
+```
+/workspaces
+```
+
+Cria um novo Workspace.
+
+O usuário autenticado é automaticamente registrado como `OWNER`.
+
+---
+
+### GET
+
+```
+/workspaces
+```
+
+Lista todos os Workspaces dos quais o usuário autenticado participa.
+
+---
+
+### GET
+
+```
+/workspaces/:id
+```
+
+Retorna os dados completos de um Workspace.
+
+Inclui:
+
+- Nome.
+- Descrição.
+- Data de criação.
+- Quantidade de membros.
+- Cargo do usuário autenticado.
+
+---
+
+### PATCH
+
+```
+/workspaces/:id
+```
+
+Atualiza as informações do Workspace.
+
+Somente usuários com permissão adequada (`OWNER` ou `ADMIN`) podem realizar essa operação.
+
+---
+
+### DELETE
+
+```
+/workspaces/:id
+```
+
+Remove permanentemente um Workspace.
+
+Apenas o proprietário (`OWNER`) possui permissão para exclusão.
+
+---
+
+### GET
+
+```
+/workspaces/:id/members
+```
+
+Lista todos os membros pertencentes ao Workspace.
+
+Cada membro retorna:
+
+- Nome.
+- Email.
+- Cargo.
+- Data de ingresso.
+
+---
+
+### POST
+
+```
+/workspaces/:id/invitations
+```
+
+Cria um convite para ingresso no Workspace.
+
+---
+
+## Workspace Invitations
+
+### POST
+
+```
+/workspace-invitations/:token/accept
+```
+
+Aceita um convite utilizando o token recebido.
 
 ---
 
@@ -476,50 +581,79 @@ Retorna o usuário autenticado.
 
 ## Infraestrutura
 
-- Docker
-- PostgreSQL
-- Prisma ORM
-- Fastify
-- TypeScript
+- Docker.
+- PostgreSQL.
+- Prisma ORM.
+- Fastify.
+- TypeScript.
 
 ---
 
 ## Banco
 
-- User
-- Workspace
-- WorkspaceMember
+- User.
+- Workspace.
+- WorkspaceMember.
+- WorkspaceInvitation.
 
 ---
 
 ## Auth
 
-- Cadastro
-- Login
-- JWT
-- Hash de senha
-- Middleware de autenticação
+- Cadastro.
+- Login.
+- JWT.
+- Hash de senha.
+- Middleware de autenticação.
+- Recuperação do usuário autenticado (`/auth/me`).
+
+---
+
+## Workspaces
+
+- Criar Workspace.
+- Listar Workspaces.
+- Buscar Workspace por ID.
+- Atualizar Workspace.
+- Excluir Workspace.
+- Associação automática do criador como `OWNER`.
+
+---
+
+## Membros
+
+- Listagem de membros.
+- Controle de permissões.
+- OWNER.
+- ADMIN.
+- MEMBER.
+- VIEWER.
+
+---
+
+## Convites
+
+- Criar convite.
+- Token único.
+- Aceitar convite.
+- Expiração automática.
+- Associação automática do membro ao Workspace.
 
 ---
 
 ## Qualidade
 
-- AppError
-- Error Middleware
-- Validação com Zod
-- Env Validation
+- AppError.
+- Error Middleware.
+- Validação com Zod.
+- Env Validation.
+- Arquitetura baseada em Use Cases.
 
 ---
 
 # Próximos Módulos
 
-A próxima etapa do backend será:
-
-```
-Workspaces
-```
-
-Após isso:
+Com a conclusão do módulo de Workspaces, as próximas implementações seguirão esta ordem:
 
 ```
 Boards
@@ -552,6 +686,16 @@ Notifications
 
 Socket.IO
 ```
+
+Cada novo módulo seguirá exatamente o mesmo padrão arquitetural utilizado em Auth e Workspaces, mantendo:
+
+- Controllers.
+- Routes.
+- Schemas.
+- Use Cases.
+- Types.
+
+Essa padronização facilita manutenção, testes e evolução da aplicação.
 
 ---
 

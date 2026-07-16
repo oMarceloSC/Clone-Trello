@@ -196,19 +196,31 @@ Possui:
 
 # WorkspacePage
 
-A WorkspacePage reutiliza o `AuthenticatedLayout`, compartilhando a Sidebar e o Header.
+A WorkspacePage segue o mesmo padrão visual adotado pelo Dashboard, utilizando o `AuthenticatedLayout` como estrutura principal.
 
-A página possui:
+A página possui como objetivo apresentar informações gerais do Workspace e servir como ponto de entrada para todas as funcionalidades relacionadas ao ambiente de trabalho.
+
+Atualmente são exibidos:
 
 - Breadcrumb.
-- Cabeçalho do Workspace.
-- Cards de resumo.
+- Nome.
+- Descrição.
+- Data de criação.
+- Quantidade de membros.
+- Cargo do usuário autenticado.
+- Botão de edição (quando permitido).
+- Botão de exclusão (quando permitido).
 - Área destinada aos Boards.
-- Botão para retornar ao Dashboard.
-- Estados de carregamento.
-- Estados de erro.
+- Seção de membros do Workspace.
 
-A organização visual segue o mesmo padrão utilizado nas demais páginas autenticadas.
+A seção de membros é carregada de forma independente da página principal, permitindo atualização apenas dessa área quando necessário.
+
+Essa estrutura prepara a página para futuras funcionalidades como:
+
+- Boards.
+- Convites.
+- Configurações.
+- Gerenciamento de permissões.
 
 ---
 
@@ -299,15 +311,62 @@ A quantidade de colunas se adapta automaticamente ao espaço disponível.
 
 # Cards de Resumo do Workspace
 
-Na WorkspacePage são exibidos cards contendo informações gerais do Workspace.
+As principais informações do Workspace são exibidas através de cards informativos.
 
 Atualmente são apresentados:
 
+- Nome.
+- Descrição.
 - Quantidade de membros.
-- Permissão do usuário autenticado.
+- Cargo do usuário autenticado.
 - Data de criação.
 
-Esses cards utilizam o mesmo padrão visual adotado pelos demais elementos da aplicação para manter consistência na interface.
+Esses cards possuem espaçamento consistente, responsividade e seguem o mesmo padrão visual utilizado nas demais páginas autenticadas.
+
+Novos indicadores poderão ser adicionados futuramente, como:
+
+- Quantidade de Boards.
+- Cards ativos.
+- Atividades recentes.
+- Convites pendentes.
+
+---
+
+# Seção de Membros
+
+A WorkspacePage possui uma área dedicada à exibição dos membros do Workspace.
+
+Essa funcionalidade é implementada através do componente:
+
+```text
+WorkspaceMembersSection
+```
+
+Cada membro é exibido em um card contendo:
+
+- Nome.
+- Email.
+- Cargo.
+
+Os cargos são apresentados visualmente para facilitar a identificação das permissões.
+
+Atualmente podem ser exibidos:
+
+- OWNER
+- ADMIN
+- MEMBER
+- VIEWER
+
+A listagem possui carregamento independente da WorkspacePage.
+
+Isso permite atualizar apenas a lista de membros sem recarregar toda a página.
+
+Essa seção servirá de base para futuras funcionalidades como:
+
+- Alteração de permissões.
+- Remoção de membros.
+- Convites.
+- Busca de membros.
 
 ---
 
@@ -624,19 +683,11 @@ Caso a exclusão falhe, a mensagem é exibida dentro do modal e o usuário perma
 
 # Estados da WorkspacePage
 
-A WorkspacePage possui estados específicos durante a busca de um Workspace.
+A WorkspacePage possui estados independentes para cada área da interface.
 
----
+## Carregando Workspace
 
-## Carregando
-
-Enquanto a API consulta:
-
-```http
-GET /workspaces/:id
-```
-
-é exibida a mensagem:
+Enquanto o Workspace é carregado:
 
 ```text
 Carregando Workspace...
@@ -644,25 +695,62 @@ Carregando Workspace...
 
 ---
 
-## Sucesso
+## Workspace carregado
 
-Quando o Workspace é encontrado são exibidos:
+São exibidos:
 
-- Informações gerais.
 - Cards de resumo.
-- Área destinada aos Boards.
+- Botões de ação.
+- Área de Boards.
+- Lista de membros.
 
 ---
 
-## Erro
+## Workspace não encontrado
 
-Caso a API retorne erro ou o usuário não possua acesso:
+Caso ocorra algum erro:
 
 ```text
 Não foi possível abrir o Workspace.
 ```
 
-A interface disponibiliza ações para retornar ao Dashboard ou realizar uma nova tentativa.
+São apresentados:
+
+- Botão para voltar ao Dashboard.
+- Botão para tentar novamente.
+
+---
+
+## Atualização
+
+Durante a edição do Workspace:
+
+```text
+Atualizando Workspace...
+```
+
+Após sucesso:
+
+```text
+Workspace atualizado com sucesso.
+```
+
+---
+
+## Exclusão
+
+Antes da exclusão é exibido um modal de confirmação.
+
+Durante a operação:
+
+```text
+Excluindo Workspace...
+```
+
+Após sucesso:
+
+- O usuário é redirecionado para o Dashboard.
+- A lista de Workspaces é atualizada automaticamente.
 
 ---
 
@@ -837,31 +925,27 @@ Exemplos:
 
 # Responsividade
 
-Já existe uma adaptação inicial para telas menores.
+Toda a interface segue abordagem Mobile First.
 
-Atualmente:
+Atualmente são responsivos:
 
-- Dashboard reorganiza os elementos.
-- Cabeçalho passa para coluna.
-- Cabeçalho da seção passa para coluna.
-- Botões ocupam largura total.
-- Modal adapta-se a telas menores.
-- Modal passa a ocupar a parte inferior da tela.
-- Ações do modal passam para coluna.
-- Botão Cancelar aparece abaixo da ação principal visualmente.
-- Espaçamento interno é reduzido.
-- Grid de Workspaces ajusta automaticamente a quantidade de colunas.
-- Sidebar passa para o topo em telas menores.
-- Navegação da Sidebar torna-se horizontal.
-- Header reorganiza seus elementos verticalmente quando necessário.
-- WorkspacePage adapta seus cards para uma única coluna em telas menores.
-- Área destinada aos Boards ocupa toda a largura disponível.
-- Breadcrumb reorganiza seu espaçamento em dispositivos móveis.
-- Ações do cabeçalho do Workspace passam para coluna em telas menores.
-- Botão de exclusão ocupa toda a largura disponível.
-- Ações do modal de exclusão passam para coluna.
+- Login.
+- Cadastro.
+- Dashboard.
+- WorkspacePage.
+- Sidebar.
+- Header.
+- Modal de criação.
+- Modal de edição.
+- Modal de exclusão.
+- Lista de membros.
 
-Outras melhorias serão implementadas futuramente.
+Em telas menores:
+
+- Os cards passam a ocupar toda a largura disponível.
+- A lista de membros é reorganizada em coluna única.
+- Os modais ajustam automaticamente seu tamanho.
+- Os botões permanecem acessíveis em dispositivos móveis.
 
 ---
 
@@ -984,41 +1068,30 @@ As próximas evoluções previstas para a camada de estilos são:
 
 ## Implementado
 
-- CSS global.
-- Layout de autenticação.
+- Estilos globais.
+- Login.
+- Cadastro.
 - Dashboard.
-- Grid de Workspaces.
-- Cards de Workspace.
-- Modal de criação de Workspace.
-- Formulário de criação.
-- Estados de carregamento.
-- Estado vazio.
-- Estados de criação.
-- Mensagens de erro.
-- Mensagens de sucesso.
-- Botões padrão.
-- Botões primários.
-- Botões secundários.
-- Botão de fechamento do modal.
-- Inputs.
-- Textareas.
-- Responsividade inicial.
-- Práticas iniciais de acessibilidade.
+- Sidebar.
+- Header.
 - AuthenticatedLayout.
-- Sidebar compartilhada.
-- Header compartilhado.
 - WorkspacePage.
+- Cards de resumo.
 - Breadcrumb.
-- Cards de resumo do Workspace.
-- Estados de carregamento da WorkspacePage.
-- Estados de erro da WorkspacePage.
-- Modal de edição de Workspace.
-- Modal de confirmação de exclusão.
-- Botão destrutivo.
-- Estados de atualização.
-- Estados de exclusão.
-- Aviso visual para ações irreversíveis.
+- Área inicial para Boards.
+- WorkspaceMembersSection.
+- Cards de membros.
+- Lista de membros.
+- Modal de criação.
+- Modal de edição.
+- Modal de exclusão.
+- Estados de carregamento.
+- Estados vazios.
+- Tratamento visual de erros.
+- Controle visual de permissões.
+- Botões destrutivos.
 - Redirecionamento após exclusão.
+- Responsividade das páginas autenticadas.
 
 ## Planejado
 

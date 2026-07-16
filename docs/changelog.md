@@ -112,6 +112,13 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Estado de carregamento durante a exclusão.
 * Tratamento de erros sem fechar o modal.
 * Redirecionamento automático para o Dashboard após a exclusão.
+* Listagem de membros do Workspace.
+* Exibição do nome, email e cargo dos membros.
+* Integração com o endpoint `GET /workspaces/:id/members`.
+* Exibição dos membros em tabela.
+* Estado de carregamento da listagem de membros.
+* Estado vazio para Workspaces sem membros adicionais.
+* Tratamento de erros durante a listagem de membros.
 
 ### Estilização
 
@@ -185,6 +192,10 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Atualização da arquitetura global com o fluxo de exclusão.
 * Atualização da documentação de estilização para ações destrutivas.
 * Atualização da documentação de componentes planejados para confirmação.
+* Atualização da documentação da WorkspacePage com a listagem de membros.
+* Atualização da documentação dos serviços com `listWorkspaceMembers()`.
+* Atualização da arquitetura para incluir o fluxo de membros.
+* Atualização da documentação da API de Workspaces.
 
 ---
 

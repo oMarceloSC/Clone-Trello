@@ -9,6 +9,7 @@ import {
 } from "react-router";
 
 import { useAuth } from "../../auth/hooks/useAuth";
+import { WorkspaceMembersSection } from "../components/WorkspaceMembersSection";
 import {
   updateWorkspaceSchema,
   type UpdateWorkspaceFormData,
@@ -456,6 +457,11 @@ export function WorkspacePage() {
           <p>Data de criação do espaço de trabalho.</p>
         </article>
       </section>
+
+      <WorkspaceMembersSection
+        workspaceId={workspace.id}
+        currentUserId={user?.id}
+      />
 
       <section className="workspace-boards-section">
         <div className="workspace-section-header">
