@@ -293,6 +293,8 @@ updateWorkspace()
 deleteWorkspace()
 
 listWorkspaceMembers()
+
+updateWorkspaceMemberRole()
 ```
 
 ---
@@ -653,6 +655,70 @@ Renderização da lista de membros
 
 ---
 
+# updateWorkspaceMemberRole()
+
+## Endpoint
+
+```http
+PATCH /workspaces/:workspaceId/members/:memberId
+```
+
+## Headers
+
+```text
+Authorization: Bearer TOKEN
+```
+
+O JWT é enviado automaticamente pelo interceptor do Axios.
+
+## Entrada
+
+```ts
+type UpdateWorkspaceMemberRoleRequest = {
+  role: "ADMIN" | "MEMBER" | "VIEWER";
+}
+```
+
+## Resposta
+
+```ts
+type UpdateWorkspaceMemberRoleResponse = {
+  message: string;
+  member: WorkspaceMember;
+}
+```
+
+## Responsabilidades
+
+- Atualizar a permissão de um membro do Workspace.
+- Permitir apenas alterações realizadas pelo OWNER.
+- Retornar apenas o membro atualizado.
+- Atualizar a interface sem recarregar toda a lista de membros.
+
+## Fluxo
+
+```text
+WorkspaceMembersSection
+
+↓
+
+updateWorkspaceMemberRole()
+
+↓
+
+PATCH /workspaces/:workspaceId/members/:memberId
+
+↓
+
+WorkspaceMember atualizado
+
+↓
+
+Atualização do membro na lista
+```
+
+---
+
 # Estruturas Utilizadas
 
 ## Workspace
@@ -877,6 +943,27 @@ type DeleteWorkspaceResponse = {
 
 ---
 
+## UpdateWorkspaceMemberRoleRequest
+
+```ts
+type UpdateWorkspaceMemberRoleRequest = {
+  role: "ADMIN" | "MEMBER" | "VIEWER";
+}
+```
+
+---
+
+## UpdateWorkspaceMemberRoleResponse
+
+```ts
+type UpdateWorkspaceMemberRoleResponse = {
+  message: string;
+  member: WorkspaceMember;
+}
+```
+
+---
+
 # Tratamento de Erros
 
 Os serviços apenas propagam os erros retornados pela API.
@@ -929,8 +1016,6 @@ Os serviços devem:
 # Serviços Planejados
 
 ```text
-updateWorkspaceMemberRole()
-
 removeWorkspaceMember()
 
 inviteWorkspaceMember()
@@ -979,6 +1064,7 @@ notification.service.ts
 - `updateWorkspace()`.
 - `deleteWorkspace()`.
 - `listWorkspaceMembers()`.
+- `updateWorkspaceMembersRole()`.
 
 ## Planejado
 

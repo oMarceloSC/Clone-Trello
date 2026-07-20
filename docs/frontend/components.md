@@ -130,6 +130,7 @@ Atualmente a maior parte dos elementos da interface permanece dentro das página
 - WorkspacePage.
 - Modal de edição de Workspace (implementado na WorkspacePage).
 - Modal de confirmação de exclusão (implementado na WorkspacePage).
+- Gerenciamento de membros (implementado através do WorkspaceMembersSection).
 
 Entretanto, a aplicação já possui um Layout compartilhado (`AuthenticatedLayout`) responsável por reutilizar a estrutura das páginas autenticadas.
 
@@ -139,6 +140,8 @@ Atualmente esse layout já é compartilhado entre:
 - WorkspacePage.
 
 Atualmente os modais de edição e exclusão ainda fazem parte da própria WorkspacePage.
+
+O gerenciamento dos participantes do Workspace já foi extraído para o componente `WorkspaceMembersSection`, responsável por carregar, exibir e atualizar as permissões dos membros.
 
 Eles deverão ser extraídos para componentes reutilizáveis conforme novas funcionalidades forem adicionadas ao sistema.
 
@@ -170,7 +173,7 @@ Também está prevista a criação de componentes reutilizáveis para ações de
 - DeleteModal.
 - LoadingButton.
 
-Esses componentes substituirão as implementações atualmente existentes na WorkspacePage.
+Esses componentes substituirão as implementações atualmente existentes na WorkspacePage, mantendo o mesmo padrão utilizado na extração do `WorkspaceMembersSection`.
 
 Após isso, novas páginas poderão reutilizar esses componentes mantendo uma interface consistente.
 

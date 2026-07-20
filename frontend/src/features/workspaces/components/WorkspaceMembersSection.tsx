@@ -1,7 +1,15 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+  type ChangeEvent,
+} from "react";
 
-import { listWorkspaceMembers } from "../services/workspace.service";
+import {
+  listWorkspaceMembers,
+  updateWorkspaceMemberRole,
+} from "../services/workspace.service";
+
 import type {
   WorkspaceMember,
   WorkspaceRole,
@@ -11,6 +19,11 @@ type WorkspaceMembersSectionProps = {
   workspaceId: string;
   currentUserId?: string;
 };
+
+type EditableWorkspaceRole = Exclude<
+  WorkspaceRole,
+  "OWNER"
+>;
 
 const workspaceRoleLabels: Record<WorkspaceRole, string> = {
   OWNER: "Proprietário",
@@ -29,6 +42,12 @@ const workspaceRoleClassNames: Record<
   VIEWER: "workspace-role-viewer",
 };
 
+const editableWorkspaceRoles: EditableWorkspaceRole[] = [
+  "ADMIN",
+  "MEMBER",
+  "VIEWER",
+];
+
 export function WorkspaceMembersSection({
   workspaceId,
   currentUserId,
@@ -41,6 +60,15 @@ export function WorkspaceMembersSection({
 
   const [membersError, setMembersError] =
     useState<string | null>(null);
+
+  const [updatingMemberId, setUpdatingMemberId] =
+    useState<string | null>(null);
+
+  const [memberUpdateErrors, setMemberUpdateErrors] =
+    useState<Record<string, string>>({});
+
+  const [memberUpdateSuccess, setMemberUpdateSuccess] =
+    useState<Record<string, string>>({});
 
   async function loadMembers() {
     try {
@@ -71,6 +99,143 @@ export function WorkspaceMembersSection({
   useEffect(() => {
     void loadMembers();
   }, [workspaceId]);
+
+  const currentMember = members.find(
+    (member) =>
+      member.user?.id === currentUserId ||
+      member.userId === currentUserId,
+  );
+
+  const canManageMemberRoles =
+    currentMember?.role === "OWNER";
+
+  async function handleMemberRoleChange(
+    member: WorkspaceMember,
+    event: ChangeEvent<HTMLSelectElement>,
+  ) {
+    const newRole = event.target
+      .value as EditableWorkspaceRole;
+
+    if (!canManageMemberRoles) {
+      return;
+    }
+
+    const memberUserId =
+      member.user?.id ?? member.userId;
+
+    const isCurrentUser =
+      memberUserId === currentUserId;
+
+    if (member.role === "OWNER" || isCurrentUser) {
+      return;
+    }
+
+    if (member.role === newRole) {
+      return;
+    }
+
+    const previousRole = member.role;
+
+    try {
+      setUpdatingMemberId(member.id);
+
+      setMemberUpdateErrors((currentErrors) => {
+        const updatedErrors = { ...currentErrors };
+
+        delete updatedErrors[member.id];
+
+        return updatedErrors;
+      });
+
+      setMemberUpdateSuccess((currentSuccess) => {
+        const updatedSuccess = { ...currentSuccess };
+
+        delete updatedSuccess[member.id];
+
+        return updatedSuccess;
+      });
+
+      setMembers((currentMembers) =>
+        currentMembers.map((currentMemberItem) =>
+          currentMemberItem.id === member.id
+            ? {
+                ...currentMemberItem,
+                role: newRole,
+              }
+            : currentMemberItem,
+        ),
+      );
+
+      const response = await updateWorkspaceMemberRole(
+        workspaceId,
+        member.id,
+        {
+          role: newRole,
+        },
+      );
+
+      setMembers((currentMembers) =>
+        currentMembers.map((currentMemberItem) =>
+          currentMemberItem.id === member.id
+            ? {
+                ...currentMemberItem,
+                ...response.member,
+                user:
+                  response.member.user ??
+                  currentMemberItem.user,
+              }
+            : currentMemberItem,
+        ),
+      );
+
+      setMemberUpdateSuccess((currentSuccess) => ({
+        ...currentSuccess,
+        [member.id]: response.message,
+      }));
+
+      window.setTimeout(() => {
+        setMemberUpdateSuccess((currentSuccess) => {
+          const updatedSuccess = { ...currentSuccess };
+
+          delete updatedSuccess[member.id];
+
+          return updatedSuccess;
+        });
+      }, 2500);
+    } catch (error) {
+      setMembers((currentMembers) =>
+        currentMembers.map((currentMemberItem) =>
+          currentMemberItem.id === member.id
+            ? {
+                ...currentMemberItem,
+                role: previousRole,
+              }
+            : currentMemberItem,
+        ),
+      );
+
+      if (axios.isAxiosError(error)) {
+        const message =
+          error.response?.data?.message ??
+          "Não foi possível alterar a permissão do membro.";
+
+        setMemberUpdateErrors((currentErrors) => ({
+          ...currentErrors,
+          [member.id]: message,
+        }));
+
+        return;
+      }
+
+      setMemberUpdateErrors((currentErrors) => ({
+        ...currentErrors,
+        [member.id]:
+          "Ocorreu um erro inesperado ao alterar a permissão.",
+      }));
+    } finally {
+      setUpdatingMemberId(null);
+    }
+  }
 
   if (isLoading) {
     return (
@@ -135,19 +300,36 @@ export function WorkspaceMembersSection({
       ) : (
         <div className="workspace-members-list">
           {members.map((member) => {
+            const memberUserId =
+              member.user?.id ?? member.userId;
+
             const isCurrentUser =
-              member.user?.id === currentUserId ||
-              member.userId === currentUserId;
+              memberUserId === currentUserId;
 
             const memberName =
               member.user?.name ?? "Usuário";
 
             const memberEmail =
-              member.user?.email ?? "Email não disponível";
+              member.user?.email ??
+              "Email não disponível";
 
             const memberInitial = memberName
               .charAt(0)
               .toUpperCase();
+
+            const canEditThisMember =
+              canManageMemberRoles &&
+              member.role !== "OWNER" &&
+              !isCurrentUser;
+
+            const isUpdating =
+              updatingMemberId === member.id;
+
+            const updateError =
+              memberUpdateErrors[member.id];
+
+            const updateSuccess =
+              memberUpdateSuccess[member.id];
 
             return (
               <article
@@ -170,15 +352,74 @@ export function WorkspaceMembersSection({
                   </div>
 
                   <span>{memberEmail}</span>
+
+                  {updateError && (
+                    <span
+                      className="workspace-member-update-error"
+                      role="alert"
+                    >
+                      {updateError}
+                    </span>
+                  )}
+
+                  {updateSuccess && (
+                    <span
+                      className="workspace-member-update-success"
+                      role="status"
+                    >
+                      {updateSuccess}
+                    </span>
+                  )}
                 </div>
 
-                <span
-                  className={`workspace-role-badge ${
-                    workspaceRoleClassNames[member.role]
-                  }`}
-                >
-                  {workspaceRoleLabels[member.role]}
-                </span>
+                {canEditThisMember ? (
+                  <div className="workspace-member-role-control">
+                    <label
+                      className="sr-only"
+                      htmlFor={`member-role-${member.id}`}
+                    >
+                      Permissão de {memberName}
+                    </label>
+
+                    <select
+                      id={`member-role-${member.id}`}
+                      className={`workspace-role-select ${
+                        workspaceRoleClassNames[member.role]
+                      }`}
+                      value={member.role}
+                      disabled={isUpdating}
+                      onChange={(event) => {
+                        void handleMemberRoleChange(
+                          member,
+                          event,
+                        );
+                      }}
+                    >
+                      {editableWorkspaceRoles.map((role) => (
+                        <option key={role} value={role}>
+                          {workspaceRoleLabels[role]}
+                        </option>
+                      ))}
+                    </select>
+
+                    {isUpdating && (
+                      <span
+                        className="workspace-member-updating"
+                        role="status"
+                      >
+                        Salvando...
+                      </span>
+                    )}
+                  </div>
+                ) : (
+                  <span
+                    className={`workspace-role-badge ${
+                      workspaceRoleClassNames[member.role]
+                    }`}
+                  >
+                    {workspaceRoleLabels[member.role]}
+                  </span>
+                )}
               </article>
             );
           })}

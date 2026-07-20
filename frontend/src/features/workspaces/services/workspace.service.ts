@@ -7,6 +7,8 @@ import type {
   GetWorkspaceResponse,
   ListWorkspaceMembersResponse,
   ListWorkspacesResponse,
+  UpdateWorkspaceMemberRoleRequest,
+  UpdateWorkspaceMemberRoleResponse,
   UpdateWorkspaceRequest,
   UpdateWorkspaceResponse,
   Workspace,
@@ -72,4 +74,18 @@ export async function listWorkspaceMembers(
     );
 
   return response.data.members;
+}
+
+export async function updateWorkspaceMemberRole(
+  workspaceId: string,
+  memberId: string,
+  data: UpdateWorkspaceMemberRoleRequest,
+): Promise<UpdateWorkspaceMemberRoleResponse> {
+  const response =
+    await api.patch<UpdateWorkspaceMemberRoleResponse>(
+      `/workspaces/${workspaceId}/members/${memberId}`,
+      data,
+    );
+
+  return response.data;
 }

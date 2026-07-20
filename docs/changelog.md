@@ -119,6 +119,16 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Estado de carregamento da listagem de membros.
 * Estado vazio para Workspaces sem membros adicionais.
 * Tratamento de erros durante a listagem de membros.
+* Atualização das permissões dos membros diretamente pela WorkspacePage.
+* Integração com o endpoint `PATCH /workspaces/:workspaceId/members/:memberId`.
+* Serviço `updateWorkspaceMemberRole()`.
+* Atualização otimista da permissão do membro.
+* Atualização individual dos membros sem recarregar toda a listagem.
+* Feedback visual durante a atualização das permissões.
+* Mensagens individuais de sucesso e erro por membro.
+* Restrição da alteração de permissões ao proprietário (`OWNER`).
+* Bloqueio da edição da própria permissão do proprietário.
+* Bloqueio da edição da permissão de outros proprietários.
 
 ### Estilização
 
@@ -196,6 +206,8 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Atualização da documentação dos serviços com `listWorkspaceMembers()`.
 * Atualização da arquitetura para incluir o fluxo de membros.
 * Atualização da documentação da API de Workspaces.
+* Atualização da documentação dos serviços com `updateWorkspaceMemberRole()`.
+* Atualização da documentação dos componentes para refletir o `WorkspaceMembersSection`.
 
 ---
 

@@ -63,8 +63,17 @@ export type UpdateWorkspaceResponse = {
 
 export type DeleteWorkspaceResponse = {
   message: string;
-}
+};
 
 export type ListWorkspaceMembersResponse = {
   members: WorkspaceMember[];
+};
+
+export type UpdateWorkspaceMemberRoleRequest = {
+  role: Exclude<WorkspaceRole, "OWNER">;
+};
+
+export type UpdateWorkspaceMemberRoleResponse = {
+  message: string;
+  member: WorkspaceMember;
 };
