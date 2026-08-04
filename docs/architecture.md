@@ -753,6 +753,9 @@ Sem alterar módulos existentes.
 - Exclusão de Workspace.
 - Controle visual de permissões.
 - Modal de confirmação para exclusão.
+- Remoção de membros pelo `OWNER`.
+- Modal de confirmação para remoção de membros.
+- Atualização automática da lista e dos contadores de membros.
 
 ---
 
@@ -761,7 +764,6 @@ Sem alterar módulos existentes.
 ### Frontend
 
 - Alteração de permissões dos membros.
-- Remoção de membros.
 - Sistema de convites.
 - Página 404.
 - Interceptor global de respostas.
@@ -786,18 +788,16 @@ Sem alterar módulos existentes.
 
 A evolução da arquitetura seguirá a seguinte ordem:
 
-1. Alteração de permissões dos membros.
-2. Remoção de membros.
-3. Sistema de convites no frontend.
-4. Boards.
-5. Lists.
-6. Cards.
-7. Comentários.
-8. Etiquetas.
-9. Checklists.
-10. Uploads.
-11. Socket.IO.
-12. Notificações.
+1. Sistema de convites no frontend.
+2. Boards.
+3. Lists.
+4. Cards.
+5. Comentários.
+6. Etiquetas.
+7. Checklists.
+8. Uploads.
+9. Socket.IO.
+10. Notificações.
 13. Dashboard avançado.
 14. Busca Global.
 

@@ -118,6 +118,11 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Exibição dos membros em tabela.
 * Estado de carregamento da listagem de membros.
 * Estado vazio para Workspaces sem membros adicionais.
+* Remoção de membros disponível exclusivamente para o `OWNER`.
+* Modal de confirmação para remoção de membros.
+* Integração com o endpoint `DELETE /workspaces/:id/members/:memberId`.
+* Atualização da lista e dos contadores sem recarregar a página.
+* Exibição das mensagens de sucesso e erro retornadas pela API.
 * Tratamento de erros durante a listagem de membros.
 * Atualização das permissões dos membros diretamente pela WorkspacePage.
 * Integração com o endpoint `PATCH /workspaces/:workspaceId/members/:memberId`.
@@ -239,6 +244,8 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Atualização da documentação de roteamento para incluir a rota de aceitação de convites.
 * Atualização da documentação da estilização com o fluxo completo de convites.
 * Atualização da documentação dos componentes compartilhados para o modal de criação de convites.
+* Atualização da documentação do frontend com o fluxo de remoção de membros.
+* Atualização do roadmap para registrar a remoção de membros como concluída.
 
 ---
 

@@ -12,6 +12,7 @@ import type {
   ListWorkspaceMembersResponse,
   ListWorkspacesResponse,
   PendingWorkspaceInvitation,
+  RemoveWorkspaceMemberResponse,
   UpdateWorkspaceMemberRoleRequest,
   UpdateWorkspaceMemberRoleResponse,
   UpdateWorkspaceRequest,
@@ -90,6 +91,18 @@ export async function updateWorkspaceMemberRole(
     await api.patch<UpdateWorkspaceMemberRoleResponse>(
       `/workspaces/${workspaceId}/members/${memberId}`,
       data,
+    );
+
+  return response.data;
+}
+
+export async function removeWorkspaceMember(
+  workspaceId: string,
+  memberId: string,
+): Promise<RemoveWorkspaceMemberResponse> {
+  const response =
+    await api.delete<RemoveWorkspaceMemberResponse>(
+      `/workspaces/${workspaceId}/members/${memberId}`,
     );
 
   return response.data;

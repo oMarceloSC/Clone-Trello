@@ -1076,6 +1076,17 @@ button {
   font-weight: 800;
 }
 
+.workspace-member-actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 10px;
+}
+
+.workspace-member-actions .danger-button {
+  padding: 8px 12px;
+}
+
 .workspace-role-owner {
   background: #fff0b3;
   color: #7f5f01;
@@ -1140,7 +1151,16 @@ button {
   }
 
   .workspace-role-badge {
+    margin-left: 0;
+  }
+
+  .workspace-member-actions {
+    width: 100%;
     margin-left: 56px;
+  }
+
+  .workspace-member-actions .danger-button {
+    margin-left: auto;
   }
 
   .workspace-members-count {

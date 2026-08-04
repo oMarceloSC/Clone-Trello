@@ -1166,12 +1166,12 @@ Esse fluxo será utilizado em todas as operações futuras do módulo de Workspa
 - ✅ Expiração automática em 7 dias.
 - ✅ Listagem de membros do Workspace.
 - ✅ Alteração de permissões dos membros.
+- ✅ Remoção de membros.
 
 ---
 
 ## Próximas Funcionalidades
 
-- Remoção de membros.
 - Listagem de convites.
 - Cancelamento de convites.
 - Reenvio de convites.

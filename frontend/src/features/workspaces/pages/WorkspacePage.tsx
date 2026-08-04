@@ -461,6 +461,20 @@ export function WorkspacePage() {
       <WorkspaceMembersSection
         workspaceId={workspace.id}
         currentUserId={user?.id}
+        onMemberRemoved={(memberId) => {
+          setWorkspace((currentWorkspace) => {
+            if (!currentWorkspace) {
+              return currentWorkspace;
+            }
+
+            return {
+              ...currentWorkspace,
+              members: currentWorkspace.members.filter(
+                (member) => member.id !== memberId,
+              ),
+            };
+          });
+        }}
       />
 
       <section className="workspace-boards-section">

@@ -132,6 +132,7 @@ Atualmente a maior parte dos elementos da interface permanece dentro das página
 - Modal de edição de Workspace (implementado na WorkspacePage).
 - Modal de confirmação de exclusão (implementado na WorkspacePage).
 - Modal de criação de convites (implementado na WorkspaceMembersSection).
+- Modal de confirmação de remoção de membros (implementado na WorkspaceMembersSection).
 - Gerenciamento de membros (implementado através do WorkspaceMembersSection).
 
 Entretanto, a aplicação já possui um Layout compartilhado (`AuthenticatedLayout`) responsável por reutilizar a estrutura das páginas autenticadas.
@@ -142,13 +143,15 @@ Atualmente esse layout já é compartilhado entre:
 - WorkspacePage.
 - AcceptWorkspaceInvitationPage.
 
-Atualmente os modais de edição, exclusão e criação de convites ainda fazem parte da própria WorkspacePage e do WorkspaceMembersSection.
+Atualmente os modais de edição, exclusão, criação de convites e remoção de membros ainda fazem parte da própria WorkspacePage e do WorkspaceMembersSection.
 
 O gerenciamento dos participantes do Workspace já foi extraído para o componente `WorkspaceMembersSection`, responsável por:
 
 - Carregar os membros.
 - Exibir os participantes.
 - Atualizar permissões.
+- Remover membros com confirmação.
+- Sincronizar a lista e os contadores após a remoção.
 - Criar convites para novos membros.
 - Gerar links de convite para compartilhamento.
 

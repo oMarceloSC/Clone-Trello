@@ -285,7 +285,6 @@ Dentro dela também está disponível o modal de criação de convite, responsá
 Essa estrutura prepara a página para futuras funcionalidades como:
 
 - Boards.
-- Remoção de membros.
 - Cancelamento de convites.
 - Reenvio de convites.
 - Configurações.
@@ -429,6 +428,8 @@ Atualmente podem ser exibidos:
 
 O `OWNER` pode alterar a permissão dos demais membros utilizando um seletor.
 
+O botão destrutivo `Remover` também é exibido somente ao `OWNER`, para membros que não sejam proprietários nem o próprio usuário autenticado.
+
 Durante a atualização, são utilizados estados visuais como:
 
 ```text
@@ -436,6 +437,8 @@ Salvando...
 ```
 
 Também podem ser exibidas mensagens individuais de sucesso ou erro.
+
+A remoção utiliza o mesmo padrão visual do modal de exclusão de Workspace, com `alertdialog`, botões desabilitados durante a requisição e o texto `Removendo...`.
 
 A listagem possui carregamento independente da WorkspacePage.
 
@@ -1361,6 +1364,8 @@ As próximas evoluções previstas para a camada de estilos são:
 - Cards de membros.
 - Lista de membros.
 - Seletor de permissões.
+- Botão de remoção de membros.
+- Modal de confirmação de remoção de membros.
 - Modal de criação.
 - Modal de edição.
 - Modal de exclusão.

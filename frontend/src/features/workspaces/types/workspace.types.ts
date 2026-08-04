@@ -78,6 +78,10 @@ export type UpdateWorkspaceMemberRoleResponse = {
   member: WorkspaceMember;
 };
 
+export type RemoveWorkspaceMemberResponse = {
+  message: string;
+};
+
 export type WorkspaceInvitationStatus =
   | "PENDING"
   | "ACCEPTED"

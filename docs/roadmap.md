@@ -137,7 +137,7 @@ Cada milestone representa um conjunto de funcionalidades relacionadas.
 * [x] Excluir Workspace
 * [x] Listar membros
 * [x] Alterar permissões
-* [ ] Remover membro
+* [x] Remover membro
 * [x] Criar convite
 * [x] Aceitar convite
 

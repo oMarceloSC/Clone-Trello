@@ -14,6 +14,7 @@ import {
 import {
   createWorkspaceInvitation,
   listWorkspaceMembers,
+  removeWorkspaceMember,
   updateWorkspaceMemberRole,
 } from "../services/workspace.service";
 import type {
@@ -24,6 +25,7 @@ import type {
 type WorkspaceMembersSectionProps = {
   workspaceId: string;
   currentUserId?: string;
+  onMemberRemoved?: (memberId: string) => void;
 };
 
 type EditableWorkspaceRole = Exclude<
@@ -57,6 +59,7 @@ const editableWorkspaceRoles: EditableWorkspaceRole[] = [
 export function WorkspaceMembersSection({
   workspaceId,
   currentUserId,
+  onMemberRemoved,
 }: WorkspaceMembersSectionProps) {
   const [members, setMembers] = useState<WorkspaceMember[]>(
     [],
@@ -75,6 +78,18 @@ export function WorkspaceMembersSection({
 
   const [memberUpdateSuccess, setMemberUpdateSuccess] =
     useState<Record<string, string>>({});
+
+  const [memberToRemove, setMemberToRemove] =
+    useState<WorkspaceMember | null>(null);
+
+  const [isRemovingMember, setIsRemovingMember] =
+    useState(false);
+
+  const [memberRemovalError, setMemberRemovalError] =
+    useState<string | null>(null);
+
+  const [memberRemovalSuccess, setMemberRemovalSuccess] =
+    useState<string | null>(null);
 
   const [
     isInvitationModalOpen,
@@ -383,6 +398,75 @@ export function WorkspaceMembersSection({
     }
   }
 
+  function openRemoveMemberModal(member: WorkspaceMember) {
+    const memberUserId = member.user?.id ?? member.userId;
+
+    if (
+      !canManageMemberRoles ||
+      member.role === "OWNER" ||
+      memberUserId === currentUserId
+    ) {
+      return;
+    }
+
+    setMemberRemovalError(null);
+    setMemberRemovalSuccess(null);
+    setMemberToRemove(member);
+  }
+
+  function closeRemoveMemberModal() {
+    if (isRemovingMember) {
+      return;
+    }
+
+    setMemberToRemove(null);
+    setMemberRemovalError(null);
+  }
+
+  async function handleRemoveMember() {
+    if (!memberToRemove) {
+      return;
+    }
+
+    try {
+      setIsRemovingMember(true);
+      setMemberRemovalError(null);
+      setMemberRemovalSuccess(null);
+
+      const response = await removeWorkspaceMember(
+        workspaceId,
+        memberToRemove.id,
+      );
+
+      const removedMemberId = memberToRemove.id;
+
+      setMembers((currentMembers) =>
+        currentMembers.filter(
+          (member) => member.id !== removedMemberId,
+        ),
+      );
+
+      onMemberRemoved?.(removedMemberId);
+      setMemberRemovalSuccess(response.message);
+      setMemberToRemove(null);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const message =
+          error.response?.data?.message ??
+          "Não foi possível remover o membro.";
+
+        setMemberRemovalError(message);
+        return;
+      }
+
+      setMemberRemovalError(
+        "Ocorreu um erro inesperado ao remover o membro.",
+      );
+    } finally {
+      setIsRemovingMember(false);
+    }
+  }
+
   if (isLoading) {
     return (
       <section className="workspace-members-section">
@@ -449,6 +533,12 @@ export function WorkspaceMembersSection({
             )}
           </div>
         </header>
+
+        {memberRemovalSuccess && (
+          <div className="success-message" role="status">
+            {memberRemovalSuccess}
+          </div>
+        )}
 
         {members.length === 0 ? (
           <div className="workspace-members-empty">
@@ -534,69 +624,154 @@ export function WorkspaceMembersSection({
                     )}
                   </div>
 
-                  {canEditThisMember ? (
-                    <div className="workspace-member-role-control">
-                      <label
-                        className="sr-only"
-                        htmlFor={`member-role-${member.id}`}
-                      >
-                        Permissão de {memberName}
-                      </label>
+                  <div className="workspace-member-actions">
+                    {canEditThisMember ? (
+                      <div className="workspace-member-role-control">
+                        <label
+                          className="sr-only"
+                          htmlFor={`member-role-${member.id}`}
+                        >
+                          Permissão de {memberName}
+                        </label>
 
-                      <select
-                        id={`member-role-${member.id}`}
-                        className={`workspace-role-select ${
+                        <select
+                          id={`member-role-${member.id}`}
+                          className={`workspace-role-select ${
+                            workspaceRoleClassNames[
+                              member.role
+                            ]
+                          }`}
+                          value={member.role}
+                          disabled={isUpdating}
+                          onChange={(event) => {
+                            void handleMemberRoleChange(
+                              member,
+                              event,
+                            );
+                          }}
+                        >
+                          {editableWorkspaceRoles.map(
+                            (role) => (
+                              <option
+                                key={role}
+                                value={role}
+                              >
+                                {workspaceRoleLabels[role]}
+                              </option>
+                            ),
+                          )}
+                        </select>
+
+                        {isUpdating && (
+                          <span
+                            className="workspace-member-updating"
+                            role="status"
+                          >
+                            Salvando...
+                          </span>
+                        )}
+                      </div>
+                    ) : (
+                      <span
+                        className={`workspace-role-badge ${
                           workspaceRoleClassNames[
                             member.role
                           ]
                         }`}
-                        value={member.role}
-                        disabled={isUpdating}
-                        onChange={(event) => {
-                          void handleMemberRoleChange(
-                            member,
-                            event,
-                          );
-                        }}
                       >
-                        {editableWorkspaceRoles.map(
-                          (role) => (
-                            <option
-                              key={role}
-                              value={role}
-                            >
-                              {workspaceRoleLabels[role]}
-                            </option>
-                          ),
-                        )}
-                      </select>
+                        {workspaceRoleLabels[member.role]}
+                      </span>
+                    )}
 
-                      {isUpdating && (
-                        <span
-                          className="workspace-member-updating"
-                          role="status"
-                        >
-                          Salvando...
-                        </span>
-                      )}
-                    </div>
-                  ) : (
-                    <span
-                      className={`workspace-role-badge ${
-                        workspaceRoleClassNames[
-                          member.role
-                        ]
-                      }`}
-                    >
-                      {workspaceRoleLabels[member.role]}
-                    </span>
-                  )}
+                    {canEditThisMember && (
+                      <button
+                        type="button"
+                        className="danger-button"
+                        onClick={() =>
+                          openRemoveMemberModal(member)
+                        }
+                      >
+                        Remover
+                      </button>
+                    )}
+                  </div>
                 </article>
               );
             })}
           </div>
         )}
       </section>
+
+      {memberToRemove && (
+        <div
+          className="modal-backdrop"
+          role="presentation"
+          onMouseDown={closeRemoveMemberModal}
+        >
+          <section
+            className="modal-card"
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="remove-member-title"
+            aria-describedby="remove-member-description"
+            onMouseDown={(event) => event.stopPropagation()}
+          >
+            <header className="modal-header">
+              <div>
+                <h2 id="remove-member-title">
+                  Deseja remover este membro?
+                </h2>
+
+                <p id="remove-member-description">
+                  Esta ação removerá o acesso dele ao Workspace.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                className="modal-close-button"
+                onClick={closeRemoveMemberModal}
+                disabled={isRemovingMember}
+                aria-label="Fechar modal"
+              >
+                ×
+              </button>
+            </header>
+
+            <div className="delete-workspace-content">
+              {memberRemovalError && (
+                <div className="api-error" role="alert">
+                  {memberRemovalError}
+                </div>
+              )}
+
+              <footer className="modal-actions">
+                <button
+                  type="button"
+                  className="secondary-button"
+                  onClick={closeRemoveMemberModal}
+                  disabled={isRemovingMember}
+                >
+                  Cancelar
+                </button>
+
+                <button
+                  type="button"
+                  className="danger-button"
+                  onClick={() => {
+                    void handleRemoveMember();
+                  }}
+                  disabled={isRemovingMember}
+                >
+                  {isRemovingMember
+                    ? "Removendo..."
+                    : "Remover"}
+                </button>
+              </footer>
+            </div>
+          </section>
+        </div>
+      )}
 
       {isInvitationModalOpen && (
         <div

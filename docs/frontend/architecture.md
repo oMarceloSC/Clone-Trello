@@ -258,6 +258,9 @@ Esse componente é responsável por:
 - Criar convites para novos membros.
 - Exibir o link do convite gerado.
 - Permitir copiar o link do convite.
+- Remover membros do Workspace.
+- Exibir a confirmação antes da remoção.
+- Atualizar a lista e os contadores sem recarregar a página.
 
 Fluxo:
 
@@ -981,6 +984,34 @@ Link de convite
 
 ---
 
+## Remoção de membros
+
+```text
+WorkspacePage
+
+↓
+
+WorkspaceMembersSection
+
+↓
+
+Modal de confirmação
+
+↓
+
+removeWorkspaceMember()
+
+↓
+
+DELETE /workspaces/:workspaceId/members/:memberId
+
+↓
+
+Lista e contadores atualizados
+```
+
+---
+
 # Controle Visual de Permissões
 
 O frontend utiliza a role do usuário para controlar quais ações são exibidas.
@@ -1143,6 +1174,9 @@ Cada módulo seguirá a mesma organização baseada em features.
 - WorkspaceMembersSection.
 - Listagem de membros.
 - Alteração de permissões.
+- Remoção de membros.
+- Modal de confirmação da remoção de membros.
+- Atualização automática dos contadores após remoção.
 - Criação de convites.
 - Geração de links de convite.
 - Listagem de convites pendentes.
@@ -1155,7 +1189,6 @@ Cada módulo seguirá a mesma organização baseada em features.
 
 ## Em desenvolvimento
 
-- Remoção de membros.
 - Cancelamento de convites.
 - Reenvio de convites.
 - Componentes reutilizáveis.
@@ -1171,17 +1204,16 @@ Cada módulo seguirá a mesma organização baseada em features.
 
 As próximas implementações serão:
 
-1. Remoção de membros.
-2. Cancelamento de convites.
-3. Reenvio de convites.
-4. Interceptor de respostas.
-5. Tratamento de sessão expirada.
-6. Página 404.
-7. Componentes compartilhados.
-8. Feature Boards.
-9. Feature Lists.
-10. Feature Cards.
-11. Integração em tempo real com Socket.IO.
+1. Cancelamento de convites.
+2. Reenvio de convites.
+3. Interceptor de respostas.
+4. Tratamento de sessão expirada.
+5. Página 404.
+6. Componentes compartilhados.
+7. Feature Boards.
+8. Feature Lists.
+9. Feature Cards.
+10. Integração em tempo real com Socket.IO.
 
 Todas as novas páginas autenticadas utilizarão o `AuthenticatedLayout`.
 

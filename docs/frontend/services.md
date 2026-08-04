@@ -725,6 +725,56 @@ Atualização do membro na lista
 
 ---
 
+# removeWorkspaceMember()
+
+## Endpoint
+
+```http
+DELETE /workspaces/:workspaceId/members/:memberId
+```
+
+## Headers
+
+```text
+Authorization: Bearer TOKEN
+```
+
+O JWT é enviado automaticamente pelo interceptor do Axios.
+
+## Resposta
+
+```ts
+type RemoveWorkspaceMemberResponse = {
+  message: string;
+}
+```
+
+## Responsabilidades
+
+- Remover um membro do Workspace.
+- Retornar a mensagem de sucesso enviada pela API.
+- Propagar erros para o `WorkspaceMembersSection`.
+
+## Fluxo
+
+```text
+WorkspaceMembersSection
+
+↓
+
+removeWorkspaceMember()
+
+↓
+
+DELETE /workspaces/:workspaceId/members/:memberId
+
+↓
+
+Atualização local da lista e dos contadores
+```
+
+---
+
 # createWorkspaceInvitation()
 
 ## Endpoint
@@ -1255,8 +1305,6 @@ Os serviços devem:
 # Serviços Planejados
 
 ```text
-removeWorkspaceMember()
-
 board.service.ts
 
 list.service.ts
@@ -1274,7 +1322,6 @@ notification.service.ts
 - Tratar respostas `401 Unauthorized`.
 - Limpar automaticamente sessões inválidas.
 - Padronizar os erros da API.
-- Permitir remoção de membros.
 - Permitir cancelamento de convites.
 - Permitir reenvio de convites.
 - Adicionar cancelamento de requisições.
@@ -1301,13 +1348,13 @@ notification.service.ts
 - `deleteWorkspace()`.
 - `listWorkspaceMembers()`.
 - `updateWorkspaceMemberRole()`.
+- `removeWorkspaceMember()`.
 - `createWorkspaceInvitation()`.
 - `listPendingWorkspaceInvitations()`.
 - `acceptWorkspaceInvitation()`.
 
 ## Planejado
 
-- Remoção de membros.
 - Cancelamento de convites.
 - Reenvio de convites.
 - Serviços de Boards.

@@ -1106,6 +1106,51 @@ Renderização da lista
 
 ---
 
+# Remoção de Membros
+
+O botão `Remover` é exibido somente quando:
+
+- O usuário autenticado possui o cargo `OWNER`.
+- O membro selecionado não possui o cargo `OWNER`.
+- O membro selecionado não é o próprio usuário autenticado.
+
+Ao clicar no botão, é exibido um modal de confirmação com os botões `Cancelar` e `Remover`.
+
+Durante a requisição, os controles do modal permanecem desabilitados e o botão apresenta:
+
+```text
+Removendo...
+```
+
+Após o sucesso:
+
+- O modal é fechado.
+- O membro é removido da lista sem recarregar a página.
+- O contador da seção e o card de resumo são atualizados automaticamente.
+- A mensagem retornada pela API é exibida.
+
+Em caso de erro, o modal permanece aberto e apresenta a mensagem retornada pela API.
+
+## Fluxo
+
+```text
+WorkspaceMembersSection
+
+↓
+
+Modal de confirmação
+
+↓
+
+DELETE /workspaces/:workspaceId/members/:memberId
+
+↓
+
+Lista e contadores atualizados
+```
+
+---
+
 # Fluxo Completo da WorkspacePage
 
 ```text
@@ -1177,7 +1222,6 @@ Dashboard
 A página será expandida para suportar:
 
 - Alteração de permissões dos membros.
-- Remoção de membros.
 - Cancelamento de convites.
 - Reenvio de convites.
 - Listagem de Boards.
@@ -1375,11 +1419,13 @@ Responsabilidades planejadas:
 - Listagem de convites pendentes.
 - Aceitação de convites pelo Dashboard.
 - Atualização automática da lista de Workspaces após aceitar convite.
+- Remoção de membros pelo `OWNER`.
+- Modal de confirmação para remoção de membros.
+- Atualização automática da lista e dos contadores de membros.
 
 ## Planejado
 
 - Alteração de permissões.
-- Remoção de membros.
 - Cancelamento de convites.
 - Reenvio de convites.
 - BoardPage.
