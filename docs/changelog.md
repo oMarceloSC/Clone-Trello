@@ -129,6 +129,21 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Restrição da alteração de permissões ao proprietário (`OWNER`).
 * Bloqueio da edição da própria permissão do proprietário.
 * Bloqueio da edição da permissão de outros proprietários.
+* Criação de convites para Workspaces diretamente pela interface.
+* Integração com o endpoint `POST /workspaces/:id/invitations`.
+* Serviço `createWorkspaceInvitation()`.
+* Modal para criação de convites.
+* Geração e exibição do link do convite.
+* Botão para copiar o link do convite.
+* Listagem de convites pendentes do usuário autenticado.
+* Integração com o endpoint `GET /workspace-invitations/pending`.
+* Serviço `listPendingWorkspaceInvitations()`.
+* Aceitação de convites diretamente pelo Dashboard.
+* Integração com o endpoint `POST /workspace-invitations/:token/accept`.
+* Serviço `acceptWorkspaceInvitation()`.
+* Página `AcceptWorkspaceInvitationPage`.
+* Atualização automática da lista de convites após aceitação.
+* Atualização automática da lista de Workspaces após aceitar um convite.
 
 ### Estilização
 
@@ -168,6 +183,14 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Aviso visual para ações irreversíveis.
 * Estados visuais de confirmação, carregamento, sucesso e erro.
 * Responsividade das ações de edição e exclusão.
+* Modal de criação de convites.
+* Exibição do link do convite.
+* Botão para copiar o link.
+* Cards de convites pendentes.
+* Botão de aceitação de convites.
+* Página de aceitação de convite.
+* Estados visuais para criação e aceitação de convites.
+* Responsividade da área de convites.
 
 ### Documentação
 
@@ -208,6 +231,14 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Atualização da documentação da API de Workspaces.
 * Atualização da documentação dos serviços com `updateWorkspaceMemberRole()`.
 * Atualização da documentação dos componentes para refletir o `WorkspaceMembersSection`.
+* Atualização da documentação dos serviços com `createWorkspaceInvitation()`.
+* Atualização da documentação dos serviços com `listPendingWorkspaceInvitations()`.
+* Atualização da documentação dos serviços com `acceptWorkspaceInvitation()`.
+* Atualização da documentação das páginas para incluir `AcceptWorkspaceInvitationPage`.
+* Atualização da arquitetura do frontend com o fluxo de convites.
+* Atualização da documentação de roteamento para incluir a rota de aceitação de convites.
+* Atualização da documentação da estilização com o fluxo completo de convites.
+* Atualização da documentação dos componentes compartilhados para o modal de criação de convites.
 
 ---
 

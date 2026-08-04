@@ -76,7 +76,8 @@ AppRoutes
 ├── /register
 ├── (AuthenticatedLayout)
 │   ├── /dashboard
-│   └── /workspaces/:id
+│   ├── /workspaces/:id
+│   └── /workspace-invitations/:token/accept
 └── *
 ```
 
@@ -91,6 +92,7 @@ AppRoutes
 | `/register` | Visitante | ✅ | Cadastro |
 | `/dashboard` | Autenticado | ✅ | Dashboard |
 | `/workspaces/:id` | Autenticado | ✅ | Visualização e gerenciamento do Workspace |
+| `/workspace-invitations/:token/accept` | Autenticado | ✅ | Aceitação de convite por token |
 | `*` | Público | ✅ | Redirecionamento temporário |
 
 ---
@@ -228,7 +230,85 @@ O Dashboard permite:
 - Listar Workspaces.
 - Criar Workspaces.
 - Abrir um Workspace.
+- Listar convites pendentes.
+- Aceitar convites diretamente.
+- Atualizar automaticamente a lista de Workspaces após aceitar um convite.
 - Visualizar estados de carregamento e erro.
+
+---
+
+# Aceitação de Convites
+
+## Rota
+
+```text
+/workspace-invitations/:token/accept
+```
+
+## Acesso
+
+Somente usuários autenticados.
+
+Caso o usuário não esteja autenticado, será redirecionado para:
+
+```text
+/login
+```
+
+Após autenticar-se, poderá acessar novamente o link de convite.
+
+---
+
+## Objetivo
+
+Permitir que um convite seja aceito diretamente através do token presente na URL.
+
+Essa rota continua disponível para compartilhamento de links entre usuários e também para testes da API.
+
+---
+
+## Fluxo
+
+```text
+Usuário
+
+↓
+
+Link do convite
+
+↓
+
+RequireAuthentication
+
+↓
+
+AuthenticatedLayout
+
+↓
+
+AcceptWorkspaceInvitationPage
+
+↓
+
+POST /workspace-invitations/:token/accept
+
+↓
+
+Dashboard
+```
+
+---
+
+## Funcionalidades
+
+A rota permite:
+
+- Ler o token da URL.
+- Aceitar o convite.
+- Exibir carregamento.
+- Exibir mensagens de erro.
+- Exibir mensagens de sucesso.
+- Redirecionar automaticamente após a aceitação.
 
 ---
 
@@ -312,6 +392,8 @@ A rota permite:
 - Atualizar o Workspace.
 - Excluir o Workspace.
 - Preparar a área para os futuros Boards.
+- Criar convites.
+- Gerar links de convite.
 
 ---
 
@@ -611,7 +693,8 @@ AppRoutes
     ↓
     Outlet
     ├── DashboardPage
-    └── WorkspacePage
+    ├── WorkspacePage
+    └── AcceptWorkspaceInvitationPage
 ```
 
 ---
@@ -722,6 +805,7 @@ Estão planejadas:
 - Layout administrativo.
 - Recuperação de senha.
 - Tratamento global de sessão expirada.
+- Redirecionamento automático para convites após login.
 
 ---
 
@@ -753,6 +837,11 @@ Estão planejadas:
 - Listagem de membros.
 - Requisição `GET /workspaces/:id/members`.
 - Controle visual de permissões.
+- Rota `/workspace-invitations/:token/accept`.
+- AcceptWorkspaceInvitationPage.
+- Listagem de convites pendentes no Dashboard.
+- Aceitação de convites diretamente pelo Dashboard.
+- Atualização automática dos Workspaces após aceitar um convite.
 
 ## Planejado
 

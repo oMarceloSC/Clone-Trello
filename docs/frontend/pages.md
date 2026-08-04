@@ -27,7 +27,8 @@ src/
 │       │   └── WorkspaceMembersSection.tsx
 │       │
 │       └── pages/
-│           └── WorkspacePage.tsx
+│           ├── WorkspacePage.tsx
+│           └── AcceptWorkspaceInvitationPage.tsx
 │
 └── pages/
     └── DashboardPage.tsx
@@ -345,6 +346,9 @@ Nesta etapa do projeto, também funciona como ponto de entrada para o gerenciame
 - Validar o formulário de criação.
 - Atualizar a lista sem recarregar a página.
 - Navegar para a página de detalhes do Workspace.
+- Listar convites pendentes do usuário autenticado.
+- Permitir aceitar convites diretamente pelo Dashboard.
+- Atualizar automaticamente os Workspaces após aceitar um convite.
 - Exibir estados de carregamento.
 - Exibir estado vazio.
 - Exibir erros retornados pela API.
@@ -381,6 +385,22 @@ Criar Workspace
 
 que abre um modal para criação de novos Workspaces.
 
+Além dos Workspaces, o Dashboard também apresenta uma seção de convites pendentes.
+
+Para cada convite são exibidos:
+
+- Nome do Workspace.
+- Descrição.
+- Nome do usuário que enviou o convite.
+- Data de expiração.
+- Botão `Aceitar convite`.
+
+Ao aceitar um convite:
+
+- O convite é removido automaticamente da lista.
+- O Workspace passa a aparecer imediatamente na lista de Workspaces.
+- Não é necessário recarregar a página.
+
 ---
 
 ## Estados
@@ -405,6 +425,22 @@ Carregando Workspaces...
 
 ---
 
+### Carregando Convites
+
+Enquanto a aplicação consulta:
+
+```text
+GET /workspace-invitations/pending
+```
+
+é exibido:
+
+```text
+Carregando convites...
+```
+
+---
+
 ### Lista carregada
 
 Os Workspaces são exibidos em formato de cards.
@@ -415,6 +451,18 @@ Cada card contém:
 - Descrição.
 - Quantidade de membros.
 - Botão `Abrir`.
+
+---
+
+### Convites carregados
+
+Quando existem convites pendentes, cada convite é exibido em um card contendo:
+
+- Workspace.
+- Descrição.
+- Usuário que enviou o convite.
+- Data de expiração.
+- Botão `Aceitar convite`.
 
 ---
 
@@ -456,6 +504,18 @@ Criar primeiro Workspace
 
 ---
 
+### Nenhum convite pendente
+
+Caso não existam convites:
+
+```text
+Nenhum convite pendente
+
+Quando alguém convidar você para um Workspace, o convite aparecerá aqui.
+```
+
+---
+
 ### Erro
 
 Caso a API não possa ser acessada:
@@ -477,6 +537,16 @@ Após a criação com sucesso:
 
 ---
 
+### Convite aceito
+
+Após aceitar um convite:
+
+- O convite desaparece da lista.
+- O Workspace é adicionado automaticamente à listagem.
+- A interface é atualizada sem recarregar a página.
+
+---
+
 ## Fluxo
 
 ```text
@@ -486,15 +556,24 @@ AuthenticatedLayout
 
 Dashboard
 
-↓
-
-GET /workspaces
-
-↓
-
+├── GET /workspace-invitations/pending
+│
+├── Renderização dos convites
+│
+├── Aceitar convite
+│        │
+│        ▼
+│ POST /workspace-invitations/:token/accept
+│        │
+│        ▼
+│ Atualização automática dos Workspaces
+│
+└── GET /workspaces
+         │
+         ▼
 Renderização da lista
 
-↓
+ou
 
 Usuário cria Workspace
           │
@@ -516,6 +595,62 @@ GET /workspaces/:id
           │
           ▼
 WorkspacePage
+```
+
+---
+
+# AcceptWorkspaceInvitationPage
+
+## Arquivo
+
+```text
+src/features/workspaces/pages/AcceptWorkspaceInvitationPage.tsx
+```
+
+## Rota
+
+```text
+/workspace-invitations/:token/accept
+```
+
+## Acesso
+
+Somente usuários autenticados.
+
+## Objetivos
+
+Permitir a aceitação de um convite utilizando o token presente na URL.
+
+Essa página continua disponível para compatibilidade e para acesso direto por links de convite.
+
+## Responsabilidades
+
+- Ler o token da URL.
+- Executar a aceitação do convite.
+- Exibir estados de carregamento.
+- Exibir mensagens de erro.
+- Redirecionar o usuário após sucesso.
+
+## Fluxo
+
+```text
+Usuário
+
+↓
+
+Link do convite
+
+↓
+
+AcceptWorkspaceInvitationPage
+
+↓
+
+POST /workspace-invitations/:token/accept
+
+↓
+
+Dashboard
 ```
 
 ---
@@ -555,6 +690,8 @@ Além da visualização das informações gerais, a página permite:
 - Visualizar os membros.
 - Consultar as permissões de cada participante.
 - Preparar o espaço para os futuros Boards.
+- Criar convites para novos membros.
+- Compartilhar links de convite.
 
 ---
 
@@ -580,6 +717,9 @@ Além da visualização das informações gerais, a página permite:
 - Exibir mensagens de erro.
 - Permitir nova tentativa em caso de falha.
 - Preparar a área destinada aos Boards.
+- Criar convites para novos membros.
+- Gerar links de convite.
+- Copiar automaticamente o link do convite.
 
 ---
 
@@ -1038,9 +1178,8 @@ A página será expandida para suportar:
 
 - Alteração de permissões dos membros.
 - Remoção de membros.
-- Criação de convites.
-- Gerenciamento de convites.
-- Aceitação de convites.
+- Cancelamento de convites.
+- Reenvio de convites.
 - Listagem de Boards.
 - Criação de Boards.
 - Configurações avançadas.
@@ -1230,13 +1369,19 @@ Responsabilidades planejadas:
 - Estados vazios.
 - Tratamento de erros.
 - Nova tentativa após falhas.
+- Criação de convites.
+- Geração de links de convite.
+- Página de aceitação por token.
+- Listagem de convites pendentes.
+- Aceitação de convites pelo Dashboard.
+- Atualização automática da lista de Workspaces após aceitar convite.
 
 ## Planejado
 
 - Alteração de permissões.
 - Remoção de membros.
-- Criação de convites.
-- Aceitação de convites.
+- Cancelamento de convites.
+- Reenvio de convites.
 - BoardPage.
 - NotificationPage.
 - ProfilePage.

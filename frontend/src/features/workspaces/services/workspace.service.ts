@@ -1,12 +1,17 @@
 import { api } from "../../../services/api";
 
 import type {
+  AcceptWorkspaceInvitationResponse,
+  CreateWorkspaceInvitationRequest,
+  CreateWorkspaceInvitationResponse,
   CreateWorkspaceRequest,
   CreateWorkspaceResponse,
   DeleteWorkspaceResponse,
   GetWorkspaceResponse,
+  ListPendingWorkspaceInvitationsResponse,
   ListWorkspaceMembersResponse,
   ListWorkspacesResponse,
+  PendingWorkspaceInvitation,
   UpdateWorkspaceMemberRoleRequest,
   UpdateWorkspaceMemberRoleResponse,
   UpdateWorkspaceRequest,
@@ -85,6 +90,42 @@ export async function updateWorkspaceMemberRole(
     await api.patch<UpdateWorkspaceMemberRoleResponse>(
       `/workspaces/${workspaceId}/members/${memberId}`,
       data,
+    );
+
+  return response.data;
+}
+
+export async function createWorkspaceInvitation(
+  workspaceId: string,
+  data: CreateWorkspaceInvitationRequest,
+): Promise<CreateWorkspaceInvitationResponse> {
+  const response =
+    await api.post<CreateWorkspaceInvitationResponse>(
+      `/workspaces/${workspaceId}/invitations`,
+      data,
+    );
+
+  return response.data;
+}
+
+export async function listPendingWorkspaceInvitations(): Promise<
+  PendingWorkspaceInvitation[]
+> {
+  const response =
+    await api.get<ListPendingWorkspaceInvitationsResponse>(
+      "/workspace-invitations/pending",
+    );
+
+  return response.data.invitations;
+}
+
+export async function acceptWorkspaceInvitation(
+  invitationToken: string,
+): Promise<AcceptWorkspaceInvitationResponse> {
+  const response =
+    await api.post<AcceptWorkspaceInvitationResponse>(
+      `/workspace-invitations/${invitationToken}/accept`,
+      {},
     );
 
   return response.data;

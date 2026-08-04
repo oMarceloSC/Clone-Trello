@@ -53,23 +53,30 @@ Atualmente existem estilos para:
 - Sidebar.
 - Header.
 - Cards de Workspace.
+- Cards de convites pendentes.
 - Modal de criação de Workspace.
 - Modal de edição de Workspace.
 - Modal de confirmação de exclusão.
+- Modal de criação de convite.
+- Exibição e cópia do link de convite.
+- Página de aceitação de convite.
 - Botão de ação destrutiva.
 - Aviso visual de exclusão.
 - WorkspacePage.
 - Breadcrumb.
 - Cards de resumo do Workspace.
 - Área de Boards.
+- Seção de membros.
+- Controle visual de permissões.
 - Botões.
 - Inputs.
 - Textareas.
 - Formulários.
 - Mensagens de erro.
 - Mensagens de sucesso.
-- Estado vazio.
-- Tela de carregamento.
+- Estados vazios.
+- Telas de carregamento.
+- Responsividade para convites e membros.
 
 ---
 
@@ -116,6 +123,38 @@ workspace-feedback
 
 workspace-empty-state
 
+pending-invitations-section
+
+pending-invitations-count
+
+pending-invitations-list
+
+pending-invitation-card
+
+pending-invitation-icon
+
+pending-invitation-content
+
+pending-invitation-details
+
+pending-invitation-actions
+
+pending-invitations-empty
+
+workspace-members-header-actions
+
+invitation-link-section
+
+invitation-link-control
+
+invitation-copy-feedback
+
+accept-invitation-page
+
+accept-invitation-card
+
+accept-invitation-actions
+
 primary-button
 
 secondary-button
@@ -140,8 +179,6 @@ workspace-form
 
 loading-page
 ```
-
-A nomenclatura busca facilitar leitura e manutenção.
 
 ---
 
@@ -180,17 +217,38 @@ Características:
 
 # Dashboard
 
-O Dashboard utiliza um layout próprio.
+O Dashboard utiliza um layout próprio dentro do `AuthenticatedLayout`.
 
 Possui:
 
-- Cabeçalho.
-- Informações do usuário.
-- Botão de logout.
-- Área principal.
-- Seção de Workspaces.
+- Cabeçalho da área de Workspaces.
 - Botão para criação de Workspace.
 - Grid responsivo de cards.
+- Estados de carregamento, erro e lista vazia.
+- Seção de convites pendentes.
+- Cards de convites.
+- Contador de convites.
+- Botão `Aceitar convite`.
+- Atualização visual automática após a aceitação.
+
+A seção de convites pendentes é exibida antes da listagem de Workspaces.
+
+Cada convite apresenta:
+
+- Inicial do Workspace.
+- Nome do Workspace.
+- Descrição.
+- Nome de quem enviou o convite.
+- Data de expiração.
+- Botão para aceitar o convite.
+- Mensagem de erro individual.
+
+Quando um convite é aceito:
+
+- O card é removido da lista.
+- A quantidade de convites é atualizada.
+- O Workspace passa a aparecer na listagem.
+- Não é necessário recarregar a página.
 
 ---
 
@@ -208,19 +266,29 @@ Atualmente são exibidos:
 - Data de criação.
 - Quantidade de membros.
 - Cargo do usuário autenticado.
-- Botão de edição (quando permitido).
-- Botão de exclusão (quando permitido).
+- Botão de edição, quando permitido.
+- Botão de exclusão, quando permitido.
 - Área destinada aos Boards.
 - Seção de membros do Workspace.
+- Botão `Convidar membro`, para `OWNER` e `ADMIN`.
 
 A seção de membros é carregada de forma independente da página principal, permitindo atualização apenas dessa área quando necessário.
+
+Dentro dela também está disponível o modal de criação de convite, responsável por:
+
+- Receber o email do convidado.
+- Exibir erros de validação.
+- Exibir mensagens retornadas pela API.
+- Mostrar o link gerado após a criação.
+- Permitir a cópia do link.
 
 Essa estrutura prepara a página para futuras funcionalidades como:
 
 - Boards.
-- Convites.
+- Remoção de membros.
+- Cancelamento de convites.
+- Reenvio de convites.
 - Configurações.
-- Gerenciamento de permissões.
 
 ---
 
@@ -334,7 +402,7 @@ Novos indicadores poderão ser adicionados futuramente, como:
 
 # Seção de Membros
 
-A WorkspacePage possui uma área dedicada à exibição dos membros do Workspace.
+A WorkspacePage possui uma área dedicada à exibição e ao gerenciamento dos membros do Workspace.
 
 Essa funcionalidade é implementada através do componente:
 
@@ -344,64 +412,181 @@ WorkspaceMembersSection
 
 Cada membro é exibido em um card contendo:
 
+- Avatar simplificado.
 - Nome.
 - Email.
 - Cargo.
+- Identificação `Você`, quando aplicável.
 
 Os cargos são apresentados visualmente para facilitar a identificação das permissões.
 
 Atualmente podem ser exibidos:
 
-- OWNER
-- ADMIN
-- MEMBER
-- VIEWER
+- OWNER.
+- ADMIN.
+- MEMBER.
+- VIEWER.
+
+O `OWNER` pode alterar a permissão dos demais membros utilizando um seletor.
+
+Durante a atualização, são utilizados estados visuais como:
+
+```text
+Salvando...
+```
+
+Também podem ser exibidas mensagens individuais de sucesso ou erro.
 
 A listagem possui carregamento independente da WorkspacePage.
 
-Isso permite atualizar apenas a lista de membros sem recarregar toda a página.
+A seção também contém o botão:
 
-Essa seção servirá de base para futuras funcionalidades como:
+```text
+Convidar membro
+```
 
-- Alteração de permissões.
-- Remoção de membros.
-- Convites.
-- Busca de membros.
+Esse botão é exibido apenas para:
+
+- OWNER.
+- ADMIN.
+
+Ao clicar nesse botão é aberto um modal para criação de convites, permitindo informar o email do usuário que será convidado para participar do Workspace.
+
+Após a criação do convite, o componente passa a exibir o link gerado, permitindo sua cópia para compartilhamento.
+
+Isso permite atualizar somente o gerenciamento de membros sem recarregar toda a página.
 
 ---
 
-# Modal de Criação de Workspace
+---
 
-A criação de novos Workspaces é realizada através de um modal centralizado.
+# Modal de Criação de Convite
 
-O modal contém:
+A criação de convites é realizada através de um modal presente no componente `WorkspaceMembersSection`.
 
-- Campo de nome.
-- Campo de descrição.
-- Botão `Cancelar`.
-- Botão `Criar Workspace`.
-- Botão de fechamento `×`.
+Esse modal permite que usuários com permissão adequada convidem novos participantes para o Workspace.
+
+O formulário contém:
+
+- Campo de email.
+- Botão `Enviar convite`.
+- Botão `Fechar`.
+- Botão de fechamento (`×`).
+- Validação de email.
 - Mensagens de erro.
-- Mensagem de sucesso.
+- Mensagens de sucesso.
 
-Enquanto o Workspace está sendo criado, o botão principal exibe:
+Durante o envio é exibido:
 
 ```text
-Criando...
+Enviando...
 ```
 
-Durante a requisição:
+Enquanto a requisição está em andamento:
 
-- O botão de fechar fica desabilitado.
-- O botão Cancelar fica desabilitado.
-- O botão de criação fica desabilitado.
+- Os botões permanecem desabilitados.
 - O modal não pode ser fechado acidentalmente.
 
-O modal pode ser fechado através de:
+Após o sucesso, o formulário deixa de ser exibido e passa a apresentar:
 
-- Botão Cancelar.
-- Botão `×`.
-- Clique fora do modal.
+- Link do convite.
+- Botão `Copiar`.
+- Mensagem de confirmação da cópia.
+- Botão `Concluir`.
+
+O link utiliza a rota:
+
+```text
+/workspace-invitations/:token/accept
+```
+
+permitindo que o usuário convidado aceite o convite diretamente pela aplicação.
+
+---
+
+# Convites Pendentes no Dashboard
+
+O Dashboard possui uma seção destinada aos convites pendentes do usuário autenticado.
+
+Os convites são carregados automaticamente utilizando:
+
+```text
+GET /workspace-invitations/pending
+```
+
+Cada convite é exibido em um card contendo:
+
+- Inicial do Workspace.
+- Nome do Workspace.
+- Descrição.
+- Nome de quem enviou o convite.
+- Data de expiração.
+- Botão `Aceitar convite`.
+
+Durante a aceitação é exibido:
+
+```text
+Aceitando...
+```
+
+Enquanto a operação é executada, o botão permanece desabilitado.
+
+Caso ocorra algum erro, a mensagem é exibida apenas no card correspondente.
+
+Quando não existem convites pendentes, é apresentado o estado:
+
+```text
+Nenhum convite pendente
+
+Quando alguém convidar você para um Workspace, o convite aparecerá aqui.
+```
+
+Após aceitar um convite:
+
+- O card é removido automaticamente.
+- A quantidade de convites é atualizada.
+- O Workspace passa a aparecer imediatamente na listagem do Dashboard.
+
+---
+
+# Página de Aceitação de Convite
+
+A aplicação possui uma página dedicada para aceitação de convites através do token presente na URL.
+
+Arquivo:
+
+```text
+AcceptWorkspaceInvitationPage.tsx
+```
+
+A página utiliza as classes:
+
+```text
+accept-invitation-page
+
+accept-invitation-card
+
+accept-invitation-icon
+
+accept-invitation-label
+
+accept-invitation-actions
+```
+
+O objetivo dessa página é permitir que um usuário aceite um convite utilizando o link compartilhado.
+
+O card central apresenta:
+
+- Ícone.
+- Identificação da funcionalidade.
+- Mensagem explicativa.
+- Estado de carregamento.
+- Mensagem de erro.
+- Mensagem de sucesso.
+- Botão `Aceitar convite`.
+- Botão para voltar ao Dashboard.
+
+Após a aceitação bem-sucedida, o usuário é redirecionado para o Dashboard, onde o Workspace já estará disponível.
 
 ---
 
@@ -514,7 +699,7 @@ Atualmente são utilizadas no formulário de criação de Workspace.
 
 # Estados Visuais
 
-O Dashboard possui diferentes estados visuais relacionados à listagem e criação de Workspaces.
+A aplicação possui diferentes estados visuais relacionados à autenticação, Workspaces, membros e convites.
 
 ---
 
@@ -526,13 +711,13 @@ Durante a recuperação da autenticação:
 Carregando sessão...
 ```
 
-Esse estado impede que rotas incorretas sejam exibidas antes da validação do token.
+Esse estado impede que páginas privadas sejam exibidas antes da validação do token.
 
 ---
 
 ## Carregamento dos Workspaces
 
-Enquanto a listagem é carregada:
+Enquanto os Workspaces são carregados:
 
 ```text
 Carregando Workspaces...
@@ -540,7 +725,17 @@ Carregando Workspaces...
 
 ---
 
-## Lista Vazia
+## Carregamento dos Convites
+
+Enquanto a aplicação consulta os convites pendentes:
+
+```text
+Carregando convites...
+```
+
+---
+
+## Lista Vazia de Workspaces
 
 Quando o usuário não participa de nenhum Workspace:
 
@@ -550,29 +745,102 @@ Nenhum Workspace encontrado
 Crie seu primeiro Workspace para começar.
 ```
 
-Nesse estado também é exibido o botão:
+---
+
+## Lista Vazia de Convites
+
+Quando não existem convites pendentes:
 
 ```text
-Criar primeiro Workspace
+Nenhum convite pendente
+
+Quando alguém convidar você para um Workspace, o convite aparecerá aqui.
 ```
 
 ---
 
 ## Lista Carregada
 
-Quando existem Workspaces, eles são exibidos em cards dentro de um grid responsivo.
+Quando existem Workspaces ou convites pendentes, ambos são exibidos em cards responsivos.
 
 ---
 
 ## Erro de Listagem
 
-Caso a API não possa carregar os Workspaces:
+Caso ocorra algum erro durante o carregamento das informações, a interface utiliza o componente visual:
 
 ```text
-Não foi possível carregar os Workspaces.
+api-error
 ```
 
-A mensagem é exibida utilizando o estilo de erro da aplicação.
+As áreas de Workspaces e Convites são independentes, permitindo que uma continue funcionando mesmo que a outra apresente falhas.
+
+---
+
+# Estados de Convite
+
+O fluxo de convites possui estados específicos para melhorar a experiência do usuário.
+
+## Enviando Convite
+
+Durante a criação de um convite é exibido:
+
+```text
+Enviando...
+```
+
+O formulário permanece desabilitado até a conclusão da operação.
+
+---
+
+## Convite Criado
+
+Após o sucesso:
+
+- A mensagem retornada pela API é exibida.
+- O link do convite passa a ser apresentado.
+- O botão de cópia fica disponível.
+- O formulário deixa de ser exibido.
+
+---
+
+## Copiando Link
+
+Ao clicar em:
+
+```text
+Copiar
+```
+
+é apresentada uma mensagem confirmando que o link foi copiado para a área de transferência.
+
+---
+
+## Aceitando Convite
+
+Durante a aceitação:
+
+```text
+Aceitando...
+```
+
+O botão permanece desabilitado até o término da operação.
+
+---
+
+## Convite Aceito
+
+Após a conclusão:
+
+- O convite desaparece da lista.
+- O Workspace é adicionado automaticamente ao Dashboard.
+- A interface é atualizada sem necessidade de recarregar a página.
+
+---
+
+## Erro
+
+Caso ocorra qualquer erro durante a criação ou aceitação do convite, a mensagem é exibida mantendo todas as informações já carregadas na tela.
 
 ---
 
@@ -925,27 +1193,36 @@ Exemplos:
 
 # Responsividade
 
-Toda a interface segue abordagem Mobile First.
+Toda a interface segue uma abordagem responsiva.
 
-Atualmente são responsivos:
+Atualmente possuem adaptações para diferentes tamanhos de tela:
 
 - Login.
 - Cadastro.
 - Dashboard.
 - WorkspacePage.
+- AcceptWorkspaceInvitationPage.
 - Sidebar.
 - Header.
 - Modal de criação.
 - Modal de edição.
 - Modal de exclusão.
+- Modal de convite.
 - Lista de membros.
+- Lista de convites pendentes.
+- Campo do link do convite.
+- Botão de cópia.
+- Botão de aceitação de convite.
 
-Em telas menores:
+Em dispositivos menores:
 
 - Os cards passam a ocupar toda a largura disponível.
-- A lista de membros é reorganizada em coluna única.
-- Os modais ajustam automaticamente seu tamanho.
-- Os botões permanecem acessíveis em dispositivos móveis.
+- A lista de membros é reorganizada.
+- Os cards de convite assumem um layout vertical.
+- O botão de aceitação ocupa toda a largura disponível.
+- O campo do link e o botão de cópia são empilhados.
+- Os modais ajustam automaticamente sua largura.
+- Os botões permanecem acessíveis em telas móveis.
 
 ---
 
@@ -1076,22 +1353,32 @@ As próximas evoluções previstas para a camada de estilos são:
 - Header.
 - AuthenticatedLayout.
 - WorkspacePage.
+- AcceptWorkspaceInvitationPage.
 - Cards de resumo.
 - Breadcrumb.
 - Área inicial para Boards.
 - WorkspaceMembersSection.
 - Cards de membros.
 - Lista de membros.
+- Seletor de permissões.
 - Modal de criação.
 - Modal de edição.
 - Modal de exclusão.
+- Modal de criação de convite.
+- Exibição do link do convite.
+- Botão para copiar o link.
+- Seção de convites pendentes.
+- Cards de convites.
+- Botão de aceitação.
 - Estados de carregamento.
 - Estados vazios.
 - Tratamento visual de erros.
+- Mensagens de sucesso.
 - Controle visual de permissões.
 - Botões destrutivos.
 - Redirecionamento após exclusão.
 - Responsividade das páginas autenticadas.
+- Responsividade do fluxo de convites.
 
 ## Planejado
 
@@ -1104,6 +1391,7 @@ As próximas evoluções previstas para a camada de estilos são:
 - Toasts.
 - Skeleton Loading.
 - Componente reutilizável de confirmação.
+- Componente reutilizável de convite.
 - Colapso da Sidebar.
 - Navegação móvel.
 - Menu lateral retrátil.

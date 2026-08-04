@@ -144,10 +144,13 @@ workspaces/
 │   └── WorkspaceMembersSection.tsx
 │
 ├── pages/
-│   └── WorkspacePage.tsx
+│   ├── WorkspacePage.tsx
+│   └── AcceptWorkspaceInvitationPage.tsx
 │
 ├── schemas/
-│   └── update-workspace.schema.ts
+│   ├── create-workspace.schema.ts
+│   ├── update-workspace.schema.ts
+│   └── create-workspace-invitation.schema.ts
 │
 ├── services/
 │   └── workspace.service.ts
@@ -224,7 +227,11 @@ RegisterPage
 DashboardPage
 
 WorkspacePage
+
+AcceptWorkspaceInvitationPage
 ```
+
+A `AcceptWorkspaceInvitationPage` permite aceitar convites utilizando o token presente na URL, enquanto o `DashboardPage` também permite aceitar convites diretamente através da listagem de convites pendentes.
 
 ---
 
@@ -248,6 +255,9 @@ Esse componente é responsável por:
 - Exibir estado vazio.
 - Exibir estado de erro.
 - Permitir nova tentativa após falha.
+- Criar convites para novos membros.
+- Exibir o link do convite gerado.
+- Permitir copiar o link do convite.
 
 Fluxo:
 
@@ -269,6 +279,18 @@ GET /workspaces/:id/members
 ↓
 
 Lista de membros
+
+↓
+
+createWorkspaceInvitation()
+
+↓
+
+POST /workspaces/:id/invitations
+
+↓
+
+Link do convite
 ```
 
 ---
@@ -395,6 +417,14 @@ updateWorkspace()
 deleteWorkspace()
 
 listWorkspaceMembers()
+
+updateWorkspaceMemberRole()
+
+createWorkspaceInvitation()
+
+listPendingWorkspaceInvitations()
+
+acceptWorkspaceInvitation()
 ```
 
 Futuramente serão criados:
@@ -467,6 +497,10 @@ WorkspaceMemberUser
 
 WorkspaceRole
 
+WorkspaceInvitation
+
+PendingWorkspaceInvitation
+
 CreateWorkspaceRequest
 
 CreateWorkspaceResponse
@@ -478,6 +512,14 @@ UpdateWorkspaceResponse
 DeleteWorkspaceResponse
 
 ListWorkspaceMembersResponse
+
+CreateWorkspaceInvitationRequest
+
+CreateWorkspaceInvitationResponse
+
+AcceptWorkspaceInvitationResponse
+
+ListPendingWorkspaceInvitationsResponse
 ```
 
 ---
@@ -763,6 +805,38 @@ Cards de Workspace
 
 ---
 
+## Convites Pendentes
+
+```text
+DashboardPage
+
+↓
+
+listPendingWorkspaceInvitations()
+
+↓
+
+GET /workspace-invitations/pending
+
+↓
+
+Cards de convite
+
+↓
+
+acceptWorkspaceInvitation()
+
+↓
+
+POST /workspace-invitations/:token/accept
+
+↓
+
+Atualização automática da lista de Workspaces
+```
+
+---
+
 ## Criação
 
 ```text
@@ -879,6 +953,34 @@ Cards de membros
 
 ---
 
+## Criação de Convites
+
+```text
+WorkspacePage
+
+↓
+
+WorkspaceMembersSection
+
+↓
+
+Modal de convite
+
+↓
+
+createWorkspaceInvitation()
+
+↓
+
+POST /workspaces/:id/invitations
+
+↓
+
+Link de convite
+```
+
+---
+
 # Controle Visual de Permissões
 
 O frontend utiliza a role do usuário para controlar quais ações são exibidas.
@@ -937,7 +1039,9 @@ Layout
 Dashboard
 
 ├── Listagem de Workspaces
-└── Criação de Workspaces
+├── Criação de Workspaces
+├── Listagem de convites pendentes
+└── Aceitação de convites
 
 Workspaces
 
@@ -946,7 +1050,9 @@ Workspaces
 ├── Atualização de Workspace
 ├── Exclusão de Workspace
 ├── Controle visual de permissões
-└── Listagem de membros
+├── Listagem de membros
+├── Criação de convites
+└── Geração de links de convite
 ```
 
 ---
@@ -1036,6 +1142,12 @@ Cada módulo seguirá a mesma organização baseada em features.
 - Controle visual de permissões.
 - WorkspaceMembersSection.
 - Listagem de membros.
+- Alteração de permissões.
+- Criação de convites.
+- Geração de links de convite.
+- Listagem de convites pendentes.
+- Aceitação de convites pelo Dashboard.
+- AcceptWorkspaceInvitationPage.
 - Estados de carregamento dos membros.
 - Estado vazio dos membros.
 - Tratamento de erros dos membros.
@@ -1043,10 +1155,9 @@ Cada módulo seguirá a mesma organização baseada em features.
 
 ## Em desenvolvimento
 
-- Alteração de permissões dos membros.
 - Remoção de membros.
-- Criação de convites.
-- Aceitação de convites.
+- Cancelamento de convites.
+- Reenvio de convites.
 - Componentes reutilizáveis.
 - Interceptor global de respostas.
 - Tratamento de sessão expirada.
@@ -1060,18 +1171,17 @@ Cada módulo seguirá a mesma organização baseada em features.
 
 As próximas implementações serão:
 
-1. Alteração de permissões dos membros.
-2. Remoção de membros.
-3. Criação de convites.
-4. Aceitação de convites.
-5. Interceptor de respostas.
-6. Tratamento de sessão expirada.
-7. Página 404.
-8. Componentes compartilhados.
-9. Feature Boards.
-10. Feature Lists.
-11. Feature Cards.
-12. Integração em tempo real com Socket.IO.
+1. Remoção de membros.
+2. Cancelamento de convites.
+3. Reenvio de convites.
+4. Interceptor de respostas.
+5. Tratamento de sessão expirada.
+6. Página 404.
+7. Componentes compartilhados.
+8. Feature Boards.
+9. Feature Lists.
+10. Feature Cards.
+11. Integração em tempo real com Socket.IO.
 
 Todas as novas páginas autenticadas utilizarão o `AuthenticatedLayout`.
 

@@ -277,16 +277,16 @@ O JWT é enviado automaticamente pelo interceptor do Axios.
 src/features/workspaces/services/workspace.service.ts
 ```
 
-Responsável por toda comunicação relacionada aos Workspaces.
+Responsável por toda comunicação relacionada aos Workspaces, membros e convites.
 
 Atualmente disponibiliza:
 
 ```text
 listWorkspaces()
 
-createWorkspace()
-
 getWorkspaceById()
+
+createWorkspace()
 
 updateWorkspace()
 
@@ -295,6 +295,12 @@ deleteWorkspace()
 listWorkspaceMembers()
 
 updateWorkspaceMemberRole()
+
+createWorkspaceInvitation()
+
+listPendingWorkspaceInvitations()
+
+acceptWorkspaceInvitation()
 ```
 
 ---
@@ -719,6 +725,190 @@ Atualização do membro na lista
 
 ---
 
+# createWorkspaceInvitation()
+
+## Endpoint
+
+```http
+POST /workspaces/:workspaceId/invitations
+```
+
+## Headers
+
+```text
+Authorization: Bearer TOKEN
+```
+
+O JWT é enviado automaticamente pelo interceptor do Axios.
+
+## Entrada
+
+```ts
+type CreateWorkspaceInvitationRequest = {
+  email: string;
+}
+```
+
+## Resposta
+
+```ts
+type CreateWorkspaceInvitationResponse = {
+  message: string;
+  invitation: WorkspaceInvitation;
+}
+```
+
+## Responsabilidades
+
+- Criar um convite para um usuário.
+- Enviar o email do convidado ao backend.
+- Gerar um token único para o convite.
+- Retornar os dados do convite criado.
+- Permitir que o frontend gere o link de compartilhamento.
+
+## Fluxo
+
+```text
+WorkspaceMembersSection
+
+↓
+
+Modal de convite
+
+↓
+
+createWorkspaceInvitation()
+
+↓
+
+POST /workspaces/:workspaceId/invitations
+
+↓
+
+WorkspaceInvitation
+
+↓
+
+Exibição do link para compartilhamento
+```
+
+---
+
+# listPendingWorkspaceInvitations()
+
+## Endpoint
+
+```http
+GET /workspace-invitations/pending
+```
+
+## Headers
+
+```text
+Authorization: Bearer TOKEN
+```
+
+O JWT é enviado automaticamente pelo interceptor do Axios.
+
+## Resposta
+
+```ts
+PendingWorkspaceInvitation[]
+```
+
+## Responsabilidades
+
+- Buscar todos os convites pendentes do usuário autenticado.
+- Retornar os dados do Workspace.
+- Retornar quem enviou o convite.
+- Exibir os convites no Dashboard.
+- Permitir aceitação direta do convite.
+
+## Fluxo
+
+```text
+DashboardPage
+
+↓
+
+listPendingWorkspaceInvitations()
+
+↓
+
+GET /workspace-invitations/pending
+
+↓
+
+PendingWorkspaceInvitation[]
+
+↓
+
+Renderização dos cards de convite
+```
+
+---
+
+# acceptWorkspaceInvitation()
+
+## Endpoint
+
+```http
+POST /workspace-invitations/:token/accept
+```
+
+## Headers
+
+```text
+Authorization: Bearer TOKEN
+```
+
+O JWT é enviado automaticamente pelo interceptor do Axios.
+
+## Resposta
+
+```ts
+type AcceptWorkspaceInvitationResponse = {
+  message: string;
+  workspaceMember: WorkspaceMember;
+  invitation: WorkspaceInvitation;
+}
+```
+
+## Responsabilidades
+
+- Aceitar um convite pendente.
+- Adicionar o usuário ao Workspace.
+- Atualizar automaticamente a lista de Workspaces.
+- Remover o convite da lista de pendentes.
+
+## Fluxo
+
+```text
+DashboardPage
+
+↓
+
+Botão "Aceitar convite"
+
+↓
+
+acceptWorkspaceInvitation()
+
+↓
+
+POST /workspace-invitations/:token/accept
+
+↓
+
+WorkspaceMember criado
+
+↓
+
+Atualização automática da interface
+```
+
+---
+
 # Estruturas Utilizadas
 
 ## Workspace
@@ -772,6 +962,55 @@ type WorkspaceRole =
   | "ADMIN"
   | "MEMBER"
   | "VIEWER";
+```
+
+---
+
+## WorkspaceInvitation
+
+```ts
+type WorkspaceInvitation = {
+  id: string;
+  email: string;
+  token: string;
+  status: WorkspaceInvitationStatus;
+  workspaceId: string;
+  invitedById: string;
+  expiresAt: string;
+  createdAt: string;
+  updatedAt: string;
+}
+```
+
+---
+
+## PendingWorkspaceInvitation
+
+```ts
+type PendingWorkspaceInvitation = {
+  id: string;
+  email: string;
+  token: string;
+  status: WorkspaceInvitationStatus;
+  workspaceId: string;
+  invitedById: string;
+  expiresAt: string;
+  createdAt: string;
+  updatedAt: string;
+
+  workspace: {
+    id: string;
+    name: string;
+    description: string | null;
+  };
+
+  invitedBy: {
+    id: string;
+    name: string;
+    email: string;
+    avatarUrl: string | null;
+  };
+}
 ```
 
 ---
@@ -1018,10 +1257,6 @@ Os serviços devem:
 ```text
 removeWorkspaceMember()
 
-inviteWorkspaceMember()
-
-acceptWorkspaceInvitation()
-
 board.service.ts
 
 list.service.ts
@@ -1039,8 +1274,9 @@ notification.service.ts
 - Tratar respostas `401 Unauthorized`.
 - Limpar automaticamente sessões inválidas.
 - Padronizar os erros da API.
-- Completar o gerenciamento de membros.
-- Completar o sistema de convites.
+- Permitir remoção de membros.
+- Permitir cancelamento de convites.
+- Permitir reenvio de convites.
 - Adicionar cancelamento de requisições.
 - Adicionar cache de consultas.
 - Avaliar TanStack Query conforme a complexidade crescer.
@@ -1064,13 +1300,16 @@ notification.service.ts
 - `updateWorkspace()`.
 - `deleteWorkspace()`.
 - `listWorkspaceMembers()`.
-- `updateWorkspaceMembersRole()`.
+- `updateWorkspaceMemberRole()`.
+- `createWorkspaceInvitation()`.
+- `listPendingWorkspaceInvitations()`.
+- `acceptWorkspaceInvitation()`.
 
 ## Planejado
 
-- Alteração de permissões.
 - Remoção de membros.
-- Convites.
+- Cancelamento de convites.
+- Reenvio de convites.
 - Serviços de Boards.
 - Serviços de Lists.
 - Serviços de Cards.

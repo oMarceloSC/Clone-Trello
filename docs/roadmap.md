@@ -138,8 +138,8 @@ Cada milestone representa um conjunto de funcionalidades relacionadas.
 * [x] Listar membros
 * [x] Alterar permissões
 * [ ] Remover membro
-* [ ] Criar convite
-* [ ] Aceitar convite
+* [x] Criar convite
+* [x] Aceitar convite
 
 ## Interface
 

@@ -1,15 +1,21 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import {
   useEffect,
   useState,
   type ChangeEvent,
 } from "react";
+import { useForm } from "react-hook-form";
 
 import {
+  createWorkspaceInvitationSchema,
+  type CreateWorkspaceInvitationFormData,
+} from "../schemas/create-workspace-invitation.schema";
+import {
+  createWorkspaceInvitation,
   listWorkspaceMembers,
   updateWorkspaceMemberRole,
 } from "../services/workspace.service";
-
 import type {
   WorkspaceMember,
   WorkspaceRole,
@@ -70,6 +76,41 @@ export function WorkspaceMembersSection({
   const [memberUpdateSuccess, setMemberUpdateSuccess] =
     useState<Record<string, string>>({});
 
+  const [
+    isInvitationModalOpen,
+    setIsInvitationModalOpen,
+  ] = useState(false);
+
+  const [invitationError, setInvitationError] =
+    useState<string | null>(null);
+
+  const [invitationSuccess, setInvitationSuccess] =
+    useState<string | null>(null);
+
+  const [invitationLink, setInvitationLink] =
+    useState<string | null>(null);
+
+  const [copySuccess, setCopySuccess] =
+    useState<string | null>(null);
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setFocus,
+    formState: {
+      errors: invitationFormErrors,
+      isSubmitting: isSubmittingInvitation,
+    },
+  } = useForm<CreateWorkspaceInvitationFormData>({
+    resolver: zodResolver(
+      createWorkspaceInvitationSchema,
+    ),
+    defaultValues: {
+      email: "",
+    },
+  });
+
   async function loadMembers() {
     try {
       setIsLoading(true);
@@ -108,6 +149,111 @@ export function WorkspaceMembersSection({
 
   const canManageMemberRoles =
     currentMember?.role === "OWNER";
+
+  const canCreateInvitations =
+    currentMember?.role === "OWNER" ||
+    currentMember?.role === "ADMIN";
+
+  function openInvitationModal() {
+    if (!canCreateInvitations) {
+      return;
+    }
+
+    setInvitationError(null);
+    setInvitationSuccess(null);
+    setInvitationLink(null);
+    setCopySuccess(null);
+
+    reset({
+      email: "",
+    });
+
+    setIsInvitationModalOpen(true);
+
+    window.setTimeout(() => {
+      setFocus("email");
+    }, 0);
+  }
+
+  function closeInvitationModal() {
+    if (isSubmittingInvitation) {
+      return;
+    }
+
+    setIsInvitationModalOpen(false);
+    setInvitationError(null);
+    setInvitationSuccess(null);
+    setInvitationLink(null);
+    setCopySuccess(null);
+
+    reset({
+      email: "",
+    });
+  }
+
+  async function handleCreateInvitation(
+    data: CreateWorkspaceInvitationFormData,
+  ) {
+    try {
+      setInvitationError(null);
+      setInvitationSuccess(null);
+      setInvitationLink(null);
+      setCopySuccess(null);
+
+      const response = await createWorkspaceInvitation(
+        workspaceId,
+        {
+          email: data.email.trim().toLowerCase(),
+        },
+      );
+
+      setInvitationSuccess(response.message);
+
+      const generatedInvitationLink =
+        `${window.location.origin}` +
+        `/workspace-invitations/` +
+        `${response.invitation.token}/accept`;
+
+      setInvitationLink(generatedInvitationLink);
+
+      reset({
+        email: "",
+      });
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const message =
+          error.response?.data?.message ??
+          "Não foi possível criar o convite.";
+
+        setInvitationError(message);
+        return;
+      }
+
+      setInvitationError(
+        "Ocorreu um erro inesperado ao criar o convite.",
+      );
+    }
+  }
+
+  async function handleCopyInvitationLink() {
+    if (!invitationLink) {
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(
+        invitationLink,
+      );
+
+      setCopySuccess(
+        "Link copiado para a área de transferência.",
+      );
+    } catch {
+      setCopySuccess(
+        "Não foi possível copiar automaticamente. Selecione e copie o link manualmente.",
+      );
+    }
+  }
 
   async function handleMemberRoleChange(
     member: WorkspaceMember,
@@ -273,158 +419,338 @@ export function WorkspaceMembersSection({
   }
 
   return (
-    <section className="workspace-members-section">
-      <header className="workspace-section-header">
-        <div>
-          <h2>Membros</h2>
+    <>
+      <section className="workspace-members-section">
+        <header className="workspace-section-header">
+          <div>
+            <h2>Membros</h2>
 
-          <p>
-            Pessoas que possuem acesso a este Workspace.
-          </p>
-        </div>
+            <p>
+              Pessoas que possuem acesso a este Workspace.
+            </p>
+          </div>
 
-        <span className="workspace-members-count">
-          {members.length}{" "}
-          {members.length === 1 ? "membro" : "membros"}
-        </span>
-      </header>
+          <div className="workspace-members-header-actions">
+            <span className="workspace-members-count">
+              {members.length}{" "}
+              {members.length === 1
+                ? "membro"
+                : "membros"}
+            </span>
 
-      {members.length === 0 ? (
-        <div className="workspace-members-empty">
-          <h3>Nenhum membro encontrado</h3>
-
-          <p>
-            Este Workspace ainda não possui membros cadastrados.
-          </p>
-        </div>
-      ) : (
-        <div className="workspace-members-list">
-          {members.map((member) => {
-            const memberUserId =
-              member.user?.id ?? member.userId;
-
-            const isCurrentUser =
-              memberUserId === currentUserId;
-
-            const memberName =
-              member.user?.name ?? "Usuário";
-
-            const memberEmail =
-              member.user?.email ??
-              "Email não disponível";
-
-            const memberInitial = memberName
-              .charAt(0)
-              .toUpperCase();
-
-            const canEditThisMember =
-              canManageMemberRoles &&
-              member.role !== "OWNER" &&
-              !isCurrentUser;
-
-            const isUpdating =
-              updatingMemberId === member.id;
-
-            const updateError =
-              memberUpdateErrors[member.id];
-
-            const updateSuccess =
-              memberUpdateSuccess[member.id];
-
-            return (
-              <article
-                className="workspace-member-card"
-                key={member.id}
+            {canCreateInvitations && (
+              <button
+                type="button"
+                className="primary-button"
+                onClick={openInvitationModal}
               >
-                <div className="workspace-member-avatar">
-                  {memberInitial}
-                </div>
+                Convidar membro
+              </button>
+            )}
+          </div>
+        </header>
 
-                <div className="workspace-member-info">
-                  <div className="workspace-member-name">
-                    <strong>{memberName}</strong>
+        {members.length === 0 ? (
+          <div className="workspace-members-empty">
+            <h3>Nenhum membro encontrado</h3>
 
-                    {isCurrentUser && (
-                      <span className="current-user-badge">
-                        Você
-                      </span>
-                    )}
+            <p>
+              Este Workspace ainda não possui membros
+              cadastrados.
+            </p>
+          </div>
+        ) : (
+          <div className="workspace-members-list">
+            {members.map((member) => {
+              const memberUserId =
+                member.user?.id ?? member.userId;
+
+              const isCurrentUser =
+                memberUserId === currentUserId;
+
+              const memberName =
+                member.user?.name ?? "Usuário";
+
+              const memberEmail =
+                member.user?.email ??
+                "Email não disponível";
+
+              const memberInitial = memberName
+                .charAt(0)
+                .toUpperCase();
+
+              const canEditThisMember =
+                canManageMemberRoles &&
+                member.role !== "OWNER" &&
+                !isCurrentUser;
+
+              const isUpdating =
+                updatingMemberId === member.id;
+
+              const updateError =
+                memberUpdateErrors[member.id];
+
+              const updateSuccess =
+                memberUpdateSuccess[member.id];
+
+              return (
+                <article
+                  className="workspace-member-card"
+                  key={member.id}
+                >
+                  <div className="workspace-member-avatar">
+                    {memberInitial}
                   </div>
 
-                  <span>{memberEmail}</span>
+                  <div className="workspace-member-info">
+                    <div className="workspace-member-name">
+                      <strong>{memberName}</strong>
 
-                  {updateError && (
-                    <span
-                      className="workspace-member-update-error"
-                      role="alert"
-                    >
-                      {updateError}
-                    </span>
-                  )}
+                      {isCurrentUser && (
+                        <span className="current-user-badge">
+                          Você
+                        </span>
+                      )}
+                    </div>
 
-                  {updateSuccess && (
-                    <span
-                      className="workspace-member-update-success"
-                      role="status"
-                    >
-                      {updateSuccess}
-                    </span>
-                  )}
-                </div>
+                    <span>{memberEmail}</span>
 
-                {canEditThisMember ? (
-                  <div className="workspace-member-role-control">
-                    <label
-                      className="sr-only"
-                      htmlFor={`member-role-${member.id}`}
-                    >
-                      Permissão de {memberName}
-                    </label>
-
-                    <select
-                      id={`member-role-${member.id}`}
-                      className={`workspace-role-select ${
-                        workspaceRoleClassNames[member.role]
-                      }`}
-                      value={member.role}
-                      disabled={isUpdating}
-                      onChange={(event) => {
-                        void handleMemberRoleChange(
-                          member,
-                          event,
-                        );
-                      }}
-                    >
-                      {editableWorkspaceRoles.map((role) => (
-                        <option key={role} value={role}>
-                          {workspaceRoleLabels[role]}
-                        </option>
-                      ))}
-                    </select>
-
-                    {isUpdating && (
+                    {updateError && (
                       <span
-                        className="workspace-member-updating"
+                        className="workspace-member-update-error"
+                        role="alert"
+                      >
+                        {updateError}
+                      </span>
+                    )}
+
+                    {updateSuccess && (
+                      <span
+                        className="workspace-member-update-success"
                         role="status"
                       >
-                        Salvando...
+                        {updateSuccess}
                       </span>
                     )}
                   </div>
-                ) : (
-                  <span
-                    className={`workspace-role-badge ${
-                      workspaceRoleClassNames[member.role]
-                    }`}
+
+                  {canEditThisMember ? (
+                    <div className="workspace-member-role-control">
+                      <label
+                        className="sr-only"
+                        htmlFor={`member-role-${member.id}`}
+                      >
+                        Permissão de {memberName}
+                      </label>
+
+                      <select
+                        id={`member-role-${member.id}`}
+                        className={`workspace-role-select ${
+                          workspaceRoleClassNames[
+                            member.role
+                          ]
+                        }`}
+                        value={member.role}
+                        disabled={isUpdating}
+                        onChange={(event) => {
+                          void handleMemberRoleChange(
+                            member,
+                            event,
+                          );
+                        }}
+                      >
+                        {editableWorkspaceRoles.map(
+                          (role) => (
+                            <option
+                              key={role}
+                              value={role}
+                            >
+                              {workspaceRoleLabels[role]}
+                            </option>
+                          ),
+                        )}
+                      </select>
+
+                      {isUpdating && (
+                        <span
+                          className="workspace-member-updating"
+                          role="status"
+                        >
+                          Salvando...
+                        </span>
+                      )}
+                    </div>
+                  ) : (
+                    <span
+                      className={`workspace-role-badge ${
+                        workspaceRoleClassNames[
+                          member.role
+                        ]
+                      }`}
+                    >
+                      {workspaceRoleLabels[member.role]}
+                    </span>
+                  )}
+                </article>
+              );
+            })}
+          </div>
+        )}
+      </section>
+
+      {isInvitationModalOpen && (
+        <div
+          className="modal-backdrop"
+          role="presentation"
+          onMouseDown={closeInvitationModal}
+        >
+          <section
+            className="modal-card"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="invite-member-title"
+            onMouseDown={(event) =>
+              event.stopPropagation()
+            }
+          >
+            <header className="modal-header">
+              <div>
+                <h2 id="invite-member-title">
+                  Convidar membro
+                </h2>
+
+                <p>
+                  Envie um convite para que outra pessoa
+                  participe deste Workspace.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                className="modal-close-button"
+                onClick={closeInvitationModal}
+                disabled={isSubmittingInvitation}
+                aria-label="Fechar modal"
+              >
+                ×
+              </button>
+            </header>
+
+            <form
+              className="workspace-form"
+              onSubmit={handleSubmit(
+                handleCreateInvitation,
+              )}
+            >
+              {!invitationLink && (
+                <div className="form-field">
+                  <label htmlFor="invitation-email">
+                    Email
+                  </label>
+
+                  <input
+                    id="invitation-email"
+                    type="email"
+                    autoComplete="email"
+                    placeholder="usuario@email.com"
+                    {...register("email")}
+                  />
+
+                  {invitationFormErrors.email && (
+                    <span className="field-error">
+                      {
+                        invitationFormErrors.email
+                          .message
+                      }
+                    </span>
+                  )}
+                </div>
+              )}
+
+              {invitationError && (
+                <div className="api-error" role="alert">
+                  {invitationError}
+                </div>
+              )}
+
+              {invitationSuccess && (
+                <div
+                  className="success-message"
+                  role="status"
+                >
+                  {invitationSuccess}
+                </div>
+              )}
+
+              {invitationLink && (
+                <div className="invitation-link-section">
+                  <label htmlFor="invitation-link">
+                    Link do convite
+                  </label>
+
+                  <div className="invitation-link-control">
+                    <input
+                      id="invitation-link"
+                      type="text"
+                      value={invitationLink}
+                      readOnly
+                      onFocus={(event) =>
+                        event.currentTarget.select()
+                      }
+                    />
+
+                    <button
+                      type="button"
+                      className="secondary-button"
+                      onClick={() => {
+                        void handleCopyInvitationLink();
+                      }}
+                    >
+                      Copiar
+                    </button>
+                  </div>
+
+                  <p>
+                    Envie este link para o usuário convidado.
+                  </p>
+
+                  {copySuccess && (
+                    <span
+                      className="invitation-copy-feedback"
+                      role="status"
+                    >
+                      {copySuccess}
+                    </span>
+                  )}
+                </div>
+              )}
+
+              <footer className="modal-actions">
+                <button
+                  type="button"
+                  className="secondary-button"
+                  onClick={closeInvitationModal}
+                  disabled={isSubmittingInvitation}
+                >
+                  {invitationLink ? "Concluir" : "Fechar"}
+                </button>
+
+                {!invitationLink && (
+                  <button
+                    type="submit"
+                    className="primary-button"
+                    disabled={isSubmittingInvitation}
                   >
-                    {workspaceRoleLabels[member.role]}
-                  </span>
+                    {isSubmittingInvitation
+                      ? "Enviando..."
+                      : "Enviar convite"}
+                  </button>
                 )}
-              </article>
-            );
-          })}
+              </footer>
+            </form>
+          </section>
         </div>
       )}
-    </section>
+    </>
   );
 }

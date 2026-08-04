@@ -128,8 +128,10 @@ Atualmente a maior parte dos elementos da interface permanece dentro das página
 - RegisterPage.
 - DashboardPage.
 - WorkspacePage.
+- AcceptWorkspaceInvitationPage.
 - Modal de edição de Workspace (implementado na WorkspacePage).
 - Modal de confirmação de exclusão (implementado na WorkspacePage).
+- Modal de criação de convites (implementado na WorkspaceMembersSection).
 - Gerenciamento de membros (implementado através do WorkspaceMembersSection).
 
 Entretanto, a aplicação já possui um Layout compartilhado (`AuthenticatedLayout`) responsável por reutilizar a estrutura das páginas autenticadas.
@@ -138,14 +140,19 @@ Atualmente esse layout já é compartilhado entre:
 
 - DashboardPage.
 - WorkspacePage.
+- AcceptWorkspaceInvitationPage.
 
-Atualmente os modais de edição e exclusão ainda fazem parte da própria WorkspacePage.
+Atualmente os modais de edição, exclusão e criação de convites ainda fazem parte da própria WorkspacePage e do WorkspaceMembersSection.
 
-O gerenciamento dos participantes do Workspace já foi extraído para o componente `WorkspaceMembersSection`, responsável por carregar, exibir e atualizar as permissões dos membros.
+O gerenciamento dos participantes do Workspace já foi extraído para o componente `WorkspaceMembersSection`, responsável por:
 
-Eles deverão ser extraídos para componentes reutilizáveis conforme novas funcionalidades forem adicionadas ao sistema.
+- Carregar os membros.
+- Exibir os participantes.
+- Atualizar permissões.
+- Criar convites para novos membros.
+- Gerar links de convite para compartilhamento.
 
-Isso garante consistência visual e reduz duplicação de código à medida que novas páginas autenticadas são adicionadas.
+Os modais ainda deverão ser extraídos para componentes reutilizáveis conforme novas funcionalidades forem adicionadas ao sistema.
 
 Essa decisão reduz duplicação de código e prepara a arquitetura para as próximas funcionalidades.
 
@@ -167,13 +174,19 @@ Além do `AuthenticatedLayout`, os próximos componentes compartilhados planejad
 - Badge.
 - Dropdown.
 
-Também está prevista a criação de componentes reutilizáveis para ações destrutivas, como:
+Também está prevista a criação de componentes reutilizáveis para:
 
 - ConfirmDialog.
 - DeleteModal.
+- InvitationModal.
 - LoadingButton.
+- PermissionSelect.
+- MemberCard.
+- InvitationCard.
 
-Esses componentes substituirão as implementações atualmente existentes na WorkspacePage, mantendo o mesmo padrão utilizado na extração do `WorkspaceMembersSection`.
+Esses componentes substituirão gradualmente as implementações atualmente existentes na `WorkspacePage`, `WorkspaceMembersSection` e `DashboardPage`.
+
+O objetivo é reutilizar a mesma interface para gerenciamento de membros, convites e permissões em qualquer Workspace da aplicação.
 
 Após isso, novas páginas poderão reutilizar esses componentes mantendo uma interface consistente.
 
@@ -193,4 +206,8 @@ Após a implementação do Design System, este documento será atualizado conten
 - Diretrizes de acessibilidade.
 - Componentes específicos para confirmação de ações destrutivas.
 - Padronização dos modais de edição.
+- Padronização dos modais de convite.
 - Padronização dos botões de carregamento.
+- Componentes reutilizáveis para gerenciamento de membros.
+- Componentes reutilizáveis para gerenciamento de convites.
+- Componentes reutilizáveis para permissões de usuários.

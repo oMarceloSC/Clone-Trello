@@ -77,3 +77,66 @@ export type UpdateWorkspaceMemberRoleResponse = {
   message: string;
   member: WorkspaceMember;
 };
+
+export type WorkspaceInvitationStatus =
+  | "PENDING"
+  | "ACCEPTED"
+  | "EXPIRED";
+
+export type WorkspaceInvitation = {
+  id: string;
+  email: string;
+  token: string;
+  status: WorkspaceInvitationStatus;
+  workspaceId: string;
+  invitedById: string;
+  expiresAt: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type CreateWorkspaceInvitationRequest = {
+  email: string;
+};
+
+export type CreateWorkspaceInvitationResponse = {
+  message: string;
+  invitation: WorkspaceInvitation;
+};
+
+export type PendingWorkspaceInvitationWorkspace = {
+  id: string;
+  name: string;
+  description: string | null;
+};
+
+export type PendingWorkspaceInvitationInvitedBy = {
+  id: string;
+  name: string;
+  email: string;
+  avatarUrl: string | null;
+};
+
+export type PendingWorkspaceInvitation = {
+  id: string;
+  email: string;
+  token: string;
+  status: WorkspaceInvitationStatus;
+  workspaceId: string;
+  invitedById: string;
+  expiresAt: string;
+  createdAt: string;
+  updatedAt: string;
+  workspace: PendingWorkspaceInvitationWorkspace;
+  invitedBy: PendingWorkspaceInvitationInvitedBy;
+};
+
+export type ListPendingWorkspaceInvitationsResponse = {
+  invitations: PendingWorkspaceInvitation[];
+};
+
+export type AcceptWorkspaceInvitationResponse = {
+  message: string;
+  workspaceMember: WorkspaceMember;
+  invitation: WorkspaceInvitation;
+};
