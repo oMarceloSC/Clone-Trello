@@ -360,6 +360,29 @@ Cada milestone representa um conjunto de funcionalidades relacionadas.
 
 ---
 
+# Milestone 11 — Assistente Inteligente
+
+## Backend
+
+- [ ] Criar módulo Assistant
+- [ ] Integrar API de IA
+- [ ] Criar contexto por Workspace
+- [ ] Criar contexto por Board
+- [ ] Implementar ferramentas internas
+- [ ] Validar permissões
+- [ ] Registrar ações do assistente
+
+## Frontend
+
+- [ ] Criar painel do assistente
+- [ ] Criar histórico de mensagens
+- [ ] Exibir carregamento das respostas
+- [ ] Permitir resumo de Boards
+- [ ] Permitir sugestão de tarefas
+- [ ] Confirmar ações antes da execução
+
+---
+
 # Objetivo Final
 
 Construir um Clone do Trello completo utilizando tecnologias modernas e arquitetura escalável, simulando um ambiente profissional de desenvolvimento.
