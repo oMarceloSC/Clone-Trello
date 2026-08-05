@@ -12,6 +12,7 @@ import { AcceptWorkspaceInvitationPage } from "../features/workspaces/pages/Acce
 import { WorkspacePage } from "../features/workspaces/pages/WorkspacePage";
 import { AuthenticatedLayout } from "../layouts/AuthenticatedLayout";
 import { DashboardPage } from "../pages/DashboardPage";
+import { NotFoundPage } from "../pages/NotFoundPage";
 
 type RouteGuardProps = {
   children: ReactNode;
@@ -114,7 +115,7 @@ export function AppRoutes() {
 
       <Route
         path="*"
-        element={<Navigate to="/dashboard" replace />}
+        element={<NotFoundPage />}
       />
     </Routes>
   );

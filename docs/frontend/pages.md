@@ -31,7 +31,8 @@ src/
 │           └── AcceptWorkspaceInvitationPage.tsx
 │
 └── pages/
-    └── DashboardPage.tsx
+    ├── DashboardPage.tsx
+    └──NotFoundPage.tsx
 ```
 
 Conforme novas funcionalidades forem implementadas, novas páginas serão adicionadas às respectivas features.
@@ -595,6 +596,82 @@ GET /workspaces/:id
           │
           ▼
 WorkspacePage
+```
+
+---
+
+# NotFoundPage
+
+## Arquivo
+
+```text
+src/pages/NotFoundPage.tsx
+```
+
+## Rota
+
+```text
+*
+```
+
+## Acesso
+
+Público.
+
+A página pode ser acessada tanto por visitantes quanto por usuários autenticados.
+
+---
+
+## Objetivos
+
+Informar que a rota solicitada não existe e oferecer uma forma simples de continuar navegando na aplicação.
+
+---
+
+## Responsabilidades
+
+- Exibir uma página de erro 404 personalizada.
+- Informar que a rota não foi encontrada.
+- Permitir retornar para a página anterior.
+- Redirecionar usuários autenticados para o Dashboard.
+- Redirecionar visitantes para a tela de Login.
+
+---
+
+## Estados
+
+### Página encontrada
+
+A página não é exibida.
+
+---
+
+### Página inexistente
+
+São apresentados:
+
+- Código 404.
+- Mensagem explicativa.
+- Botão `Voltar`.
+- Botão `Ir para o Dashboard` ou `Ir para o Login`, dependendo da autenticação.
+
+---
+
+## Fluxo
+
+```text
+Usuário
+
+↓
+
+Rota inexistente
+
+↓
+
+NotFoundPage
+
+├── Voltar
+└── Dashboard/Login
 ```
 
 ---
@@ -1317,6 +1394,8 @@ GET /auth/me
 Carregando sessão...
 ```
 
+Essa tela é utilizada pelos componentes `RequireAuthentication` e `RequireGuest`, evitando que as páginas sejam renderizadas antes da conclusão da validação da sessão.
+
 Essa tela impede que rotas protegidas sejam exibidas antes da validação do token.
 
 ---
@@ -1365,19 +1444,6 @@ Responsabilidades planejadas:
 
 ---
 
-## NotFoundPage
-
-```text
-*
-```
-
-Responsabilidades planejadas:
-
-- Exibir página 404.
-- Permitir navegação de volta ao Dashboard.
-
----
-
 # Estado Atual
 
 ## Implementado
@@ -1385,6 +1451,7 @@ Responsabilidades planejadas:
 - LoginPage.
 - RegisterPage.
 - DashboardPage.
+- NotFoundPage.
 - WorkspacePage.
 - AuthenticatedLayout.
 - Sidebar compartilhada.
@@ -1416,6 +1483,7 @@ Responsabilidades planejadas:
 - Criação de convites.
 - Geração de links de convite.
 - Página de aceitação por token.
+- Página 404 personalizada.
 - Listagem de convites pendentes.
 - Aceitação de convites pelo Dashboard.
 - Atualização automática da lista de Workspaces após aceitar convite.
@@ -1431,4 +1499,3 @@ Responsabilidades planejadas:
 - BoardPage.
 - NotificationPage.
 - ProfilePage.
-- NotFoundPage.

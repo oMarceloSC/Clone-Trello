@@ -33,6 +33,8 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Compartilhamento da Sidebar entre páginas autenticadas.
 * Compartilhamento do Header entre páginas autenticadas.
 * Utilização do `Outlet` para renderização das páginas privadas.
+* Página 404 personalizada para rotas inexistentes.
+* Substituição do redirecionamento automático da rota coringa pela `NotFoundPage`.
 
 ### Comunicação com a API
 
@@ -204,6 +206,10 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Página de aceitação de convite.
 * Estados visuais para criação e aceitação de convites.
 * Responsividade da área de convites.
+* Layout da Página 404.
+* Card central da Página 404.
+* Navegação por botões para retorno, Dashboard e Login.
+* Responsividade da Página 404.
 
 ### Documentação
 
@@ -260,6 +266,11 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Atualização da arquitetura do frontend com o interceptor global do Axios.
 * Atualização da documentação da estilização para o feedback de sessão expirada.
 * Atualização do roadmap para registrar o interceptor de respostas e o tratamento de sessão expirada como concluídos.
+* Atualização da documentação de roteamento para incluir a Página 404.
+* Atualização da documentação das páginas com a `NotFoundPage`.
+* Atualização da documentação da estilização da Página 404.
+* Atualização da arquitetura do frontend para documentar a rota coringa.
+* Atualização do roadmap para registrar a Página 404 como concluída.
 
 ---
 

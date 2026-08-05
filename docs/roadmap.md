@@ -102,7 +102,7 @@ Cada milestone representa um conjunto de funcionalidades relacionadas.
 * [x] Criar rota de cadastro
 * [x] Criar rota protegida
 * [x] Configurar redirecionamentos
-* [ ] Criar página 404
+* [x] Criar página 404
 * [x] Criar layout autenticado
 
 ## Comunicação
@@ -155,6 +155,7 @@ Cada milestone representa um conjunto de funcionalidades relacionadas.
 - [x] Sidebar compartilhada
 - [x] Header compartilhado
 - [x] WorkspacePage
+- [x] Página 404 personalizada
 - [x] Breadcrumb de navegação
 - [x] Cards de resumo do Workspace
 - [x] Modal de edição de Workspace

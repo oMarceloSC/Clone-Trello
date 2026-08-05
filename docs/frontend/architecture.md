@@ -229,9 +229,13 @@ DashboardPage
 WorkspacePage
 
 AcceptWorkspaceInvitationPage
+
+NotFoundPage
 ```
 
 A `AcceptWorkspaceInvitationPage` permite aceitar convites utilizando o token presente na URL, enquanto o `DashboardPage` também permite aceitar convites diretamente através da listagem de convites pendentes.
+
+A `NotFoundPage` é renderizada quando nenhuma rota corresponde ao endereço acessado, permitindo retornar à página anterior, ao Dashboard ou ao Login.
 
 ---
 
@@ -576,6 +580,42 @@ Exemplos:
 
 ---
 
+## Rota Coringa
+
+A rota coringa captura endereços que não correspondem a nenhuma rota existente.
+
+```text
+*
+```
+
+Ela renderiza:
+
+```text
+NotFoundPage
+```
+
+A página está disponível tanto para visitantes quanto para usuários autenticados.
+
+Fluxo:
+
+```text
+Rota inexistente
+
+↓
+
+AppRoutes
+
+↓
+
+NotFoundPage
+
+├── Voltar
+├── Dashboard, quando autenticado
+└── Login, quando visitante
+```
+
+---
+
 # Layout Autenticado
 
 As rotas privadas utilizam um layout compartilhado.
@@ -837,6 +877,56 @@ Resposta
 
 Atualização da Interface
 ```
+
+---
+
+# Fluxo da Página 404
+
+Quando uma URL não corresponde a nenhuma rota registrada, o React Router utiliza a rota coringa.
+
+```text
+Usuário
+
+↓
+
+URL inexistente
+
+↓
+
+React Router
+
+↓
+
+Rota *
+
+↓
+
+NotFoundPage
+```
+
+A página consulta o estado atual da autenticação através do `useAuth()`.
+
+Com base nesse estado, apresenta a ação principal adequada:
+
+```text
+Autenticado
+
+↓
+
+Ir para o Dashboard
+```
+
+ou:
+
+```text
+Visitante
+
+↓
+
+Ir para o Login
+```
+
+Também existe a ação `Voltar`, que utiliza o histórico de navegação do navegador.
 
 ---
 
@@ -1122,6 +1212,13 @@ Layout
 ├── Sidebar
 └── Header
 
+Navegação
+
+├── AppRoutes
+├── RequireAuthentication
+├── RequireGuest
+└── NotFoundPage
+
 Dashboard
 
 ├── Listagem de Workspaces
@@ -1137,6 +1234,7 @@ Workspaces
 ├── Exclusão de Workspace
 ├── Controle visual de permissões
 ├── Listagem de membros
+├── Remoção de membros
 ├── Criação de convites
 └── Geração de links de convite
 ```
@@ -1247,13 +1345,17 @@ Cada módulo seguirá a mesma organização baseada em features.
 - Estado vazio dos membros.
 - Tratamento de erros dos membros.
 - Nova tentativa após falha.
+- NotFoundPage.
+- Rota coringa `*`.
+- Página 404 personalizada.
+- Navegação da Página 404 para Dashboard ou Login.
+- Retorno à página anterior através do histórico.
 
 ## Em desenvolvimento
 
 - Cancelamento de convites.
 - Reenvio de convites.
 - Componentes reutilizáveis.
-- Página 404.
 - Design System.
 - Responsividade avançada.
 
@@ -1265,7 +1367,7 @@ As próximas implementações serão:
 
 1. Cancelamento de convites.
 2. Reenvio de convites.
-3. Página 404.
+3. Recuperação de senha.
 4. Componentes compartilhados.
 5. Feature Boards.
 6. Feature Lists.

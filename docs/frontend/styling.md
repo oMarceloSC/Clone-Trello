@@ -60,6 +60,7 @@ Atualmente existem estilos para:
 - Modal de criação de convite.
 - Exibição e cópia do link de convite.
 - Página de aceitação de convite.
+- Página 404.
 - Botão de ação destrutiva.
 - Aviso visual de exclusão.
 - WorkspacePage.
@@ -154,6 +155,16 @@ accept-invitation-page
 accept-invitation-card
 
 accept-invitation-actions
+
+not-found-page
+
+not-found-card
+
+not-found-code
+
+not-found-label
+
+not-found-actions
 
 primary-button
 
@@ -590,6 +601,44 @@ O card central apresenta:
 - Botão para voltar ao Dashboard.
 
 Após a aceitação bem-sucedida, o usuário é redirecionado para o Dashboard, onde o Workspace já estará disponível.
+
+---
+
+# Página 404
+
+A aplicação possui uma página personalizada para rotas inexistentes.
+
+Arquivo:
+
+```text
+NotFoundPage.tsx
+```
+
+A página utiliza as classes:
+
+```text
+not-found-page
+
+not-found-card
+
+not-found-code
+
+not-found-label
+
+not-found-actions
+```
+
+Ela segue o mesmo padrão visual adotado nas demais telas da aplicação.
+
+O card central apresenta:
+
+- Código 404.
+- Identificação da página.
+- Mensagem explicativa.
+- Botão `Voltar`.
+- Botão `Ir para o Dashboard` ou `Ir para o Login`, conforme o estado da autenticação.
+
+A interface é totalmente responsiva e reutiliza os estilos globais dos botões principais e secundários.
 
 ---
 
@@ -1205,6 +1254,7 @@ Atualmente possuem adaptações para diferentes tamanhos de tela:
 - Dashboard.
 - WorkspacePage.
 - AcceptWorkspaceInvitationPage.
+- NotFoundPage.
 - Sidebar.
 - Header.
 - Modal de criação.
@@ -1225,6 +1275,8 @@ Em dispositivos menores:
 - O botão de aceitação ocupa toda a largura disponível.
 - O campo do link e o botão de cópia são empilhados.
 - Os modais ajustam automaticamente sua largura.
+- Os botões da Página 404 passam a ser exibidos em coluna.
+- O card da Página 404 reduz automaticamente sua largura.
 - Os botões permanecem acessíveis em telas móveis.
 
 ---
@@ -1357,6 +1409,7 @@ As próximas evoluções previstas para a camada de estilos são:
 - AuthenticatedLayout.
 - WorkspacePage.
 - AcceptWorkspaceInvitationPage.
+- NotFoundPage.
 - Cards de resumo.
 - Breadcrumb.
 - Área inicial para Boards.

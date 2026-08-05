@@ -78,7 +78,7 @@ AppRoutes
 │   ├── /dashboard
 │   ├── /workspaces/:id
 │   └── /workspace-invitations/:token/accept
-└── *
+└── NotFoundPage (*)
 ```
 
 ---
@@ -93,7 +93,7 @@ AppRoutes
 | `/dashboard` | Autenticado | ✅ | Dashboard |
 | `/workspaces/:id` | Autenticado | ✅ | Visualização e gerenciamento do Workspace |
 | `/workspace-invitations/:token/accept` | Autenticado | ✅ | Aceitação de convite por token |
-| `*` | Público | ✅ | Redirecionamento temporário |
+| `*` | Público | ✅ | Página 404 personalizada |
 
 ---
 
@@ -719,32 +719,33 @@ O redirecionamento utiliza navegação com substituição de histórico para evi
 
 # Página Não Encontrada
 
-Atualmente qualquer rota inexistente é redirecionada para:
+Quando o usuário acessa uma rota inexistente, a aplicação renderiza uma página personalizada de erro (`NotFoundPage`).
+
+Essa página está disponível tanto para usuários autenticados quanto para visitantes.
+
+Dependendo do estado da autenticação, ela oferece um redirecionamento apropriado:
+
+- Usuário autenticado → Dashboard.
+- Visitante → Login.
+
+Também é disponibilizado um botão para retornar à página anteriormente acessada.
+
+Fluxo:
 
 ```text
-/dashboard
-```
-
-O sistema então decide:
-
-```text
-Autenticado
+Usuário
 
 ↓
 
-Dashboard
-
-ou
-
-Não autenticado
+Rota inexistente
 
 ↓
 
-Login
+NotFoundPage
+
+├── Voltar
+└── Dashboard/Login
 ```
-
-Futuramente será implementada uma página dedicada de erro 404.
-
 ---
 
 # Fluxo Completo da Navegação
@@ -760,14 +761,16 @@ AppRoutes
 │   ├── LoginPage
 │   └── RegisterPage
 │
-└── RequireAuthentication
-    ↓
-    AuthenticatedLayout
-    ↓
-    Outlet
-    ├── DashboardPage
-    ├── WorkspacePage
-    └── AcceptWorkspaceInvitationPage
+├── RequireAuthentication
+│   ↓
+│   AuthenticatedLayout
+│   ↓
+│   Outlet
+│   ├── DashboardPage
+│   ├── WorkspacePage
+│   └── AcceptWorkspaceInvitationPage
+│
+└── NotFoundPage
 ```
 
 ---
@@ -855,19 +858,10 @@ Será renderizada dentro do `AuthenticatedLayout`.
 
 ---
 
-## Página 404
-
-```text
-*
-```
-
----
-
 # Melhorias Futuras
 
 Estão planejadas:
 
-- Página 404.
 - Lazy Loading.
 - Code Splitting.
 - Breadcrumbs reutilizáveis.
@@ -887,6 +881,7 @@ Estão planejadas:
 
 - BrowserRouter.
 - AppRoutes.
+- NotFoundPage.
 - RequireAuthentication.
 - RequireGuest.
 - Redirecionamento automático.
@@ -915,6 +910,7 @@ Estão planejadas:
 - Requisição `GET /workspaces/:id/members`.
 - Controle visual de permissões.
 - Rota `/workspace-invitations/:token/accept`.
+- Página 404 personalizada.
 - AcceptWorkspaceInvitationPage.
 - Listagem de convites pendentes no Dashboard.
 - Aceitação de convites diretamente pelo Dashboard.
@@ -922,7 +918,6 @@ Estão planejadas:
 
 ## Planejado
 
-- Página 404.
 - Rotas dos Boards.
 - Rotas de Perfil.
 - Rotas de Notificações.
