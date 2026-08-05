@@ -126,7 +126,7 @@ Axios
 
 ↓
 
-Interceptor
+Interceptor de Requisição
 
 ↓
 
@@ -139,6 +139,63 @@ Authorization
 ↓
 
 Backend
+```
+
+---
+
+# Interceptor de Respostas
+
+Além do interceptor de requisição, a aplicação também utiliza um interceptor global de respostas.
+
+Sua responsabilidade é tratar automaticamente sessões inválidas ou expiradas.
+
+Quando uma resposta retorna:
+
+```http
+401 Unauthorized
+```
+
+o interceptor:
+
+- Remove o token armazenado.
+- Remove os dados do usuário autenticado.
+- Dispara um evento global de sessão expirada.
+- Evita múltiplos disparos simultâneos para a mesma situação.
+
+As requisições de login (`POST /auth/login`) são ignoradas por esse tratamento para permitir a exibição normal de mensagens como:
+
+```text
+Email ou senha inválidos
+```
+
+Fluxo:
+
+```text
+Backend
+
+↓
+
+401 Unauthorized
+
+↓
+
+Interceptor de Respostas
+
+↓
+
+Limpeza da sessão
+
+↓
+
+Evento global
+
+↓
+
+AuthProvider
+
+↓
+
+Redirecionamento para Login
 ```
 
 ---
@@ -1259,6 +1316,14 @@ Os serviços apenas propagam os erros retornados pela API.
 
 A responsabilidade pela exibição das mensagens pertence às páginas ou aos hooks responsáveis pelo fluxo.
 
+Quando uma resposta `401 Unauthorized` é recebida em qualquer requisição autenticada (exceto durante o login), o interceptor global realiza automaticamente:
+
+- Limpeza do token.
+- Limpeza do usuário autenticado.
+- Disparo do evento global de sessão expirada.
+
+O `AuthProvider` recebe esse evento, limpa o estado da autenticação e permite que a aplicação redirecione automaticamente o usuário para a tela de Login.
+
 Exemplo:
 
 ```text
@@ -1270,7 +1335,15 @@ AxiosError
 
 ↓
 
-WorkspacePage
+Interceptor de Respostas
+
+↓
+
+AuthProvider
+
+↓
+
+LoginPage
 
 ↓
 
@@ -1284,6 +1357,7 @@ Mensagens utilizadas atualmente:
 - Não foi possível atualizar o Workspace.
 - Não foi possível excluir o Workspace.
 - Não foi possível criar o Workspace.
+- Sua sessão expirou. Entre novamente.
 
 ---
 
@@ -1318,9 +1392,6 @@ notification.service.ts
 
 # Melhorias Futuras
 
-- Criar interceptor global de respostas.
-- Tratar respostas `401 Unauthorized`.
-- Limpar automaticamente sessões inválidas.
 - Padronizar os erros da API.
 - Permitir cancelamento de convites.
 - Permitir reenvio de convites.
@@ -1328,6 +1399,9 @@ notification.service.ts
 - Adicionar cache de consultas.
 - Avaliar TanStack Query conforme a complexidade crescer.
 - Implementar retry automático quando necessário.
+- Implementar Refresh Token.
+- Renovação automática do JWT.
+- Controle de múltiplas sessões.
 
 ---
 
@@ -1337,7 +1411,11 @@ notification.service.ts
 
 - Instância compartilhada do Axios.
 - Configuração por variável de ambiente.
-- Interceptor JWT.
+- Interceptor de requisição JWT.
+- Interceptor global de respostas.
+- Tratamento automático de respostas `401 Unauthorized`.
+- Limpeza automática de sessões inválidas.
+- Evento global de sessão expirada.
 - `login()`.
 - `registerUser()`.
 - `getCurrentUser()`.
@@ -1360,6 +1438,5 @@ notification.service.ts
 - Serviços de Boards.
 - Serviços de Lists.
 - Serviços de Cards.
-- Interceptor de respostas.
 - Refresh Token.
 - Cache de requisições.

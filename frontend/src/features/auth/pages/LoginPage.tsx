@@ -1,6 +1,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
-import { useState } from "react";
+import {
+  useEffect,
+  useState,
+} from "react";
 import { useForm } from "react-hook-form";
 import {
   Link,
@@ -18,6 +21,9 @@ type LoginLocationState = {
   registrationSuccess?: boolean;
 };
 
+const SESSION_EXPIRED_STORAGE_KEY =
+  "@clone-trello:session-expired";
+
 export function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -25,7 +31,25 @@ export function LoginPage() {
 
   const state = location.state as LoginLocationState | null;
 
-  const [apiError, setApiError] = useState<string | null>(null);
+  const [apiError, setApiError] =
+    useState<string | null>(null);
+
+  const [isSessionExpired] = useState(
+    () =>
+      sessionStorage.getItem(
+        SESSION_EXPIRED_STORAGE_KEY,
+      ) === "true",
+  );
+
+  useEffect(() => {
+    if (!isSessionExpired) {
+      return;
+    }
+
+    sessionStorage.removeItem(
+      SESSION_EXPIRED_STORAGE_KEY,
+    );
+  }, [isSessionExpired]);
 
   const {
     register,
@@ -61,7 +85,9 @@ export function LoginPage() {
         return;
       }
 
-      setApiError("Ocorreu um erro inesperado.");
+      setApiError(
+        "Ocorreu um erro inesperado.",
+      );
     }
   }
 
@@ -70,12 +96,24 @@ export function LoginPage() {
       <section className="auth-card">
         <header className="auth-header">
           <h1>Clone do Trello</h1>
-          <p>Entre para acessar seus Workspaces.</p>
+
+          <p>
+            Entre para acessar seus Workspaces.
+          </p>
         </header>
 
         {state?.registrationSuccess && (
-          <div className="success-message" role="status">
+          <div
+            className="success-message"
+            role="status"
+          >
             Conta criada com sucesso. Agora você pode entrar.
+          </div>
+        )}
+
+        {isSessionExpired && (
+          <div className="api-error" role="alert">
+            Sua sessão expirou. Entre novamente.
           </div>
         )}
 
@@ -84,7 +122,9 @@ export function LoginPage() {
           onSubmit={handleSubmit(handleLogin)}
         >
           <div className="form-field">
-            <label htmlFor="email">Email</label>
+            <label htmlFor="email">
+              Email
+            </label>
 
             <input
               id="email"
@@ -102,7 +142,9 @@ export function LoginPage() {
           </div>
 
           <div className="form-field">
-            <label htmlFor="password">Senha</label>
+            <label htmlFor="password">
+              Senha
+            </label>
 
             <input
               id="password"
@@ -120,19 +162,29 @@ export function LoginPage() {
           </div>
 
           {apiError && (
-            <div className="api-error" role="alert">
+            <div
+              className="api-error"
+              role="alert"
+            >
               {apiError}
             </div>
           )}
 
-          <button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Entrando..." : "Entrar"}
+          <button
+            type="submit"
+            disabled={isSubmitting}
+          >
+            {isSubmitting
+              ? "Entrando..."
+              : "Entrar"}
           </button>
         </form>
 
         <p className="auth-footer">
           Ainda não possui conta?{" "}
-          <Link to="/register">Criar conta</Link>
+          <Link to="/register">
+            Criar conta
+          </Link>
         </p>
       </section>
     </main>

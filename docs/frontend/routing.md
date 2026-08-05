@@ -546,6 +546,10 @@ Existe token?
         Login
 ```
 
+Além da validação inicial através do endpoint `/auth/me`, a aplicação monitora continuamente respostas `401 Unauthorized` retornadas pelas requisições autenticadas.
+
+Quando isso ocorre, o interceptor global do Axios remove automaticamente a sessão armazenada, o `AuthProvider` limpa o estado da autenticação e as rotas protegidas passam a redirecionar o usuário novamente para a tela de Login.
+
 ---
 
 # Estado de Carregamento
@@ -563,6 +567,51 @@ Carregando sessão...
 ```
 
 Esse estado evita que páginas privadas sejam exibidas antes da validação do token.
+
+---
+
+# Sessão Expirada
+
+Quando qualquer requisição autenticada recebe a resposta:
+
+```http
+401 Unauthorized
+```
+
+o frontend executa automaticamente o seguinte fluxo:
+
+```text
+API
+
+↓
+
+Interceptor de Respostas
+
+↓
+
+Remoção da sessão
+
+↓
+
+AuthProvider
+
+↓
+
+RequireAuthentication
+
+↓
+
+/login
+
+↓
+
+Mensagem:
+"Sua sessão expirou. Entre novamente."
+```
+
+Esse comportamento garante que o usuário nunca permaneça navegando com um token inválido ou expirado.
+
+As requisições de login (`POST /auth/login`) não utilizam esse fluxo, permitindo que credenciais incorretas continuem exibindo apenas a mensagem retornada pela API.
 
 ---
 
@@ -620,6 +669,30 @@ Logout
 ↓
 
 /login
+```
+
+## Sessão expirada
+
+Quando uma sessão expira durante a utilização da aplicação:
+
+```text
+Resposta 401
+
+↓
+
+Interceptor Global
+
+↓
+
+Limpeza da sessão
+
+↓
+
+/login
+
+↓
+
+Mensagem de sessão expirada
 ```
 
 ---
@@ -804,7 +877,6 @@ Estão planejadas:
 - Navegação baseada em permissões.
 - Layout administrativo.
 - Recuperação de senha.
-- Tratamento global de sessão expirada.
 - Redirecionamento automático para convites após login.
 
 ---
@@ -819,6 +891,11 @@ Estão planejadas:
 - RequireGuest.
 - Redirecionamento automático.
 - Recuperação da sessão.
+- Interceptor global de respostas.
+- Tratamento automático de respostas `401 Unauthorized`.
+- Limpeza automática da sessão expirada.
+- Redirecionamento automático para Login após expiração da sessão.
+- Exibição da mensagem de sessão expirada.
 - Tela de carregamento.
 - Login.
 - Cadastro.
@@ -853,5 +930,4 @@ Estão planejadas:
 - Lazy Loading.
 - Code Splitting.
 - Proteção baseada em permissões.
-- Tratamento global de sessão expirada.
 - Layout administrativo.

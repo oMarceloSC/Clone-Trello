@@ -381,6 +381,9 @@ Responsabilidades:
 - Executar logout.
 - Restaurar a sessão.
 - Validar o token através de `/auth/me`.
+- Escutar eventos globais de expiração da sessão.
+- Limpar automaticamente a autenticação após respostas `401 Unauthorized`.
+- Notificar a interface quando a sessão expirar.
 
 ---
 
@@ -441,6 +444,12 @@ card.service.ts
 
 notification.service.ts
 ```
+
+A comunicação HTTP é centralizada por uma instância compartilhada do Axios, responsável por:
+
+- Adicionar automaticamente o JWT em todas as requisições autenticadas.
+- Monitorar respostas da API através de um interceptor global.
+- Encerrar automaticamente sessões inválidas ou expiradas.
 
 ---
 
@@ -620,6 +629,9 @@ Responsabilidades:
 - Armazenar usuário.
 - Disponibilizar autenticação.
 - Limpar sessão inválida.
+- Escutar eventos globais disparados pelo interceptor do Axios.
+- Encerrar automaticamente a sessão após respostas `401 Unauthorized`.
+- Informar a interface quando uma sessão expirar.
 
 ---
 
@@ -702,28 +714,70 @@ Existe token?
 
 ---
 
+# Fluxo de Expiração da Sessão
+
+Durante toda a utilização da aplicação, o frontend monitora respostas `401 Unauthorized`.
+
+Quando isso ocorre, o fluxo executado é:
+
+```text
+Requisição
+
+↓
+
+Backend
+
+↓
+
+401 Unauthorized
+
+↓
+
+Interceptor de Respostas
+
+↓
+
+Remoção do token
+
+↓
+
+SESSION_EXPIRED_EVENT
+
+↓
+
+AuthProvider
+
+↓
+
+RequireAuthentication
+
+↓
+
+LoginPage
+
+↓
+
+"Sua sessão expirou. Entre novamente."
+```
+
+As requisições de autenticação (`POST /auth/login`) são ignoradas por esse tratamento para que erros de credenciais continuem sendo apresentados normalmente ao usuário.
+
+---
+
 # Comunicação com a API
 
 Toda comunicação passa pela instância compartilhada do Axios.
 
 ```text
-Page ou Component
+A comunicação utiliza uma instância compartilhada do Axios contendo dois interceptores:
 
-↓
+- **Interceptor de Requisição**, responsável por adicionar automaticamente o header:
 
-Service
+```text
+Authorization: Bearer TOKEN
+```
 
-↓
-
-Axios
-
-↓
-
-Interceptor
-
-↓
-
-Backend
+- **Interceptor de Respostas**, responsável por detectar respostas `401 Unauthorized`, limpar automaticamente a sessão, disparar um evento global e permitir que a aplicação redirecione o usuário para a tela de Login.
 ```
 
 O interceptor adiciona automaticamente:
@@ -1059,6 +1113,7 @@ Auth
 ├── Login
 ├── Cadastro
 ├── Recuperação da sessão
+├── Tratamento automático da sessão expirada
 └── AuthContext
 
 Layout
@@ -1156,6 +1211,12 @@ Cada módulo seguirá a mesma organização baseada em features.
 - Cadastro.
 - Dashboard.
 - Recuperação automática da sessão.
+- Interceptor global de respostas.
+- Tratamento automático de respostas `401 Unauthorized`.
+- Limpeza automática da sessão expirada.
+- Evento global de expiração da sessão.
+- Redirecionamento automático para Login.
+- Mensagem de sessão expirada.
 - Organização por Features.
 - Services.
 - Hooks.
@@ -1192,8 +1253,6 @@ Cada módulo seguirá a mesma organização baseada em features.
 - Cancelamento de convites.
 - Reenvio de convites.
 - Componentes reutilizáveis.
-- Interceptor global de respostas.
-- Tratamento de sessão expirada.
 - Página 404.
 - Design System.
 - Responsividade avançada.
@@ -1206,14 +1265,12 @@ As próximas implementações serão:
 
 1. Cancelamento de convites.
 2. Reenvio de convites.
-3. Interceptor de respostas.
-4. Tratamento de sessão expirada.
-5. Página 404.
-6. Componentes compartilhados.
-7. Feature Boards.
-8. Feature Lists.
-9. Feature Cards.
-10. Integração em tempo real com Socket.IO.
+3. Página 404.
+4. Componentes compartilhados.
+5. Feature Boards.
+6. Feature Lists.
+7. Feature Cards.
+8. Integração em tempo real com Socket.IO.
 
 Todas as novas páginas autenticadas utilizarão o `AuthenticatedLayout`.
 

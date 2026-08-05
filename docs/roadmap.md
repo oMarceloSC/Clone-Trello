@@ -111,8 +111,8 @@ Cada milestone representa um conjunto de funcionalidades relacionadas.
 - [x] Configurar URL da API
 - [x] Criar interceptor JWT
 - [x] Criar serviço de autenticação
-- [ ] Criar interceptor de respostas
-- [ ] Tratar sessão expirada
+- [x] Criar interceptor de respostas
+- [x] Tratar sessão expirada
 
 ## Autenticação
 

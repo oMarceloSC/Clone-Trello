@@ -39,6 +39,10 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Instância centralizada do Axios.
 * Configuração da URL do backend.
 * Interceptor para envio automático do JWT.
+* Interceptor global de respostas.
+* Tratamento automático de respostas `401 Unauthorized`.
+* Limpeza automática da sessão após token inválido ou expirado.
+* Evento global de expiração da sessão.
 * Serviço inicial de autenticação.
 * Endpoint `/auth/me`.
 * Recuperação automática da sessão.
@@ -79,6 +83,9 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Estado global de autenticação.
 * Bloqueio de páginas públicas para usuários autenticados.
 * Validação automática da sessão durante a inicialização da aplicação.
+* Encerramento automático da sessão após respostas `401 Unauthorized`.
+* Redirecionamento automático para Login após sessão expirada.
+* Exibição da mensagem de sessão expirada.
 * Dashboard integrado ao AuthContext.
 
 ### Workspaces no Frontend
@@ -157,6 +164,7 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Estilos dos formulários.
 * Feedback visual de erros.
 * Feedback visual de cadastro concluído.
+* Feedback visual para sessão expirada.
 * Layout inicial do dashboard.
 * Tela de carregamento da recuperação de sessão.
 * Cards de Workspaces.
@@ -246,6 +254,12 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Atualização da documentação dos componentes compartilhados para o modal de criação de convites.
 * Atualização da documentação do frontend com o fluxo de remoção de membros.
 * Atualização do roadmap para registrar a remoção de membros como concluída.
+* Atualização da documentação dos serviços com o interceptor global de respostas.
+* Atualização da documentação da autenticação com o tratamento automático da sessão.
+* Atualização da documentação de roteamento para incluir o fluxo de sessão expirada.
+* Atualização da arquitetura do frontend com o interceptor global do Axios.
+* Atualização da documentação da estilização para o feedback de sessão expirada.
+* Atualização do roadmap para registrar o interceptor de respostas e o tratamento de sessão expirada como concluídos.
 
 ---
 

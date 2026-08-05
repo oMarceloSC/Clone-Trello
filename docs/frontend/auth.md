@@ -156,6 +156,9 @@ src/features/auth/contexts/AuthProvider.tsx
 - Restaurar a sessão.
 - Validar o token no backend.
 - Remover sessões inválidas.
+- Escutar eventos globais de expiração da sessão.
+- Limpar automaticamente a autenticação após respostas `401 Unauthorized`.
+- Notificar a interface quando uma sessão expirar.
 - Disponibilizar os dados para toda a aplicação.
 
 O `AuthProvider` envolve a aplicação no arquivo `main.tsx`.
@@ -387,6 +390,7 @@ Autenticar um usuário cadastrado utilizando email e senha.
 - Tratamento de credenciais inválidas.
 - Feedback durante o envio.
 - Exibição de confirmação após cadastro.
+- Exibição automática da mensagem de sessão expirada.
 
 ---
 
@@ -561,6 +565,66 @@ Caso o token seja inválido ou esteja expirado:
 
 ---
 
+# Expiração Automática da Sessão
+
+Além da recuperação automática da sessão, o frontend monitora todas as respostas da API através de um interceptor global do Axios.
+
+Quando uma requisição autenticada recebe a resposta:
+
+```http
+401 Unauthorized
+```
+
+o sistema executa automaticamente:
+
+- Remoção do token armazenado.
+- Remoção dos dados do usuário.
+- Disparo de um evento global de sessão expirada.
+- Atualização do `AuthContext`.
+- Redirecionamento automático para a tela de Login.
+
+O endpoint de autenticação (`POST /auth/login`) é ignorado por esse tratamento para que credenciais inválidas continuem exibindo apenas a mensagem retornada pela API.
+
+## Fluxo
+
+```text
+Backend
+
+↓
+
+401 Unauthorized
+
+↓
+
+Interceptor de Respostas
+
+↓
+
+SESSION_EXPIRED_EVENT
+
+↓
+
+AuthProvider
+
+↓
+
+Sessão encerrada
+
+↓
+
+RequireAuthentication
+
+↓
+
+LoginPage
+
+↓
+
+"Sua sessão expirou. Entre novamente."
+```
+
+---
+
 # Envio Automático do JWT
 
 A instância do Axios possui um interceptor responsável por adicionar o token às requisições.
@@ -701,6 +765,9 @@ isAuthenticated = false
 - Token JWT enviado via Bearer Token.
 - Validação da sessão através do backend.
 - Remoção de tokens inválidos.
+- Tratamento automático de respostas `401 Unauthorized`.
+- Limpeza automática da sessão após token inválido ou expirado.
+- Evento global de expiração da sessão.
 - Proteção das rotas autenticadas.
 - Bloqueio das páginas públicas para usuários autenticados.
 - Dados da senha nunca armazenados no frontend.
@@ -736,7 +803,11 @@ Futuramente poderá ser avaliada a utilização de:
 - Estado de carregamento.
 - Persistência do token.
 - Persistência do usuário.
-- Interceptor JWT.
+- Interceptor de requisição JWT.
+- Interceptor global de respostas.
+- Tratamento automático de respostas `401 Unauthorized`.
+- Limpeza automática da sessão.
+- Mensagem de sessão expirada.
 - Rotas protegidas.
 - Rotas exclusivas para visitantes.
 - Redirecionamento após cadastro.
@@ -744,8 +815,6 @@ Futuramente poderá ser avaliada a utilização de:
 
 ## Planejado
 
-- Interceptor global de respostas.
-- Tratamento automático de respostas `401`.
 - Recuperação de senha.
 - Redefinição de senha.
 - Refresh token.

@@ -5,6 +5,7 @@ import {
   type ReactNode,
 } from "react";
 
+import { SESSION_EXPIRED_EVENT } from "../../../services/api";
 import {
   getCurrentUser,
   login,
@@ -52,6 +53,7 @@ export function AuthProvider({
       } catch {
         localStorage.removeItem(TOKEN_STORAGE_KEY);
         localStorage.removeItem(USER_STORAGE_KEY);
+
         setUser(null);
       } finally {
         setIsLoading(false);
@@ -59,6 +61,32 @@ export function AuthProvider({
     }
 
     void restoreSession();
+  }, []);
+
+  useEffect(() => {
+    function handleSessionExpired() {
+      localStorage.removeItem(TOKEN_STORAGE_KEY);
+      localStorage.removeItem(USER_STORAGE_KEY);
+
+      sessionStorage.setItem(
+        "@clone-trello:session-expired",
+        "true",
+      );
+
+      setUser(null);
+    }
+
+    window.addEventListener(
+      SESSION_EXPIRED_EVENT,
+      handleSessionExpired,
+    );
+
+    return () => {
+      window.removeEventListener(
+        SESSION_EXPIRED_EVENT,
+        handleSessionExpired,
+      );
+    };
   }, []);
 
   async function signIn(
@@ -76,12 +104,20 @@ export function AuthProvider({
       JSON.stringify(response.user),
     );
 
+    sessionStorage.removeItem(
+      "@clone-trello:session-expired",
+    );
+
     setUser(response.user);
   }
 
   function signOut() {
     localStorage.removeItem(TOKEN_STORAGE_KEY);
     localStorage.removeItem(USER_STORAGE_KEY);
+
+    sessionStorage.removeItem(
+      "@clone-trello:session-expired",
+    );
 
     setUser(null);
   }
