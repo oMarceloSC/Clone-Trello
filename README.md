@@ -352,9 +352,9 @@ O desenvolvimento do projeto é dividido em milestones, permitindo evolução co
 |-----------|:------:|
 | ✅ Milestone 1 — Foundation | Concluído |
 | ✅ Milestone 2 — Workspaces | Concluído |
-| 🚧 Milestone 3 — Frontend de Integração | Em andamento |
-| ⏳ Milestone 4 — Boards | Próximo |
-| ⏳ Milestone 5 — Lists | Planejado |
+| ✅ Milestone 3 — Frontend de Integração | Concluído |
+| 🚧 Milestone 4 — Boards | Em andamento |
+| ⏳ Milestone 5 — Lists | Próximo |
 | ⏳ Milestone 6 — Cards | Planejado |
 | ⏳ Milestone 7 — Colaboração em Tempo Real | Planejado |
 | ⏳ Milestone 8 — Dashboard, Atividades e Notificações | Planejado |
