@@ -175,10 +175,6 @@ Cada milestone representa um conjunto de funcionalidades relacionadas.
 - [x] Modal de confirmação de exclusão
 - [x] Controle de permissão para exclusão
 - [x] Redirecionamento após exclusão
-- [ ] Criar componentes reutilizáveis
-- [ ] Criar estados de carregamento
-- [ ] Criar empty states
-- [ ] Criar sistema de mensagens ou toasts
 
 ---
 
@@ -329,6 +325,10 @@ Cada milestone representa um conjunto de funcionalidades relacionadas.
 * [ ] Error pages
 * [ ] Modais
 * [ ] Toasts
+- [ ] Criar componentes reutilizáveis
+- [ ] Criar estados de carregamento
+- [ ] Criar empty states
+- [ ] Criar sistema de mensagens ou toasts
 
 ## Experiência do Usuário
 
