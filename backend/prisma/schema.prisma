@@ -18,17 +18,32 @@ model User {
   workspaceMembers WorkspaceMember[]
 
   workspaceInvitationsSent WorkspaceInvitation[] @relation("WorkspaceInvitationInviter")
+
+  passwordResetTokens PasswordResetToken[]
+}
+
+model PasswordResetToken {
+  id        String    @id @default(uuid())
+  token     String    @unique
+  userId    String
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
 }
 
 model Workspace {
   id          String   @id @default(uuid())
   name        String
   description String?
-
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  members      WorkspaceMember[]
+  members WorkspaceMember[]
 
   invitations WorkspaceInvitation[]
 }
@@ -41,17 +56,13 @@ enum WorkspaceRole {
 }
 
 model WorkspaceMember {
-  id          String @id @default(uuid())
-
+  id          String        @id @default(uuid())
   userId      String
   workspaceId String
+  role        WorkspaceRole @default(MEMBER)
+  createdAt   DateTime      @default(now())
 
-  role WorkspaceRole @default(MEMBER)
-
-  createdAt DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
   @@unique([userId, workspaceId])

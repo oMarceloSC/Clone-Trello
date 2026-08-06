@@ -111,6 +111,8 @@ Cada milestone representa um conjunto de funcionalidades relacionadas.
 - [x] Configurar URL da API
 - [x] Criar interceptor JWT
 - [x] Criar serviço de autenticação
+- [x] Implementar serviço de recuperação de senha
+- [x] Implementar serviço de redefinição de senha
 - [x] Criar interceptor de respostas
 - [x] Tratar sessão expirada
 
@@ -126,7 +128,8 @@ Cada milestone representa um conjunto de funcionalidades relacionadas.
 - [x] Implementar AuthContext
 - [x] Recuperar sessão com `/auth/me`
 - [x] Bloquear páginas públicas para usuários autenticados
-- [ ] Implementar recuperação de senha
+- [x] Implementar recuperação de senha
+- [x] Implementar redefinição de senha
 
 ## Workspaces
 
@@ -156,6 +159,13 @@ Cada milestone representa um conjunto de funcionalidades relacionadas.
 - [x] Header compartilhado
 - [x] WorkspacePage
 - [x] Página 404 personalizada
+- [x] Página de recuperação de senha
+- [x] Página de redefinição de senha
+- [x] Link "Esqueci minha senha"
+- [x] Exibição do link de redefinição durante o desenvolvimento
+- [x] Botão para copiar o link de redefinição
+- [x] Redirecionamento automático para Login após redefinição da senha
+- [x] Mensagem de confirmação após redefinição da senha
 - [x] Breadcrumb de navegação
 - [x] Cards de resumo do Workspace
 - [x] Modal de edição de Workspace
@@ -393,6 +403,8 @@ Ao final, a aplicação deverá possuir:
 * Backend modular.
 * Frontend moderno em React.
 * Autenticação completa.
+* Recuperação de senha.
+* Redefinição de senha.
 * Workspaces, Boards, Lists e Cards.
 * Sistema de membros e permissões.
 * Convites.

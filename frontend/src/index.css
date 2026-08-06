@@ -1559,3 +1559,83 @@ button {
     width: 100%;
   }
 }
+
+.forgot-password-link {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -4px;
+}
+
+.forgot-password-link a {
+  color: #0c66e4;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.forgot-password-link a:hover {
+  text-decoration: underline;
+}
+
+.password-reset-link-section {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid #b3d4ff;
+  border-radius: 10px;
+  background: #f7faff;
+}
+
+.password-reset-link-section p {
+  margin: 0;
+  color: #44546f;
+  line-height: 1.5;
+}
+
+.password-reset-link-control {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.password-reset-link-control input {
+  min-width: 0;
+  flex: 1;
+}
+
+.password-reset-link-control .secondary-button {
+  flex-shrink: 0;
+}
+
+.password-reset-copy-message {
+  color: #216e4e;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.password-reset-open-link {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: fit-content;
+  text-decoration: none;
+}
+
+.password-reset-open-link:hover {
+  text-decoration: none;
+}
+
+@media (max-width: 520px) {
+  .password-reset-link-control {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .password-reset-link-control .secondary-button {
+    width: 100%;
+  }
+
+  .password-reset-open-link {
+    width: 100%;
+  }
+}

@@ -30,3 +30,22 @@ export type RegisterResponse = {
 export type CurrentUserResponse = {
   user: User;
 };
+
+export type ForgotPasswordRequest = {
+  email: string;
+};
+
+export type ForgotPasswordResponse = {
+  message: string;
+  resetToken: string | null;
+  resetUrl: string | null;
+};
+
+export type ResetPasswordRequest = {
+  token: string;
+  password: string;
+};
+
+export type ResetPasswordResponse = {
+  message: string;
+};

@@ -74,6 +74,8 @@ AppRoutes
 ├── /
 ├── /login
 ├── /register
+├── /forgot-password
+├── /reset-password
 ├── (AuthenticatedLayout)
 │   ├── /dashboard
 │   ├── /workspaces/:id
@@ -90,6 +92,8 @@ AppRoutes
 | `/` | Público | ✅ | Redireciona para o Dashboard |
 | `/login` | Visitante | ✅ | Login |
 | `/register` | Visitante | ✅ | Cadastro |
+| `/forgot-password` | Visitante | ✅ | Recuperação de senha |
+| `/reset-password` | Visitante | ✅ | Redefinição de senha |
 | `/dashboard` | Autenticado | ✅ | Dashboard |
 | `/workspaces/:id` | Autenticado | ✅ | Visualização e gerenciamento do Workspace |
 | `/workspace-invitations/:token/accept` | Autenticado | ✅ | Aceitação de convite por token |
@@ -117,7 +121,7 @@ O sistema verifica a autenticação e decide se o usuário pode continuar ou se 
 
 # Rotas Públicas
 
-Atualmente existem duas rotas públicas.
+Atualmente existem quatro rotas públicas.
 
 ## Login
 
@@ -139,6 +143,26 @@ Responsável pela criação de novos usuários.
 
 ---
 
+## Recuperação de senha
+
+```text
+/forgot-password
+```
+
+Responsável por iniciar o fluxo de recuperação de senha.
+
+---
+
+## Redefinição de senha
+
+```text
+/reset-password
+```
+
+Responsável por permitir a definição de uma nova senha utilizando um token de recuperação válido.
+
+---
+
 # RequireGuest
 
 As páginas públicas utilizam:
@@ -147,7 +171,12 @@ As páginas públicas utilizam:
 RequireGuest
 ```
 
-Esse componente impede que usuários autenticados acessem Login ou Cadastro.
+Esse componente impede que usuários autenticados acessem:
+
+- Login.
+- Cadastro.
+- Recuperação de senha.
+- Redefinição de senha.
 
 Fluxo:
 
@@ -156,7 +185,19 @@ Usuário autenticado
 
 ↓
 
-/login ou /register
+/login
+
+ou
+
+/register
+
+ou
+
+/forgot-password
+
+ou
+
+/reset-password
 
 ↓
 
@@ -234,6 +275,52 @@ O Dashboard permite:
 - Aceitar convites diretamente.
 - Atualizar automaticamente a lista de Workspaces após aceitar um convite.
 - Visualizar estados de carregamento e erro.
+
+---
+
+# Recuperação de Senha
+
+## Fluxo
+
+```text
+Visitante
+
+↓
+
+/forgot-password
+
+↓
+
+POST /auth/forgot-password
+
+↓
+
+Link de redefinição
+
+↓
+
+/reset-password
+
+↓
+
+POST /auth/reset-password
+
+↓
+
+/login
+```
+
+---
+
+## Funcionalidades
+
+As novas rotas permitem:
+
+- Solicitar recuperação de senha.
+- Validar o email informado.
+- Exibir o link de redefinição durante o desenvolvimento.
+- Redefinir a senha utilizando um token válido.
+- Redirecionar automaticamente para a tela de Login após sucesso.
 
 ---
 
@@ -759,7 +846,9 @@ AppRoutes
 
 ├── RequireGuest
 │   ├── LoginPage
-│   └── RegisterPage
+│   ├── RegisterPage
+│   ├── ForgotPasswordPage
+│   └── ResetPasswordPage
 │
 ├── RequireAuthentication
 │   ↓
@@ -842,22 +931,6 @@ Será renderizada dentro do `AuthenticatedLayout`.
 
 ---
 
-## Recuperação de senha
-
-```text
-/forgot-password
-```
-
----
-
-## Redefinição de senha
-
-```text
-/reset-password
-```
-
----
-
 # Melhorias Futuras
 
 Estão planejadas:
@@ -870,7 +943,6 @@ Estão planejadas:
 - Rotas dinâmicas adicionais.
 - Navegação baseada em permissões.
 - Layout administrativo.
-- Recuperação de senha.
 - Redirecionamento automático para convites após login.
 
 ---
@@ -915,13 +987,17 @@ Estão planejadas:
 - Listagem de convites pendentes no Dashboard.
 - Aceitação de convites diretamente pelo Dashboard.
 - Atualização automática dos Workspaces após aceitar um convite.
+- Rota `/forgot-password`.
+- Rota `/reset-password`.
+- Fluxo de recuperação de senha.
+- Fluxo de redefinição de senha.
+- Redirecionamento automático para Login após redefinição da senha.
 
 ## Planejado
 
 - Rotas dos Boards.
 - Rotas de Perfil.
 - Rotas de Notificações.
-- Recuperação de senha.
 - Lazy Loading.
 - Code Splitting.
 - Proteção baseada em permissões.

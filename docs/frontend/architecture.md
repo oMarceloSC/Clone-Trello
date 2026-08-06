@@ -224,6 +224,10 @@ LoginPage
 
 RegisterPage
 
+ForgotPasswordPage
+
+ResetPasswordPage
+
 DashboardPage
 
 WorkspacePage
@@ -236,6 +240,10 @@ NotFoundPage
 A `AcceptWorkspaceInvitationPage` permite aceitar convites utilizando o token presente na URL, enquanto o `DashboardPage` também permite aceitar convites diretamente através da listagem de convites pendentes.
 
 A `NotFoundPage` é renderizada quando nenhuma rota corresponde ao endereço acessado, permitindo retornar à página anterior, ao Dashboard ou ao Login.
+
+A `ForgotPasswordPage` é responsável por iniciar o fluxo de recuperação da senha, permitindo que o usuário solicite um token de redefinição.
+
+A `ResetPasswordPage` permite informar uma nova senha utilizando um token válido recebido durante o processo de recuperação.
 
 ---
 
@@ -410,6 +418,10 @@ login()
 
 registerUser()
 
+forgotPassword()
+
+resetPassword()
+
 getCurrentUser()
 ```
 
@@ -467,6 +479,8 @@ Atualmente existem schemas para:
 - Cadastro.
 - Criação de Workspace.
 - Atualização de Workspace.
+- Recuperação de senha.
+- Redefinição de senha.
 
 Exemplos:
 
@@ -474,6 +488,10 @@ Exemplos:
 login.schema.ts
 
 register.schema.ts
+
+forgot-password.schema.ts
+
+reset-password.schema.ts
 
 create-workspace.schema.ts
 
@@ -500,6 +518,14 @@ LoginResponse
 RegisterRequest
 
 RegisterResponse
+
+ForgotPasswordRequest
+
+ForgotPasswordResponse
+
+ResetPasswordRequest
+
+ResetPasswordResponse
 ```
 
 Exemplos de Workspaces:
@@ -576,6 +602,10 @@ Exemplos:
 /login
 
 /register
+
+/forgot-password
+
+/reset-password
 ```
 
 ---
@@ -716,6 +746,54 @@ AuthenticatedLayout
 
 Dashboard
 ```
+
+---
+
+# Fluxo da Recuperação de Senha
+
+```text
+Usuário
+
+↓
+
+ForgotPasswordPage
+
+↓
+
+forgotPassword()
+
+↓
+
+POST /auth/forgot-password
+
+↓
+
+Token temporário
+
+↓
+
+ResetPasswordPage
+
+↓
+
+resetPassword()
+
+↓
+
+POST /auth/reset-password
+
+↓
+
+Senha atualizada
+
+↓
+
+LoginPage
+```
+
+Durante o desenvolvimento, o backend retorna o link de redefinição para facilitar os testes locais.
+
+Em ambiente de produção, esse link será enviado por email ao usuário.
 
 ---
 
@@ -1202,6 +1280,8 @@ Auth
 
 ├── Login
 ├── Cadastro
+├── Recuperação de senha
+├── Redefinição de senha
 ├── Recuperação da sessão
 ├── Tratamento automático da sessão expirada
 └── AuthContext
@@ -1350,6 +1430,14 @@ Cada módulo seguirá a mesma organização baseada em features.
 - Página 404 personalizada.
 - Navegação da Página 404 para Dashboard ou Login.
 - Retorno à página anterior através do histórico.
+- ForgotPasswordPage.
+- ResetPasswordPage.
+- Recuperação de senha.
+- Redefinição de senha.
+- Schemas de recuperação de senha.
+- Schemas de redefinição de senha.
+- Métodos `forgotPassword()`.
+- Métodos `resetPassword()`.
 
 ## Em desenvolvimento
 
@@ -1367,12 +1455,12 @@ As próximas implementações serão:
 
 1. Cancelamento de convites.
 2. Reenvio de convites.
-3. Recuperação de senha.
-4. Componentes compartilhados.
-5. Feature Boards.
-6. Feature Lists.
-7. Feature Cards.
-8. Integração em tempo real com Socket.IO.
+3. Componentes compartilhados.
+4. Feature Boards.
+5. Feature Lists.
+6. Feature Cards.
+7. Integração em tempo real com Socket.IO.
+8. Envio da recuperação de senha por email.
 
 Todas as novas páginas autenticadas utilizarão o `AuthenticatedLayout`.
 

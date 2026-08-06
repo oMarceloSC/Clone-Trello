@@ -217,6 +217,10 @@ login()
 
 registerUser()
 
+forgotPassword()
+
+resetPassword()
+
 getCurrentUser()
 ```
 
@@ -290,6 +294,120 @@ POST /auth/register
 - Criar um novo usuário.
 - Retornar os dados do usuário criado.
 - Não enviar a confirmação de senha para o backend.
+
+---
+
+# forgotPassword()
+
+## Endpoint
+
+```http
+POST /auth/forgot-password
+```
+
+## Entrada
+
+```ts
+type ForgotPasswordRequest = {
+  email: string;
+}
+```
+
+## Resposta
+
+```ts
+type ForgotPasswordResponse = {
+  message: string;
+  resetToken: string | null;
+  resetUrl: string | null;
+}
+```
+
+## Responsabilidades
+
+- Solicitar a recuperação da senha.
+- Enviar o email informado para o backend.
+- Receber a mensagem de confirmação.
+- Receber o link de redefinição durante o ambiente de desenvolvimento.
+- Propagar erros para a página responsável.
+
+## Fluxo
+
+```text
+ForgotPasswordPage
+
+↓
+
+forgotPassword()
+
+↓
+
+POST /auth/forgot-password
+
+↓
+
+ForgotPasswordResponse
+
+↓
+
+Exibição do link de redefinição
+```
+
+---
+
+# resetPassword()
+
+## Endpoint
+
+```http
+POST /auth/reset-password
+```
+
+## Entrada
+
+```ts
+type ResetPasswordRequest = {
+  token: string;
+  password: string;
+}
+```
+
+## Resposta
+
+```ts
+type ResetPasswordResponse = {
+  message: string;
+}
+```
+
+## Responsabilidades
+
+- Enviar o token de recuperação.
+- Enviar a nova senha.
+- Receber a confirmação da redefinição.
+- Propagar erros para a página responsável.
+
+## Fluxo
+
+```text
+ResetPasswordPage
+
+↓
+
+resetPassword()
+
+↓
+
+POST /auth/reset-password
+
+↓
+
+Mensagem de sucesso
+
+↓
+
+Redirecionamento para Login
+```
 
 ---
 
@@ -1225,6 +1343,49 @@ type CurrentUserResponse = {
 
 ---
 
+## ForgotPasswordRequest
+
+```ts
+type ForgotPasswordRequest = {
+  email: string;
+}
+```
+
+---
+
+## ForgotPasswordResponse
+
+```ts
+type ForgotPasswordResponse = {
+  message: string;
+  resetToken: string | null;
+  resetUrl: string | null;
+}
+```
+
+---
+
+## ResetPasswordRequest
+
+```ts
+type ResetPasswordRequest = {
+  token: string;
+  password: string;
+}
+```
+
+---
+
+## ResetPasswordResponse
+
+```ts
+type ResetPasswordResponse = {
+  message: string;
+}
+```
+
+---
+
 ## ListWorkspacesResponse
 
 ```ts
@@ -1358,6 +1519,8 @@ Mensagens utilizadas atualmente:
 - Não foi possível excluir o Workspace.
 - Não foi possível criar o Workspace.
 - Sua sessão expirou. Entre novamente.
+- Não foi possível solicitar a recuperação da senha.
+- Não foi possível redefinir a senha.
 
 ---
 
@@ -1430,6 +1593,8 @@ notification.service.ts
 - `createWorkspaceInvitation()`.
 - `listPendingWorkspaceInvitations()`.
 - `acceptWorkspaceInvitation()`.
+- `forgotPassword()`.
+- `resetPassword()`.
 
 ## Planejado
 
@@ -1438,5 +1603,6 @@ notification.service.ts
 - Serviços de Boards.
 - Serviços de Lists.
 - Serviços de Cards.
+- Integração com envio de email para recuperação de senha.
 - Refresh Token.
 - Cache de requisições.

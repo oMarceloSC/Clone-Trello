@@ -89,6 +89,19 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Redirecionamento automático para Login após sessão expirada.
 * Exibição da mensagem de sessão expirada.
 * Dashboard integrado ao AuthContext.
+* Página de recuperação de senha.
+* Página de redefinição de senha.
+* Link "Esqueci minha senha" na LoginPage.
+* Integração com o endpoint `POST /auth/forgot-password`.
+* Integração com o endpoint `POST /auth/reset-password`.
+* Serviço `forgotPassword()`.
+* Serviço `resetPassword()`.
+* Validação do formulário de recuperação utilizando React Hook Form e Zod.
+* Validação do formulário de redefinição utilizando React Hook Form e Zod.
+* Geração do link de redefinição durante o ambiente de desenvolvimento.
+* Botão para copiar o link de redefinição.
+* Redirecionamento automático para Login após redefinição da senha.
+* Mensagem de confirmação após redefinição da senha.
 
 ### Workspaces no Frontend
 
@@ -210,6 +223,14 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Card central da Página 404.
 * Navegação por botões para retorno, Dashboard e Login.
 * Responsividade da Página 404.
+* Layout da ForgotPasswordPage.
+* Layout da ResetPasswordPage.
+* Link "Esqueci minha senha".
+* Área de exibição do link de redefinição.
+* Botão para copiar o link de redefinição.
+* Estados visuais da recuperação de senha.
+* Estados visuais da redefinição de senha.
+* Responsividade do fluxo de recuperação de senha.
 
 ### Documentação
 
@@ -271,6 +292,15 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Atualização da documentação da estilização da Página 404.
 * Atualização da arquitetura do frontend para documentar a rota coringa.
 * Atualização do roadmap para registrar a Página 404 como concluída.
+* Atualização da documentação da API de autenticação com os endpoints de recuperação de senha.
+* Atualização da documentação do frontend para o fluxo de recuperação de senha.
+* Atualização da documentação das páginas para incluir `ForgotPasswordPage`.
+* Atualização da documentação das páginas para incluir `ResetPasswordPage`.
+* Atualização da documentação dos serviços com `forgotPassword()`.
+* Atualização da documentação dos serviços com `resetPassword()`.
+* Atualização da documentação de roteamento para incluir as rotas de recuperação e redefinição de senha.
+* Atualização da documentação de estilização para o fluxo de recuperação de senha.
+* Atualização da arquitetura do frontend com o fluxo de recuperação de senha.
 
 ---
 

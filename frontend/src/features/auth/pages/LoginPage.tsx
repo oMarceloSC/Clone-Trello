@@ -19,6 +19,7 @@ import {
 
 type LoginLocationState = {
   registrationSuccess?: boolean;
+  passwordResetSuccess?: boolean;
 };
 
 const SESSION_EXPIRED_STORAGE_KEY =
@@ -107,7 +108,16 @@ export function LoginPage() {
             className="success-message"
             role="status"
           >
-            Conta criada com sucesso. Agora você pode entrar.
+            Conta criada com sucesso.
+          </div>
+        )}
+
+        {state?.passwordResetSuccess && (
+          <div
+            className="success-message"
+            role="status"
+          >
+            Senha redefinida com sucesso.
           </div>
         )}
 
@@ -159,6 +169,12 @@ export function LoginPage() {
                 {errors.password.message}
               </span>
             )}
+          </div>
+
+          <div className="forgot-password-link">
+            <Link to="/forgot-password">
+              Esqueci minha senha
+            </Link>
           </div>
 
           {apiError && (

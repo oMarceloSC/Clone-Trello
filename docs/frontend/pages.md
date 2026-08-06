@@ -20,7 +20,9 @@ src/
 │   ├── auth/
 │   │   └── pages/
 │   │       ├── LoginPage.tsx
-│   │       └── RegisterPage.tsx
+│   │       ├── RegisterPage.tsx
+│   │       ├── ForgotPasswordPage.tsx
+│   │       └── ResetPasswordPage.tsx
 │   │
 │   └── workspaces/
 │       ├── components/
@@ -80,6 +82,8 @@ Permitir autenticação utilizando email e senha.
 - Atualizar o AuthContext.
 - Exibir mensagens de erro.
 - Redirecionar para o Dashboard após autenticação.
+- Exibir link para recuperação de senha.
+- Exibir mensagem de sucesso após redefinição da senha.
 
 ---
 
@@ -134,6 +138,16 @@ Conta criada com sucesso. Agora você pode entrar.
 
 ---
 
+### Senha redefinida
+
+Quando o usuário conclui a redefinição da senha, é exibida a mensagem:
+
+```text
+Senha redefinida com sucesso. Agora você pode entrar.
+```
+
+---
+
 ## Fluxo
 
 ```text
@@ -170,6 +184,14 @@ AuthContext
 ↓
 
 Dashboard
+
+ou
+
+Esqueci minha senha
+
+↓
+
+ForgotPasswordPage
 ```
 
 ---
@@ -298,6 +320,140 @@ POST /auth/register
 ↓
 
 Login
+```
+
+---
+
+# ForgotPasswordPage
+
+## Arquivo
+
+```text
+src/features/auth/pages/ForgotPasswordPage.tsx
+```
+
+## Rota
+
+```text
+/forgot-password
+```
+
+## Acesso
+
+Público.
+
+Usuários autenticados são redirecionados automaticamente para:
+
+```text
+/dashboard
+```
+
+---
+
+## Objetivos
+
+Permitir que um usuário solicite a recuperação da senha.
+
+---
+
+## Responsabilidades
+
+- Exibir formulário de recuperação.
+- Validar o email.
+- Solicitar recuperação da senha.
+- Exibir o link de redefinição durante o desenvolvimento.
+- Permitir copiar o link.
+- Permitir abrir diretamente a página de redefinição.
+
+---
+
+## Fluxo
+
+```text
+Usuário
+
+↓
+
+ForgotPasswordPage
+
+↓
+
+POST /auth/forgot-password
+
+↓
+
+Link de redefinição
+
+↓
+
+ResetPasswordPage
+```
+
+---
+
+# ResetPasswordPage
+
+## Arquivo
+
+```text
+src/features/auth/pages/ResetPasswordPage.tsx
+```
+
+## Rota
+
+```text
+/reset-password
+```
+
+## Acesso
+
+Público.
+
+Usuários autenticados são redirecionados automaticamente para:
+
+```text
+/dashboard
+```
+
+---
+
+## Objetivos
+
+Permitir que o usuário informe uma nova senha utilizando um token válido.
+
+---
+
+## Responsabilidades
+
+- Ler o token presente na URL.
+- Validar a nova senha.
+- Confirmar a senha.
+- Executar a redefinição.
+- Exibir mensagens de erro.
+- Redirecionar para o Login após sucesso.
+
+---
+
+## Fluxo
+
+```text
+Usuário
+
+↓
+
+ResetPasswordPage
+
+↓
+
+POST /auth/reset-password
+
+↓
+
+Senha redefinida
+
+↓
+
+LoginPage
 ```
 
 ---
@@ -1490,12 +1646,19 @@ Responsabilidades planejadas:
 - Remoção de membros pelo `OWNER`.
 - Modal de confirmação para remoção de membros.
 - Atualização automática da lista e dos contadores de membros.
+- ForgotPasswordPage.
+- ResetPasswordPage.
+- Recuperação de senha.
+- Redefinição de senha.
+- Link para recuperação de senha na LoginPage.
+- Mensagem de confirmação após redefinição da senha.
 
 ## Planejado
 
 - Alteração de permissões.
 - Cancelamento de convites.
 - Reenvio de convites.
+- Envio de email para recuperação de senha.
 - BoardPage.
 - NotificationPage.
 - ProfilePage.

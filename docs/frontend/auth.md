@@ -49,10 +49,14 @@ src/
         │   └── useAuth.ts
         ├── pages/
         │   ├── LoginPage.tsx
-        │   └── RegisterPage.tsx
+        │   ├── RegisterPage.tsx
+        │   ├── ForgotPasswordPage.tsx
+        │   └── ResetPasswordPage.tsx
         ├── schemas/
         │   ├── login.schema.ts
-        │   └── register.schema.ts
+        │   ├── register.schema.ts
+        │   ├── forgot-password.schema.ts
+        │   └── reset-password.schema.ts
         ├── services/
         │   └── auth.service.ts
         └── types/
@@ -67,6 +71,8 @@ src/
 |---|---|---|
 | POST | `/auth/register` | Cadastro de usuário |
 | POST | `/auth/login` | Autenticação |
+| POST | `/auth/forgot-password` | Solicitação de recuperação de senha |
+| POST | `/auth/reset-password` | Redefinição da senha |
 | GET | `/auth/me` | Recuperação da sessão atual |
 
 ---
@@ -453,6 +459,138 @@ Redirecionamento para /dashboard
 
 ---
 
+# Recuperação de Senha
+
+## Rota
+
+```text
+/forgot-password
+```
+
+## Objetivo
+
+Permitir que o usuário solicite a redefinição da senha informando seu email.
+
+---
+
+## Funcionalidades
+
+- Formulário de recuperação.
+- Validação utilizando React Hook Form e Zod.
+- Integração com o endpoint `/auth/forgot-password`.
+- Exibição do link de redefinição durante o desenvolvimento.
+- Botão para copiar o link.
+- Navegação direta para a tela de redefinição.
+- Tratamento de erros retornados pela API.
+
+---
+
+## Endpoint Consumido
+
+```http
+POST /auth/forgot-password
+```
+
+---
+
+## Fluxo
+
+```text
+Usuário acessa /forgot-password
+
+↓
+
+Informa o email
+
+↓
+
+Validação com Zod
+
+↓
+
+POST /auth/forgot-password
+
+↓
+
+Token gerado
+
+↓
+
+Link de redefinição exibido
+
+↓
+
+Usuário acessa a tela de redefinição
+```
+
+---
+
+# Redefinição de Senha
+
+## Rota
+
+```text
+/reset-password
+```
+
+## Objetivo
+
+Permitir que o usuário informe uma nova senha utilizando um token de recuperação válido.
+
+---
+
+## Funcionalidades
+
+- Leitura do token enviado pela URL.
+- Validação utilizando React Hook Form e Zod.
+- Confirmação da nova senha.
+- Integração com o endpoint `/auth/reset-password`.
+- Redirecionamento automático para o Login após sucesso.
+- Exibição de confirmação da redefinição da senha.
+- Tratamento de tokens inválidos ou expirados.
+
+---
+
+## Endpoint Consumido
+
+```http
+POST /auth/reset-password
+```
+
+---
+
+## Fluxo
+
+```text
+Usuário acessa /reset-password?token=...
+
+↓
+
+Nova senha
+
+↓
+
+Confirmação da senha
+
+↓
+
+POST /auth/reset-password
+
+↓
+
+Senha atualizada
+
+↓
+
+Redirecionamento para /login
+
+↓
+
+Mensagem de sucesso
+```
+
+---
+
 # Persistência da Sessão
 
 O token e os dados do usuário são armazenados no `localStorage`.
@@ -677,7 +815,14 @@ Sessão está carregando?
 
 # Rotas Públicas para Visitantes
 
-As páginas de login e cadastro utilizam o componente `RequireGuest`.
+As páginas públicas utilizam o componente `RequireGuest`.
+
+Atualmente são protegidas:
+
+- `/login`
+- `/register`
+- `/forgot-password`
+- `/reset-password`
 
 Caso um usuário autenticado tente acessar:
 
@@ -795,6 +940,8 @@ Futuramente poderá ser avaliada a utilização de:
 - Cadastro.
 - Login.
 - Logout.
+- Recuperação de senha.
+- Redefinição de senha.
 - `AuthContext`.
 - `AuthProvider`.
 - Hook `useAuth`.
@@ -808,15 +955,15 @@ Futuramente poderá ser avaliada a utilização de:
 - Tratamento automático de respostas `401 Unauthorized`.
 - Limpeza automática da sessão.
 - Mensagem de sessão expirada.
+- Mensagem de confirmação após redefinição da senha.
 - Rotas protegidas.
 - Rotas exclusivas para visitantes.
 - Redirecionamento após cadastro.
-- Mensagem de sucesso no login.
+- Redirecionamento após redefinição da senha.
 
 ## Planejado
 
-- Recuperação de senha.
-- Redefinição de senha.
+- Envio da recuperação por email.
 - Refresh token.
 - Revogação de sessões.
 - Cookies `HttpOnly`.

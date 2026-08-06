@@ -7,6 +7,8 @@ import {
 
 import { useAuth } from "../features/auth/hooks/useAuth";
 import { LoginPage } from "../features/auth/pages/LoginPage";
+import { ForgotPasswordPage } from "../features/auth/pages/ForgotPasswordPage";
+import { ResetPasswordPage } from "../features/auth/pages/ResetPasswordPage";
 import { RegisterPage } from "../features/auth/pages/RegisterPage";
 import { AcceptWorkspaceInvitationPage } from "../features/workspaces/pages/AcceptWorkspaceInvitationPage";
 import { WorkspacePage } from "../features/workspaces/pages/WorkspacePage";
@@ -86,6 +88,24 @@ export function AppRoutes() {
         element={
           <RequireGuest>
             <RegisterPage />
+          </RequireGuest>
+        }
+      />
+
+      <Route
+        path="/forgot-password"
+        element={
+          <RequireGuest>
+            <ForgotPasswordPage />
+          </RequireGuest>
+        }
+      />
+      
+      <Route 
+        path="/reset-password"
+        element={
+          <RequireGuest>
+            <ResetPasswordPage />
           </RequireGuest>
         }
       />

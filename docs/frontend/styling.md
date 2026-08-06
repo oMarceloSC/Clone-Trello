@@ -48,6 +48,10 @@ Atualmente existem estilos para:
 - Layout de autenticação.
 - Login.
 - Cadastro.
+- Recuperação de senha.
+- Redefinição de senha.
+- Link `Esqueci minha senha`.
+- Exibição e cópia do link de redefinição.
 - Dashboard.
 - AuthenticatedLayout.
 - Sidebar.
@@ -95,6 +99,16 @@ auth-card
 auth-header
 
 auth-form
+
+forgot-password-link
+
+password-reset-link-section
+
+password-reset-link-control
+
+password-reset-copy-message
+
+password-reset-open-link
 
 form-field
 
@@ -212,7 +226,7 @@ Todos os componentes e páginas reutilizam essas definições.
 
 # Layout de Autenticação
 
-Atualmente existe um layout compartilhado entre Login e Cadastro.
+Atualmente existe um layout compartilhado entre Login, Cadastro, Recuperação de Senha e Redefinição de Senha.
 
 Características:
 
@@ -223,6 +237,90 @@ Características:
 - Mensagens de sucesso.
 - Botões de ação.
 - Links de navegação entre Login e Cadastro.
+- Link para recuperação de senha.
+- Exibição do link de redefinição durante o desenvolvimento.
+- Botão para copiar o link.
+- Navegação direta para a tela de redefinição.
+- Formulário para nova senha e confirmação.
+
+---
+
+# Recuperação de Senha
+
+A página de recuperação reutiliza o mesmo layout visual das páginas de Login e Cadastro.
+
+Arquivo:
+
+```text
+ForgotPasswordPage.tsx
+```
+
+A página permite:
+
+- Informar o email.
+- Solicitar a recuperação da senha.
+- Exibir mensagens de validação.
+- Exibir mensagens retornadas pela API.
+- Apresentar o link de redefinição durante o desenvolvimento.
+- Copiar o link para a área de transferência.
+- Abrir diretamente a página de redefinição.
+
+O link `Esqueci minha senha` utiliza a classe:
+
+```text
+forgot-password-link
+```
+
+A área de exibição do link utiliza:
+
+```text
+password-reset-link-section
+
+password-reset-link-control
+
+password-reset-copy-message
+
+password-reset-open-link
+```
+
+A seção possui:
+
+- Fundo diferenciado.
+- Borda visível.
+- Campo somente leitura.
+- Botão `Copiar`.
+- Mensagem de confirmação da cópia.
+- Botão para abrir a tela de redefinição.
+
+---
+
+# Redefinição de Senha
+
+A página de redefinição utiliza o mesmo padrão visual do restante da autenticação.
+
+Arquivo:
+
+```text
+ResetPasswordPage.tsx
+```
+
+A página contém:
+
+- Campo de nova senha.
+- Campo de confirmação da senha.
+- Mensagens de validação.
+- Mensagens de erro da API.
+- Mensagem de sucesso.
+- Botão `Redefinir senha`.
+- Link para retornar ao Login.
+
+Durante a requisição, o botão principal exibe:
+
+```text
+Redefinindo...
+```
+
+Após o sucesso, o usuário é redirecionado para o Login e recebe uma mensagem de confirmação.
 
 ---
 
@@ -469,8 +567,6 @@ Ao clicar nesse botão é aberto um modal para criação de convites, permitindo
 Após a criação do convite, o componente passa a exibir o link gerado, permitindo sua cópia para compartilhamento.
 
 Isso permite atualizar somente o gerenciamento de membros sem recarregar toda a página.
-
----
 
 ---
 
@@ -764,6 +860,52 @@ Carregando sessão...
 ```
 
 Esse estado impede que páginas privadas sejam exibidas antes da validação do token.
+
+---
+
+## Solicitação de Recuperação
+
+Durante a solicitação é exibido:
+
+```text
+Enviando...
+```
+
+O botão permanece desabilitado até a conclusão da requisição.
+
+---
+
+## Recuperação Solicitada
+
+Após o sucesso:
+
+- A mensagem retornada pela API é exibida.
+- O link de redefinição passa a ser apresentado.
+- O botão de cópia fica disponível.
+- O usuário pode abrir diretamente a página de redefinição.
+
+---
+
+## Redefinindo Senha
+
+Durante a redefinição é exibido:
+
+```text
+Redefinindo...
+```
+
+O botão permanece desabilitado enquanto a requisição está em andamento.
+
+---
+
+## Senha Redefinida
+
+Após o sucesso:
+
+- A mensagem retornada pela API é exibida.
+- O botão permanece desabilitado.
+- O usuário é redirecionado automaticamente para o Login.
+- A LoginPage exibe uma mensagem de confirmação.
 
 ---
 
@@ -1240,6 +1382,8 @@ Exemplos:
 - Workspace criado.
 - Workspace atualizado.
 - Workspace excluído.
+- Recuperação de senha solicitada.
+- Senha redefinida.
 
 ---
 
@@ -1251,6 +1395,8 @@ Atualmente possuem adaptações para diferentes tamanhos de tela:
 
 - Login.
 - Cadastro.
+- ForgotPasswordPage.
+- ResetPasswordPage.
 - Dashboard.
 - WorkspacePage.
 - AcceptWorkspaceInvitationPage.
@@ -1278,6 +1424,8 @@ Em dispositivos menores:
 - Os botões da Página 404 passam a ser exibidos em coluna.
 - O card da Página 404 reduz automaticamente sua largura.
 - Os botões permanecem acessíveis em telas móveis.
+- O campo do link de redefinição e o botão de cópia são empilhados.
+- O botão para abrir a redefinição ocupa toda a largura disponível.
 
 ---
 
@@ -1301,6 +1449,10 @@ Entre elas:
 - Uso de `aria-labelledby`.
 - Botão de fechamento com `aria-label`.
 - Navegação por teclado nos formulários.
+- Campo do link de redefinição com `aria-label`.
+- Mensagem de cópia utilizando `role="status"`.
+- Mensagem de sucesso da redefinição utilizando `role="status"`.
+- Mensagens de erro da recuperação utilizando `role="alert"`.
 
 ---
 
@@ -1403,6 +1555,14 @@ As próximas evoluções previstas para a camada de estilos são:
 - Estilos globais.
 - Login.
 - Cadastro.
+- ForgotPasswordPage.
+- ResetPasswordPage.
+- Link `Esqueci minha senha`.
+- Estilos do fluxo de recuperação de senha.
+- Exibição do link de redefinição.
+- Botão para copiar o link.
+- Mensagem de confirmação da cópia.
+- Responsividade do fluxo de recuperação de senha.
 - Dashboard.
 - Sidebar.
 - Header.
