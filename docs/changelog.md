@@ -60,6 +60,13 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Integração com o endpoint `PATCH /workspaces/:id`.
 * Atualização de Workspaces pelo frontend.
 * Serviço `deleteWorkspace()`.
+* Serviço `listBoards()`.
+* Serviço `createBoard()`.
+* Integração com o endpoint `GET /workspaces/:workspaceId/boards`.
+* Integração com o endpoint `POST /workspaces/:workspaceId/boards`.
+* Listagem de Boards por Workspace.
+* Criação de Boards pelo frontend.
+* Atualização automática da lista de Boards após criação.
 * Integração com o endpoint `DELETE /workspaces/:id`.
 * Exclusão de Workspaces pelo frontend.
 
@@ -171,6 +178,16 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Página `AcceptWorkspaceInvitationPage`.
 * Atualização automática da lista de convites após aceitação.
 * Atualização automática da lista de Workspaces após aceitar um convite.
+* Listagem de Boards na WorkspacePage.
+* Modal de criação de Boards.
+* Formulário de criação utilizando React Hook Form e Zod.
+* Campo opcional para descrição.
+* Campo opcional para cor de fundo.
+* Campo opcional para imagem de capa.
+* Atualização automática da lista de Boards após criação.
+* Estado vazio para Workspaces sem Boards.
+* Estado de carregamento durante a busca de Boards.
+* Controle visual para impedir criação por usuários `VIEWER`.
 
 ### Estilização
 
@@ -231,6 +248,14 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Estados visuais da recuperação de senha.
 * Estados visuais da redefinição de senha.
 * Responsividade do fluxo de recuperação de senha.
+* Grid responsivo de Boards.
+* Cards de Boards.
+* Modal de criação de Boards.
+* Seletor visual de cor.
+* Suporte para imagem de capa.
+* Estado vazio dos Boards.
+* Estado de carregamento dos Boards.
+* Feedback visual para erros de carregamento dos Boards.
 
 ### Documentação
 
@@ -301,6 +326,13 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Atualização da documentação de roteamento para incluir as rotas de recuperação e redefinição de senha.
 * Atualização da documentação de estilização para o fluxo de recuperação de senha.
 * Atualização da arquitetura do frontend com o fluxo de recuperação de senha.
+* Documentação da API de Boards.
+* Atualização da documentação das páginas com a listagem de Boards.
+* Atualização da documentação das páginas com a criação de Boards.
+* Atualização da documentação dos serviços com `listBoards()`.
+* Atualização da documentação dos serviços com `createBoard()`.
+* Atualização da documentação da estilização para a área de Boards.
+* Atualização da arquitetura do frontend para incluir a Feature Boards.
 
 ---
 

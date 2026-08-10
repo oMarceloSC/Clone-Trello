@@ -922,7 +922,9 @@ Além da visualização das informações gerais, a página permite:
 - Excluir o Workspace.
 - Visualizar os membros.
 - Consultar as permissões de cada participante.
-- Preparar o espaço para os futuros Boards.
+- Listar Boards do Workspace.
+- Criar novos Boards.
+- Exibir estados de carregamento e estado vazio dos Boards.
 - Criar convites para novos membros.
 - Compartilhar links de convite.
 
@@ -949,7 +951,11 @@ Além da visualização das informações gerais, a página permite:
 - Exibir estados de carregamento.
 - Exibir mensagens de erro.
 - Permitir nova tentativa em caso de falha.
-- Preparar a área destinada aos Boards.
+- Listar os Boards do Workspace.
+- Criar novos Boards.
+- Atualizar automaticamente a lista após a criação.
+- Exibir estado vazio quando não existirem Boards.
+- Exibir estado de carregamento durante a consulta dos Boards.
 - Criar convites para novos membros.
 - Gerar links de convite.
 - Copiar automaticamente o link do convite.
@@ -967,7 +973,13 @@ A página apresenta:
 - Data de criação.
 - Breadcrumb.
 - Botão `Voltar`.
-- Área reservada para Boards.
+- Área de Boards.
+- Cards dos Boards.
+- Cor de fundo do Board.
+- Imagem de capa (quando existir).
+- Cargo do usuário no Board.
+- Indicador de favorito.
+- Botão "Abrir".
 
 Também é exibida uma seção de membros contendo:
 
@@ -1384,6 +1396,143 @@ Lista e contadores atualizados
 
 ---
 
+# Boards
+
+A `WorkspacePage` também é responsável pelo gerenciamento inicial dos Boards pertencentes ao Workspace.
+
+## Objetivos
+
+- Listar Boards.
+- Criar novos Boards.
+- Exibir estados de carregamento.
+- Exibir estado vazio.
+- Atualizar automaticamente a interface após a criação.
+
+---
+
+## Dados Exibidos
+
+Cada Board apresenta:
+
+- Cor de fundo.
+- Imagem de capa (quando configurada).
+- Nome.
+- Descrição.
+- Cargo do usuário.
+- Indicador de favorito.
+- Botão `Abrir`.
+
+---
+
+## Permissões
+
+Podem criar Boards:
+
+```text
+OWNER
+
+ADMIN
+
+MEMBER
+```
+
+Usuários `VIEWER` possuem acesso somente para visualização.
+
+---
+
+## Estados
+
+### Carregando
+
+Durante:
+
+```http
+GET /workspaces/:workspaceId/boards
+```
+
+é exibido:
+
+```text
+Carregando Boards...
+```
+
+---
+
+### Lista vazia
+
+Caso não existam Boards:
+
+```text
+Nenhum Board disponível
+
+Crie o primeiro Board para organizar as tarefas deste Workspace.
+```
+
+---
+
+### Criação
+
+Ao clicar em:
+
+```text
+Criar Board
+```
+
+é exibido um modal contendo:
+
+- Título.
+- Descrição.
+- Cor de fundo.
+- URL da imagem de capa.
+- Botão `Cancelar`.
+- Botão `Criar Board`.
+
+O formulário utiliza:
+
+- React Hook Form.
+- Zod.
+
+---
+
+### Criação concluída
+
+Após sucesso:
+
+- O modal é fechado automaticamente.
+- O formulário é limpo.
+- O novo Board é adicionado ao início da lista.
+- Não é necessário recarregar a página.
+
+---
+
+## Fluxo
+
+```text
+WorkspacePage
+
+↓
+
+GET /workspaces/:workspaceId/boards
+
+↓
+
+Lista de Boards
+
+↓
+
+Criar Board
+
+↓
+
+POST /workspaces/:workspaceId/boards
+
+↓
+
+Lista atualizada
+```
+
+---
+
 # Fluxo Completo da WorkspacePage
 
 ```text
@@ -1401,11 +1550,16 @@ GET /workspaces/:id
 
 WorkspacePage
 
-├── Informações gerais
+↓
+
+Informações gerais
+
 ├── Cards de resumo
 ├── GET /workspaces/:id/members
 ├── Lista de membros
-└── Área de Boards
+├── GET /workspaces/:workspaceId/boards
+├── Lista de Boards
+└── Modal de criação de Board
 ```
 
 Fluxo de atualização:
@@ -1457,8 +1611,6 @@ A página será expandida para suportar:
 - Alteração de permissões dos membros.
 - Cancelamento de convites.
 - Reenvio de convites.
-- Listagem de Boards.
-- Criação de Boards.
 - Configurações avançadas.
 
 ---
@@ -1652,6 +1804,15 @@ Responsabilidades planejadas:
 - Redefinição de senha.
 - Link para recuperação de senha na LoginPage.
 - Mensagem de confirmação após redefinição da senha.
+- Listagem de Boards.
+- Criação de Boards.
+- Modal de criação de Board.
+- Atualização automática da lista após criação.
+- Estado vazio dos Boards.
+- Estado de carregamento dos Boards.
+- Exibição de cores de fundo dos Boards.
+- Suporte à imagem de capa dos Boards.
+- Controle de permissão para criação de Boards.
 
 ## Planejado
 

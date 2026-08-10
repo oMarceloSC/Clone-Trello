@@ -1639,3 +1639,180 @@ button {
     width: 100%;
   }
 }
+
+.workspace-boards-error {
+  display: grid;
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.workspace-boards-error .secondary-button {
+  justify-self: start;
+}
+
+.workspace-boards-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(auto-fill, minmax(260px, 1fr));
+  gap: 18px;
+  margin-top: 24px;
+}
+
+.workspace-board-card {
+  position: relative;
+  display: flex;
+  min-height: 210px;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  border-radius: 12px;
+  background-position: center;
+  background-size: cover;
+  box-shadow: 0 3px 12px rgb(9 30 66 / 18%);
+  color: #ffffff;
+}
+
+.workspace-board-card::before {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgb(9 30 66 / 8%) 0%,
+    rgb(9 30 66 / 64%) 100%
+  );
+  content: "";
+  pointer-events: none;
+}
+
+.workspace-board-card-content,
+.workspace-board-card-footer {
+  position: relative;
+  z-index: 1;
+}
+
+.workspace-board-card-content {
+  padding: 20px;
+}
+
+.workspace-board-card-content h3,
+.workspace-board-card-content p {
+  margin: 0;
+}
+
+.workspace-board-card-content h3 {
+  margin-top: 10px;
+  color: #ffffff;
+  font-size: 21px;
+  line-height: 1.25;
+  text-shadow: 0 1px 3px rgb(9 30 66 / 40%);
+}
+
+.workspace-board-card-content p {
+  display: -webkit-box;
+  overflow: hidden;
+  margin-top: 8px;
+  color: rgb(255 255 255 / 88%);
+  font-size: 14px;
+  line-height: 1.5;
+  text-shadow: 0 1px 2px rgb(9 30 66 / 35%);
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.workspace-board-card-role {
+  display: inline-flex;
+  width: fit-content;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 88%);
+  color: #172b4d;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.workspace-board-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px 20px;
+  border-top: 1px solid rgb(255 255 255 / 22%);
+  background: rgb(9 30 66 / 22%);
+  backdrop-filter: blur(4px);
+}
+
+.workspace-board-card-footer span {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.workspace-board-card-footer button {
+  padding: 8px 13px;
+  border: 0;
+  border-radius: 6px;
+  background: rgb(255 255 255 / 92%);
+  color: #172b4d;
+  font-weight: 700;
+}
+
+.workspace-board-card-footer button:hover:not(:disabled) {
+  background: #ffffff;
+}
+
+.workspace-board-card-footer button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.workspace-boards-empty .primary-button {
+  margin-top: 20px;
+}
+
+.form-field input[type="color"] {
+  width: 72px;
+  height: 46px;
+  padding: 4px;
+  cursor: pointer;
+}
+
+.form-field input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.form-field input[type="color"]::-webkit-color-swatch {
+  border: 0;
+  border-radius: 4px;
+}
+
+.form-field input[type="color"]::-moz-color-swatch {
+  border: 0;
+  border-radius: 4px;
+}
+
+@media (max-width: 700px) {
+  .workspace-boards-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .workspace-boards-error .secondary-button {
+    width: 100%;
+  }
+
+  .workspace-board-card {
+    min-height: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .workspace-board-card-footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .workspace-board-card-footer button {
+    width: 100%;
+  }
+}

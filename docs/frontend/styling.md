@@ -71,6 +71,13 @@ Atualmente existem estilos para:
 - Breadcrumb.
 - Cards de resumo do Workspace.
 - Área de Boards.
+- Grid de Boards.
+- Cards de Boards.
+- Modal de criação de Board.
+- Estados de carregamento dos Boards.
+- Estados vazios dos Boards.
+- Feedback visual para erros de carregamento dos Boards.
+- Seletor visual de cor do Board.
 - Seção de membros.
 - Controle visual de permissões.
 - Botões.
@@ -377,7 +384,11 @@ Atualmente são exibidos:
 - Cargo do usuário autenticado.
 - Botão de edição, quando permitido.
 - Botão de exclusão, quando permitido.
-- Área destinada aos Boards.
+- Área de Boards.
+- Grid responsivo de Boards.
+- Cards dos Boards.
+- Botão "Criar Board".
+- Modal de criação de Board.
 - Seção de membros do Workspace.
 - Botão `Convidar membro`, para `OWNER` e `ADMIN`.
 
@@ -391,12 +402,62 @@ Dentro dela também está disponível o modal de criação de convite, responsá
 - Mostrar o link gerado após a criação.
 - Permitir a cópia do link.
 
-Essa estrutura prepara a página para futuras funcionalidades como:
+Essa estrutura permite a evolução contínua do Workspace, incluindo gerenciamento de Boards, convites, configurações e futuras funcionalidades da aplicação.
 
-- Boards.
-- Cancelamento de convites.
-- Reenvio de convites.
-- Configurações.
+---
+
+# Área de Boards
+
+A WorkspacePage possui uma seção dedicada ao gerenciamento inicial dos Boards pertencentes ao Workspace.
+
+Os Boards são apresentados em um grid responsivo.
+
+Cada card pode exibir:
+
+- Cor de fundo personalizada.
+- Imagem de capa.
+- Nome.
+- Descrição.
+- Cargo do usuário.
+- Indicador de favorito.
+- Botão `Abrir`.
+
+Os Boards são carregados de forma independente das demais informações do Workspace, permitindo atualização apenas dessa área.
+
+---
+
+## Modal de Criação
+
+A criação é realizada através de um modal.
+
+O formulário possui:
+
+- Campo de título.
+- Campo de descrição.
+- Seletor de cor.
+- URL da imagem de capa.
+- Botão `Cancelar`.
+- Botão `Criar Board`.
+
+O formulário reutiliza:
+
+- React Hook Form.
+- Zod.
+- Componentes visuais compartilhados.
+
+Durante a criação:
+
+```text
+Criando...
+```
+
+Todos os controles permanecem desabilitados.
+
+Após sucesso:
+
+- O modal é fechado.
+- O formulário é limpo.
+- O Board aparece imediatamente na lista.
 
 ---
 
@@ -841,7 +902,7 @@ Características:
 - Espaçamento interno.
 - Integração com mensagens de erro.
 
-Atualmente são utilizadas no formulário de criação de Workspace.
+Atualmente são utilizadas nos formulários de criação e edição de Workspaces, além da criação de Boards.
 
 ---
 
@@ -1216,6 +1277,56 @@ Após sucesso:
 
 ---
 
+## Carregando Boards
+
+Durante a consulta:
+
+```text
+Carregando Boards...
+```
+
+---
+
+## Nenhum Board
+
+Quando o Workspace ainda não possui Boards:
+
+```text
+Nenhum Board disponível
+
+Crie o primeiro Board para organizar as tarefas deste Workspace.
+```
+
+---
+
+## Criando Board
+
+Durante a criação:
+
+```text
+Criando...
+```
+
+Após sucesso:
+
+- O modal é fechado.
+- O formulário é limpo.
+- O Board é adicionado automaticamente à lista.
+
+---
+
+## Erro ao carregar Boards
+
+Quando ocorre alguma falha durante a consulta, é exibida uma mensagem utilizando a classe:
+
+```text
+api-error
+```
+
+mantendo o restante da WorkspacePage disponível para uso.
+
+---
+
 # Botões
 
 Atualmente existem quatro estilos principais de botões.
@@ -1412,6 +1523,9 @@ Atualmente possuem adaptações para diferentes tamanhos de tela:
 - Campo do link do convite.
 - Botão de cópia.
 - Botão de aceitação de convite.
+- Grid de Boards.
+- Cards de Boards.
+- Modal de criação de Board.
 
 Em dispositivos menores:
 
@@ -1597,6 +1711,14 @@ As próximas evoluções previstas para a camada de estilos são:
 - Redirecionamento após exclusão.
 - Responsividade das páginas autenticadas.
 - Responsividade do fluxo de convites.
+- Grid responsivo de Boards.
+- Cards de Boards.
+- Modal de criação de Board.
+- Seletor visual de cor.
+- Suporte visual para imagem de capa.
+- Estados de carregamento dos Boards.
+- Estado vazio dos Boards.
+- Feedback visual para erros dos Boards.
 
 ## Planejado
 

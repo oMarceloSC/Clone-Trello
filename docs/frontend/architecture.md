@@ -111,7 +111,8 @@ Atualmente existem:
 features/
 
 ├── auth/
-└── workspaces/
+├── workspaces/
+└── boards/
 ```
 
 Futuramente serão adicionadas:
@@ -157,6 +158,25 @@ workspaces/
 │
 └── types/
     └── workspace.types.ts
+```
+
+---
+
+Exemplo da feature `boards`:
+
+```text
+boards/
+
+├── components/
+│
+├── schemas/
+│   └── create-board.schema.ts
+│
+├── services/
+│   └── board.service.ts
+│
+└── types/
+    └── board.types.ts
 ```
 
 Dependendo da necessidade, uma feature também pode possuir:
@@ -363,15 +383,17 @@ Responsabilidades:
 - Executar login.
 - Executar logout.
 
-Futuramente poderão existir:
+Atualmente:
 
-```text
+useAuth()
+
+Futuramente:
+
 useWorkspace()
 
 useBoard()
 
 useNotification()
-```
 
 ---
 
@@ -405,11 +427,11 @@ Os Services realizam a comunicação HTTP com o backend.
 
 Atualmente existem:
 
-```text
 auth.service.ts
 
 workspace.service.ts
-```
+
+board.service.ts
 
 O `auth.service.ts` disponibiliza:
 
@@ -467,6 +489,20 @@ A comunicação HTTP é centralizada por uma instância compartilhada do Axios, 
 - Monitorar respostas da API através de um interceptor global.
 - Encerrar automaticamente sessões inválidas ou expiradas.
 
+O `board.service.ts` disponibiliza:
+
+```text
+listBoards()
+
+createBoard()
+```
+
+Esses métodos são responsáveis por:
+
+- listar os Boards de um Workspace;
+- criar novos Boards;
+- atualizar automaticamente a interface após a criação.
+
 ---
 
 # Schemas
@@ -481,6 +517,7 @@ Atualmente existem schemas para:
 - Atualização de Workspace.
 - Recuperação de senha.
 - Redefinição de senha.
+- Criação de Board.
 
 Exemplos:
 
@@ -496,6 +533,8 @@ reset-password.schema.ts
 create-workspace.schema.ts
 
 update-workspace.schema.ts
+
+create-board.schema.ts
 ```
 
 O Zod impede que dados inválidos sejam enviados para a API.
@@ -562,6 +601,22 @@ CreateWorkspaceInvitationResponse
 AcceptWorkspaceInvitationResponse
 
 ListPendingWorkspaceInvitationsResponse
+```
+
+Exemplos de Boards:
+
+```text
+Board
+
+BoardMember
+
+BoardRole
+
+CreateBoardRequest
+
+CreateBoardResponse
+
+ListBoardsResponse
 ```
 
 ---
@@ -1234,6 +1289,52 @@ Lista e contadores atualizados
 
 ---
 
+# Fluxo de Boards
+
+## Listagem
+
+```text
+WorkspacePage
+
+↓
+
+listBoards()
+
+↓
+
+GET /workspaces/:workspaceId/boards
+
+↓
+
+Grid de Boards
+```
+
+---
+
+## Criação
+
+```text
+WorkspacePage
+
+↓
+
+Modal de criação
+
+↓
+
+createBoard()
+
+↓
+
+POST /workspaces/:workspaceId/boards
+
+↓
+
+Lista atualizada automaticamente
+```
+
+---
+
 # Controle Visual de Permissões
 
 O frontend utiliza a role do usuário para controlar quais ações são exibidas.
@@ -1316,7 +1417,9 @@ Workspaces
 ├── Listagem de membros
 ├── Remoção de membros
 ├── Criação de convites
-└── Geração de links de convite
+├── Geração de links de convite
+├── Listagem de Boards
+└── Criação de Boards
 ```
 
 ---
@@ -1438,6 +1541,12 @@ Cada módulo seguirá a mesma organização baseada em features.
 - Schemas de redefinição de senha.
 - Métodos `forgotPassword()`.
 - Métodos `resetPassword()`.
+- Feature Boards.
+- board.service.ts.
+- Schema de criação de Board.
+- Listagem de Boards.
+- Criação de Boards.
+- Atualização automática da lista de Boards.
 
 ## Em desenvolvimento
 
@@ -1456,7 +1565,7 @@ As próximas implementações serão:
 1. Cancelamento de convites.
 2. Reenvio de convites.
 3. Componentes compartilhados.
-4. Feature Boards.
+4. Evolução da feature Boards.
 5. Feature Lists.
 6. Feature Cards.
 7. Integração em tempo real com Socket.IO.

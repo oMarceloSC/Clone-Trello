@@ -85,7 +85,7 @@ Cada milestone representa um conjunto de funcionalidades relacionadas.
 
 ---
 
-# Milestone 3 — Frontend de Integração 🚧
+# Milestone 3 — Frontend de Integração ✅
 
 ## Infraestrutura
 
@@ -178,14 +178,14 @@ Cada milestone representa um conjunto de funcionalidades relacionadas.
 
 ---
 
-# Milestone 4 — Boards
+# Milestone 4 — Boards 🚧
 
 ## Backend
 
-* [ ] Model Board
-* [ ] Model BoardMember
-* [ ] Criar Board
-* [ ] Listar Boards
+* [x] Model Board
+* [x] Model BoardMember
+* [x] Criar Board
+* [x] Listar Boards
 * [ ] Buscar Board por ID
 * [ ] Atualizar Board
 * [ ] Excluir Board
@@ -195,8 +195,8 @@ Cada milestone representa um conjunto de funcionalidades relacionadas.
 
 ## Frontend
 
-* [ ] Listar Boards
-* [ ] Criar Board
+* [x] Listar Boards
+* [x] Criar Board
 * [ ] Visualizar Board
 * [ ] Atualizar Board
 * [ ] Excluir Board

@@ -29,9 +29,13 @@ src/
     │   └── services/
     │       └── auth.service.ts
     │
-    └── workspaces/
+    ├── workspaces/
+    │   └── services/
+    │       └── workspace.service.ts
+    │
+    └── boards/
         └── services/
-            └── workspace.service.ts
+            └── board.service.ts
 ```
 
 Novas funcionalidades possuirão seus próprios serviços.
@@ -477,6 +481,7 @@ listPendingWorkspaceInvitations()
 
 acceptWorkspaceInvitation()
 ```
+
 
 ---
 
@@ -1134,6 +1139,148 @@ Atualização automática da interface
 
 ---
 
+# Serviço de Boards
+
+## Arquivo
+
+```text
+src/features/boards/services/board.service.ts
+```
+
+Responsável pela comunicação entre o frontend e os endpoints relacionados aos Boards.
+
+Atualmente disponibiliza:
+
+```text
+listBoards()
+
+createBoard()
+```
+
+---
+
+# listBoards()
+
+## Endpoint
+
+```http
+GET /workspaces/:workspaceId/boards
+```
+
+## Headers
+
+```text
+Authorization: Bearer TOKEN
+```
+
+O JWT é enviado automaticamente pela instância compartilhada do Axios.
+
+## Resposta
+
+```ts
+Board[]
+```
+
+## Responsabilidades
+
+- Buscar todos os Boards do Workspace.
+- Retornar apenas Boards ativos.
+- Fornecer os dados necessários para a `WorkspacePage`.
+- Atualizar a interface após alterações.
+
+## Fluxo
+
+```text
+WorkspacePage
+
+↓
+
+listBoards()
+
+↓
+
+GET /workspaces/:workspaceId/boards
+
+↓
+
+Board[]
+
+↓
+
+Renderização dos cards
+```
+
+---
+
+# createBoard()
+
+## Endpoint
+
+```http
+POST /workspaces/:workspaceId/boards
+```
+
+## Headers
+
+```text
+Authorization: Bearer TOKEN
+```
+
+## Entrada
+
+```ts
+type CreateBoardRequest = {
+  title: string;
+  description?: string;
+  backgroundColor?: string;
+  coverImage?: string;
+}
+```
+
+## Resposta
+
+```ts
+type CreateBoardResponse = {
+  message: string;
+  board: Board;
+}
+```
+
+## Responsabilidades
+
+- Criar um novo Board.
+- Associar automaticamente o usuário autenticado como OWNER.
+- Atualizar imediatamente a lista de Boards.
+- Propagar erros para a `WorkspacePage`.
+
+## Fluxo
+
+```text
+WorkspacePage
+
+↓
+
+Modal de criação
+
+↓
+
+createBoard()
+
+↓
+
+POST /workspaces/:workspaceId/boards
+
+↓
+
+Board criado
+
+↓
+
+Atualização automática da lista
+```
+
+---
+
 # Estruturas Utilizadas
 
 ## Workspace
@@ -1471,6 +1618,59 @@ type UpdateWorkspaceMemberRoleResponse = {
 
 ---
 
+## Board
+
+```ts
+type Board = {
+  id: string;
+  title: string;
+  description: string | null;
+  backgroundColor: string | null;
+  coverImage: string | null;
+  isArchived: boolean;
+  workspaceId: string;
+  createdById: string;
+  createdAt: string;
+  updatedAt: string;
+}
+```
+
+---
+
+## CreateBoardRequest
+
+```ts
+type CreateBoardRequest = {
+  title: string;
+  description?: string;
+  backgroundColor?: string;
+  coverImage?: string;
+}
+```
+
+---
+
+## CreateBoardResponse
+
+```ts
+type CreateBoardResponse = {
+  message: string;
+  board: Board;
+}
+```
+
+---
+
+## ListBoardsResponse
+
+```ts
+type ListBoardsResponse = {
+  boards: Board[];
+}
+```
+
+---
+
 # Tratamento de Erros
 
 Os serviços apenas propagam os erros retornados pela API.
@@ -1521,6 +1721,8 @@ Mensagens utilizadas atualmente:
 - Sua sessão expirou. Entre novamente.
 - Não foi possível solicitar a recuperação da senha.
 - Não foi possível redefinir a senha.
+- Não foi possível carregar os Boards.
+- Não foi possível criar o Board.
 
 ---
 
@@ -1542,8 +1744,6 @@ Os serviços devem:
 # Serviços Planejados
 
 ```text
-board.service.ts
-
 list.service.ts
 
 card.service.ts
@@ -1595,12 +1795,13 @@ notification.service.ts
 - `acceptWorkspaceInvitation()`.
 - `forgotPassword()`.
 - `resetPassword()`.
+- `listBoards()`.
+- `createBoard()`.
 
 ## Planejado
 
 - Cancelamento de convites.
 - Reenvio de convites.
-- Serviços de Boards.
 - Serviços de Lists.
 - Serviços de Cards.
 - Integração com envio de email para recuperação de senha.

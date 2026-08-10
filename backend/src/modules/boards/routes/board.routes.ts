@@ -1,0 +1,23 @@
+import type { FastifyInstance } from "fastify";
+
+import { authMiddleware } from "../../../middlewares/auth.middleware.js";
+
+import { BoardController } from "../controller/board.controller.js";
+
+const boardController = new BoardController();
+
+export async function boardRoutes(
+  app: FastifyInstance,
+) {
+  app.addHook("preHandler", authMiddleware);
+
+  app.post(
+    "/workspaces/:workspaceId/boards",
+    boardController.create,
+  );
+
+  app.get(
+    "/workspaces/:workspaceId/boards",
+    boardController.list,
+  );
+}

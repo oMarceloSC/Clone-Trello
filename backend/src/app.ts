@@ -6,6 +6,7 @@ import { errorMiddleware } from "./middlewares/error.middleware.js";
 import { authRoutes } from "./modules/auth/routes/auth.rotes.js";
 import { workspaceInvitationRoutes } from "./modules/workspaces/routes/workspace-invitation.routes.js";
 import { workspaceRoutes } from "./modules/workspaces/routes/workspace.routes.js";
+import { boardRoutes } from "./modules/boards/routes/board.routes.js"
 
 const isProduction = process.env.NODE_ENV === "production";
 
@@ -29,6 +30,8 @@ app.register(cors, {
 app.register(workspaceRoutes, {
   prefix: "/workspaces",
 });
+
+app.register(boardRoutes);
 
 app.register(workspaceInvitationRoutes, {
   prefix: "/workspace-invitations",
