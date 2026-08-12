@@ -74,9 +74,16 @@ Atualmente existem estilos para:
 - Grid de Boards.
 - Cards de Boards.
 - Modal de criação de Board.
+- Modal de edição de Board.
+- BoardPage.
+- Breadcrumb da BoardPage.
+- Cards de resumo do Board.
+- Área destinada às Lists.
 - Estados de carregamento dos Boards.
 - Estados vazios dos Boards.
 - Feedback visual para erros de carregamento dos Boards.
+- Estados de carregamento da BoardPage.
+- Estado de erro da BoardPage.
 - Seletor visual de cor do Board.
 - Seção de membros.
 - Controle visual de permissões.
@@ -387,12 +394,15 @@ Atualmente são exibidos:
 - Área de Boards.
 - Grid responsivo de Boards.
 - Cards dos Boards.
+- Botão "Abrir".
 - Botão "Criar Board".
 - Modal de criação de Board.
 - Seção de membros do Workspace.
 - Botão `Convidar membro`, para `OWNER` e `ADMIN`.
 
 A seção de membros é carregada de forma independente da página principal, permitindo atualização apenas dessa área quando necessário.
+
+Cada card também possui um botão `Abrir`, responsável por navegar para a `BoardPage`, onde o usuário pode visualizar os detalhes do Board e, futuramente, gerenciar suas Lists e Cards.
 
 Dentro dela também está disponível o modal de criação de convite, responsável por:
 
@@ -421,8 +431,17 @@ Cada card pode exibir:
 - Cargo do usuário.
 - Indicador de favorito.
 - Botão `Abrir`.
+- Botão `Editar`, quando permitido
 
 Os Boards são carregados de forma independente das demais informações do Workspace, permitindo atualização apenas dessa área.
+
+Usuários com permissão de visualização podem acessar o Board através do botão **"Abrir"**.
+
+A navegação utiliza a rota:
+
+```text
+/boards/:id
+```
 
 ---
 
@@ -461,9 +480,66 @@ Após sucesso:
 
 ---
 
+# BoardPage
+
+A `BoardPage` utiliza o mesmo padrão visual adotado nas demais páginas autenticadas.
+
+Seu objetivo é apresentar todas as informações relacionadas a um Board específico e servir como ponto de entrada para a futura implementação das Lists.
+
+## Atualmente são exibidos
+
+- Breadcrumb.
+- Nome do Board.
+- Descrição.
+- Workspace de origem.
+- Data de criação.
+- Quantidade de membros.
+- Cargo do usuário autenticado.
+- Cards de resumo.
+- Lista de membros.
+- Área reservada para Lists.
+
+A página reutiliza os mesmos padrões visuais utilizados na `WorkspacePage`, garantindo consistência em toda a aplicação.
+
+---
+
+## Estados
+
+### Carregando
+
+```text
+Carregando Board...
+```
+
+---
+
+### Erro
+
+```text
+Não foi possível abrir o Board.
+```
+
+São exibidos:
+
+- Botão **Voltar**.
+- Botão **Tentar novamente**.
+
+---
+
+### Sucesso
+
+São exibidos:
+
+- Informações gerais.
+- Cards de resumo.
+- Lista de membros.
+- Área destinada às Lists.
+
+---
+
 # AuthenticatedLayout
 
-Todas as páginas autenticadas compartilham um mesmo layout.
+Dashboard, WorkspacePage e BoardPage compartilham o mesmo layout autenticado.
 
 Esse layout é composto por:
 
@@ -1526,6 +1602,8 @@ Atualmente possuem adaptações para diferentes tamanhos de tela:
 - Grid de Boards.
 - Cards de Boards.
 - Modal de criação de Board.
+- Modal de edição de Board.
+- BoardPage.
 
 Em dispositivos menores:
 
@@ -1714,6 +1792,13 @@ As próximas evoluções previstas para a camada de estilos são:
 - Grid responsivo de Boards.
 - Cards de Boards.
 - Modal de criação de Board.
+- BoardPage.
+- Breadcrumb da BoardPage.
+- Cards de resumo do Board.
+- Lista de membros do Board.
+- Navegação Workspace → Board.
+- Modal de edição de Board.
+- Visualização individual de Boards.
 - Seletor visual de cor.
 - Suporte visual para imagem de capa.
 - Estados de carregamento dos Boards.

@@ -1154,7 +1154,11 @@ Atualmente disponibiliza:
 ```text
 listBoards()
 
+getBoardById()
+
 createBoard()
+
+updateBoard()
 ```
 
 ---
@@ -1277,6 +1281,140 @@ Board criado
 ↓
 
 Atualização automática da lista
+```
+
+---
+
+# getBoardById()
+
+## Endpoint
+
+```http
+GET /boards/:id
+```
+
+## Headers
+
+```text
+Authorization: Bearer TOKEN
+```
+
+O JWT é enviado automaticamente pela instância compartilhada do Axios.
+
+## Resposta
+
+```ts
+Board
+```
+
+O serviço retorna diretamente:
+
+```ts
+Board
+```
+
+para simplificar o consumo pela `BoardPage`.
+
+## Responsabilidades
+
+- Buscar um Board específico pelo ID.
+- Retornar os dados necessários para a `BoardPage`.
+- Retornar informações do Workspace relacionado.
+- Retornar os membros do Board.
+- Permitir a identificação da permissão do usuário autenticado.
+- Propagar erros de acesso ou de recurso inexistente para a página responsável.
+
+## Fluxo
+
+```text
+BoardPage
+
+↓
+
+getBoardById()
+
+↓
+
+GET /boards/:id
+
+↓
+
+Board
+
+↓
+
+Renderização da BoardPage
+```
+
+---
+
+# updateBoard()
+
+## Endpoint
+
+```http
+PATCH /boards/:id
+```
+
+## Headers
+
+```text
+Authorization: Bearer TOKEN
+```
+
+O JWT é enviado automaticamente pela instância compartilhada do Axios.
+
+## Entrada
+
+```ts
+type UpdateBoardRequest = {
+  title?: string;
+  description?: string;
+  backgroundColor?: string;
+  coverImage?: string;
+}
+```
+
+Todos os campos são opcionais, permitindo atualização parcial do Board.
+
+## Resposta
+
+```ts
+type UpdateBoardResponse = {
+  message: string;
+  board: Board;
+}
+```
+
+## Responsabilidades
+
+- Atualizar as informações de um Board.
+- Permitir atualização parcial dos dados.
+- Enviar apenas os campos que precisam ser modificados.
+- Retornar a mensagem de sucesso enviada pela API.
+- Retornar o Board atualizado.
+- Propagar erros de acesso e de permissão para a página responsável.
+
+## Fluxo
+
+```text
+BoardPage
+
+↓
+
+updateBoard()
+
+↓
+
+PATCH /boards/:id
+
+↓
+
+Board atualizado
+
+↓
+
+Atualização da interface
 ```
 
 ---
@@ -1671,6 +1809,107 @@ type ListBoardsResponse = {
 
 ---
 
+## BoardRole
+
+```ts
+type BoardRole =
+  | "OWNER"
+  | "ADMIN"
+  | "MEMBER"
+  | "VIEWER";
+```
+
+---
+
+## BoardMemberUser
+
+```ts
+type BoardMemberUser = {
+  id: string;
+  name: string;
+  email: string;
+  avatarUrl: string | null;
+}
+```
+
+---
+
+## BoardMember
+
+```ts
+type BoardMember = {
+  id: string;
+  boardId?: string;
+  userId: string;
+  role: BoardRole;
+  isFavorite: boolean;
+  createdAt: string;
+  updatedAt: string;
+  user?: BoardMemberUser;
+}
+```
+
+---
+
+## Board
+
+```ts
+type Board = {
+  id: string;
+  title: string;
+  description: string | null;
+  backgroundColor: string | null;
+  coverImage: string | null;
+  isArchived: boolean;
+  workspaceId: string;
+  createdById: string;
+  createdAt: string;
+  updatedAt: string;
+  members: BoardMember[];
+
+  workspace?: {
+    id: string;
+    name: string;
+  };
+}
+```
+
+---
+
+## GetBoardResponse
+
+```ts
+type GetBoardResponse = {
+  board: Board;
+}
+```
+
+---
+
+## UpdateBoardRequest
+
+```ts
+type UpdateBoardRequest = {
+  title?: string;
+  description?: string;
+  backgroundColor?: string;
+  coverImage?: string;
+}
+```
+
+---
+
+## UpdateBoardResponse
+
+```ts
+type UpdateBoardResponse = {
+  message: string;
+  board: Board;
+}
+```
+
+---
+
 # Tratamento de Erros
 
 Os serviços apenas propagam os erros retornados pela API.
@@ -1723,6 +1962,8 @@ Mensagens utilizadas atualmente:
 - Não foi possível redefinir a senha.
 - Não foi possível carregar os Boards.
 - Não foi possível criar o Board.
+- Não foi possível carregar o Board.
+- Não foi possível atualizar o Board.
 
 ---
 
@@ -1797,6 +2038,8 @@ notification.service.ts
 - `resetPassword()`.
 - `listBoards()`.
 - `createBoard()`.
+- `getBoardById()`
+- `updateBoard()`
 
 ## Planejado
 

@@ -20,4 +20,14 @@ export async function boardRoutes(
     "/workspaces/:workspaceId/boards",
     boardController.list,
   );
+
+  app.get(
+    "/boards/:id",
+    boardController.getById,
+  );
+
+  app.patch(
+    "/boards/:id",
+    boardController.update,
+  );
 }

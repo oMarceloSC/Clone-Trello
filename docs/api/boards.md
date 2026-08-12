@@ -150,9 +150,14 @@ Ao criar um Board:
 
 ### Descrição
 
-Lista todos os Boards ativos pertencentes a um Workspace.
+Lista os Boards ativos pertencentes a um Workspace de acordo com as permissões do usuário.
 
-Apenas usuários membros do Workspace podem visualizar os Boards.
+Regras de visualização:
+
+- OWNER do Workspace visualiza todos os Boards.
+- ADMIN do Workspace visualiza todos os Boards.
+- MEMBER do Workspace visualiza apenas os Boards dos quais participa.
+- VIEWER do Workspace visualiza apenas os Boards dos quais participa.
 
 Boards arquivados não são retornados.
 
@@ -215,7 +220,9 @@ A listagem:
 
 - verifica se o usuário pertence ao Workspace;
 - retorna apenas Boards ativos (`isArchived = false`);
-- retorna a participação do usuário em cada Board;
+- OWNER e ADMIN do Workspace visualizam todos os Boards do Workspace;
+- MEMBER e VIEWER visualizam apenas os Boards dos quais participam;
+- retorna a participação do usuário em cada Board quando existir;
 - ordena os Boards pela data de criação (mais recentes primeiro).
 
 ---
@@ -241,6 +248,176 @@ A listagem:
 ```json
 {
   "message": "Token inválido ou expirado"
+}
+```
+
+---
+
+# Buscar Board
+
+## GET
+
+```
+/boards/:id
+```
+
+### Descrição
+
+Retorna um Board específico.
+
+### Headers
+
+```
+Authorization: Bearer TOKEN
+```
+
+### Parâmetros
+
+| Nome | Tipo | Obrigatório | Descrição |
+|------|------|-------------|-----------|
+| id | UUID | Sim | Identificador do Board |
+
+### Resposta
+
+**200 OK**
+
+```json
+{
+  "board": {
+    "id": "uuid",
+    "title": "Desenvolvimento",
+    "description": "Board responsável pelo desenvolvimento",
+    "backgroundColor": "#0C66E4",
+    "coverImage": null,
+    "isArchived": false,
+    "workspace": {
+      "id": "uuid",
+      "name": "Workspace Principal"
+    },
+    "members": [
+      {
+        "id": "uuid",
+        "role": "OWNER",
+        "user": {
+          "id": "uuid",
+          "name": "Marcelo Cruz",
+          "email": "marcelo@email.com",
+          "avatarUrl": null
+        }
+      }
+    ]
+  }
+}
+```
+
+### Regras de Negócio
+
+O acesso ao Board segue as seguintes regras:
+
+- o Board deve existir;
+- o usuário deve pertencer ao Workspace;
+- OWNER e ADMIN do Workspace podem visualizar qualquer Board;
+- MEMBER e VIEWER somente podem visualizar Boards dos quais participam;
+- usuários sem acesso recebem **404**, evitando expor a existência do Board.
+
+### Possíveis Erros
+
+#### Board não encontrado
+
+**404 Not Found**
+
+```json
+{
+  "message": "Board não encontrado."
+}
+```
+
+---
+
+#### Token inválido
+
+**401 Unauthorized**
+
+```json
+{
+  "message": "Token inválido ou expirado"
+}
+```
+
+---
+
+# Atualizar Board
+
+## PATCH
+
+```
+/boards/:id
+```
+
+### Descrição
+
+Atualiza as informações de um Board.
+
+### Headers
+
+```
+Authorization: Bearer TOKEN
+```
+
+### Request Body
+
+```json
+{
+  "title": "Backend",
+  "description": "Nova descrição",
+  "backgroundColor": "#0052CC",
+  "coverImage": null
+}
+```
+
+Todos os campos são opcionais.
+
+### Resposta
+
+**200 OK**
+
+```json
+{
+  "message": "Board atualizado com sucesso",
+  "board": {
+    "id": "uuid",
+    "title": "Backend",
+    "description": "Nova descrição"
+  }
+}
+```
+
+### Regras de Negócio
+
+- o usuário deve possuir acesso ao Board;
+- apenas OWNER e ADMIN do Board podem atualizá-lo;
+- OWNER e ADMIN do Workspace que não sejam membros do Board possuem apenas permissão de visualização;
+- apenas os campos enviados são atualizados.
+
+### Possíveis Erros
+
+#### Sem permissão
+
+**403 Forbidden**
+
+```json
+{
+  "message": "Você não tem permissão para realizar esta ação neste Board."
+}
+```
+
+#### Board não encontrado
+
+**404 Not Found**
+
+```json
+{
+  "message": "Board não encontrado."
 }
 ```
 
@@ -316,15 +493,17 @@ Retorna lista de Boards
 
 - Criação de Boards.
 - Listagem de Boards.
+- Busca de Board por ID.
+- Atualização de Board.
 - Associação automática do criador como OWNER.
 - Controle de permissões.
+- Controle de acesso centralizado (`BoardAccessService`).
+- Visibilidade baseada em permissões do Workspace e participação no Board.
 - Validação de Workspace.
 - Integração com autenticação JWT.
 
 ## Planejado
 
-- Buscar Board por ID.
-- Atualizar Board.
 - Excluir Board.
 - Favoritar Board.
 - Arquivar Board.

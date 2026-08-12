@@ -169,14 +169,19 @@ boards/
 
 ├── components/
 │
+├── pages/
+│   └── BoardPage.tsx
+│
 ├── schemas/
 │   └── create-board.schema.ts
 │
 ├── services/
 │   └── board.service.ts
 │
-└── types/
-    └── board.types.ts
+├── types/
+│   └── board.types.ts
+│
+└── hooks/
 ```
 
 Dependendo da necessidade, uma feature também pode possuir:
@@ -252,12 +257,16 @@ DashboardPage
 
 WorkspacePage
 
+BoardPage
+
 AcceptWorkspaceInvitationPage
 
 NotFoundPage
 ```
 
 A `AcceptWorkspaceInvitationPage` permite aceitar convites utilizando o token presente na URL, enquanto o `DashboardPage` também permite aceitar convites diretamente através da listagem de convites pendentes.
+
+A `BoardPage` é responsável por apresentar as informações de um Board específico, exibindo seus membros, informações gerais, Workspace de origem e preparando a estrutura para a futura implementação das Lists.
 
 A `NotFoundPage` é renderizada quando nenhuma rota corresponde ao endereço acessado, permitindo retornar à página anterior, ao Dashboard ou ao Login.
 
@@ -362,6 +371,7 @@ Atualmente utilizam esse layout:
 
 - DashboardPage.
 - WorkspacePage.
+- BoardPage
 
 ---
 
@@ -494,14 +504,20 @@ O `board.service.ts` disponibiliza:
 ```text
 listBoards()
 
+getBoardById()
+
 createBoard()
+
+updateBoard()
 ```
 
 Esses métodos são responsáveis por:
 
 - listar os Boards de um Workspace;
+- buscar um Board específico;
 - criar novos Boards;
-- atualizar automaticamente a interface após a criação.
+- atualizar informações de um Board;
+- atualizar automaticamente a interface após criação e edição.
 
 ---
 
@@ -610,6 +626,8 @@ Board
 
 BoardMember
 
+BoardMemberUser
+
 BoardRole
 
 CreateBoardRequest
@@ -617,6 +635,12 @@ CreateBoardRequest
 CreateBoardResponse
 
 ListBoardsResponse
+
+GetBoardResponse
+
+UpdateBoardRequest
+
+UpdateBoardResponse
 ```
 
 ---
@@ -643,6 +667,8 @@ Exemplos:
 /dashboard
 
 /workspaces/:id
+
+/boards/:id
 ```
 
 ---
@@ -1335,6 +1361,54 @@ Lista atualizada automaticamente
 
 ---
 
+## Visualização
+
+```text
+WorkspacePage
+
+↓
+
+Abrir Board
+
+↓
+
+getBoardById()
+
+↓
+
+GET /boards/:id
+
+↓
+
+BoardPage
+```
+
+---
+
+## Atualização
+
+```text
+BoardPage
+
+↓
+
+Modal de edição
+
+↓
+
+updateBoard()
+
+↓
+
+PATCH /boards/:id
+
+↓
+
+Interface atualizada
+```
+
+---
+
 # Controle Visual de Permissões
 
 O frontend utiliza a role do usuário para controlar quais ações são exibidas.
@@ -1419,7 +1493,11 @@ Workspaces
 ├── Criação de convites
 ├── Geração de links de convite
 ├── Listagem de Boards
-└── Criação de Boards
+├── Criação de Boards
+├── BoardPage
+├── Visualização de Board
+├── Atualização de Board
+└── Navegação Workspace → Boards
 ```
 
 ---
@@ -1546,6 +1624,16 @@ Cada módulo seguirá a mesma organização baseada em features.
 - Schema de criação de Board.
 - Listagem de Boards.
 - Criação de Boards.
+- BoardPage.
+- Visualização de Board.
+- Atualização de Board.
+- Navegação entre Workspace e Board.
+- Breadcrumb da BoardPage.
+- Cards de resumo do Board.
+- Exibição de membros do Board.
+- Área preparada para Lists.
+- Métodos `getBoardById()`.
+- Métodos `updateBoard()`.
 - Atualização automática da lista de Boards.
 
 ## Em desenvolvimento

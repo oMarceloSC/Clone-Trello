@@ -24,17 +24,21 @@ src/
 │   │       ├── ForgotPasswordPage.tsx
 │   │       └── ResetPasswordPage.tsx
 │   │
-│   └── workspaces/
-│       ├── components/
-│       │   └── WorkspaceMembersSection.tsx
-│       │
+│   ├── workspaces/
+│   │   ├── components/
+│   │   │   └── WorkspaceMembersSection.tsx
+│   │   │
+│   │   └── pages/
+│   │       ├── WorkspacePage.tsx
+│   │       └── AcceptWorkspaceInvitationPage.tsx
+│   │
+│   └── boards/
 │       └── pages/
-│           ├── WorkspacePage.tsx
-│           └── AcceptWorkspaceInvitationPage.tsx
+│           └── BoardPage.tsx
 │
 └── pages/
     ├── DashboardPage.tsx
-    └──NotFoundPage.tsx
+    └── NotFoundPage.tsx
 ```
 
 Conforme novas funcionalidades forem implementadas, novas páginas serão adicionadas às respectivas features.
@@ -927,6 +931,7 @@ Além da visualização das informações gerais, a página permite:
 - Exibir estados de carregamento e estado vazio dos Boards.
 - Criar convites para novos membros.
 - Compartilhar links de convite.
+- Navegar para um board especifico
 
 ---
 
@@ -959,6 +964,7 @@ Além da visualização das informações gerais, a página permite:
 - Criar convites para novos membros.
 - Gerar links de convite.
 - Copiar automaticamente o link do convite.
+- Permitir abrir um board.
 
 ---
 
@@ -980,6 +986,11 @@ A página apresenta:
 - Cargo do usuário no Board.
 - Indicador de favorito.
 - Botão "Abrir".
+
+Ao clicar em "Abrir", o usúario é redirecionado para:
+```text
+/boards/:id
+```
 
 Também é exibida uma seção de membros contendo:
 
@@ -1518,17 +1529,21 @@ GET /workspaces/:workspaceId/boards
 
 Lista de Boards
 
-↓
-
-Criar Board
-
-↓
-
-POST /workspaces/:workspaceId/boards
-
-↓
-
-Lista atualizada
+├── Criar Board
+│        │
+│        ▼
+│ POST /workspaces/:workspaceId/boards
+│        │
+│        ▼
+│ Atualização automática
+│
+└── Abrir Board
+         │
+         ▼
+GET /boards/:id
+         │
+         ▼
+BoardPage
 ```
 
 ---
@@ -1629,17 +1644,15 @@ Todas as páginas autenticadas são renderizadas dentro deste layout.
 
 Atualmente:
 
-```text
 DashboardPage
 
 WorkspacePage
-```
+
+BoardPage
 
 No futuro:
 
 ```text
-BoardPage
-
 NotificationPage
 
 ProfilePage
@@ -1706,24 +1719,134 @@ Essa tela é utilizada pelos componentes `RequireAuthentication` e `RequireGuest
 
 Essa tela impede que rotas protegidas sejam exibidas antes da validação do token.
 
----
+# BoardPage
 
-# Páginas Planejadas
+## Arquivo
 
-## BoardPage
+```text
+src/features/boards/pages/BoardPage.tsx
+```
+
+## Rota
 
 ```text
 /boards/:id
 ```
 
-Responsabilidades planejadas:
+## Acesso
 
-- Lists.
-- Cards.
-- Drag and Drop.
-- Atualizações em tempo real.
+Somente usuários autenticados.
+
+O acesso é validado pelo backend de acordo com as regras do Workspace e do Board.
 
 ---
+
+## Objetivos
+
+Permitir a visualização de um Board específico.
+
+Nesta etapa do projeto a página apresenta as informações gerais do Board e prepara a estrutura para a futura implementação das Lists.
+
+---
+
+## Responsabilidades
+
+- Buscar o Board pelo ID.
+- Exibir informações gerais.
+- Exibir Workspace de origem.
+- Exibir membros do Board.
+- Exibir o cargo do usuário autenticado.
+- Exibir estados de carregamento.
+- Exibir estado de erro.
+- Permitir nova tentativa.
+- Navegar de volta ao Workspace.
+- Preparar a área destinada às Lists.
+
+---
+
+## Dados Exibidos
+
+A página apresenta:
+
+- Nome.
+- Descrição.
+- Workspace.
+- Quantidade de membros.
+- Cargo do usuário.
+- Data de criação.
+- Breadcrumb.
+- Cor de fundo.
+- Imagem de capa.
+- Lista de membros.
+- Área destinada às Lists.
+
+---
+
+## Estados
+
+### Carregando
+
+Durante:
+
+```http
+GET /boards/:id
+```
+
+é exibido:
+
+```text
+Carregando Board...
+```
+
+---
+
+### Board encontrado
+
+São exibidos:
+
+- Informações gerais.
+- Cards de resumo.
+- Lista de membros.
+- Área destinada às Lists.
+
+---
+
+### Board não encontrado
+
+Caso a API retorne erro:
+
+```text
+Não foi possível abrir o Board.
+```
+
+São exibidos:
+
+- Botão Voltar.
+- Botão Tentar novamente.
+
+---
+
+## Fluxo
+
+```text
+WorkspacePage
+
+↓
+
+Abrir
+
+↓
+
+GET /boards/:id
+
+↓
+
+BoardPage
+```
+
+---
+
+# Páginas Planejadas
 
 ## ProfilePage
 
@@ -1813,6 +1936,13 @@ Responsabilidades planejadas:
 - Exibição de cores de fundo dos Boards.
 - Suporte à imagem de capa dos Boards.
 - Controle de permissão para criação de Boards.
+- BoardPage.
+- Navegação entre Workspace e Board.
+- Visualização individual de Boards.
+- Breadcrumb da BoardPage.
+- Cards de resumo do Board.
+- Exibição de membros do Board.
+- Área inicial destinada às Lists.
 
 ## Planejado
 
@@ -1820,6 +1950,5 @@ Responsabilidades planejadas:
 - Cancelamento de convites.
 - Reenvio de convites.
 - Envio de email para recuperação de senha.
-- BoardPage.
 - NotificationPage.
 - ProfilePage.

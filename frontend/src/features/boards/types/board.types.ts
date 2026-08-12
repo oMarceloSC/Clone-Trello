@@ -4,6 +4,13 @@ export type BoardRole =
     | "MEMBER"
     | "VIEWER"
 
+export type BoardMemberUser = {
+    id: string;
+    name: string;
+    email: string;
+    avatarUrl: string | null;
+};
+
 export type BoardMember = {
     id: string;
     boardId?: string;
@@ -12,6 +19,7 @@ export type BoardMember = {
     isFavorite: boolean;
     createdAt: string;
     updatedAt: string;
+    user?: BoardMemberUser;
 };
 
 export type Board = {
@@ -26,6 +34,10 @@ export type Board = {
     createdById: string;
     updatedAt: string;
     members: BoardMember[];
+    workspace?: {
+        id: string;
+        name: string;
+    };
 };
 
 export type ListBoardsResponse = {
@@ -42,4 +54,20 @@ export type CreateBoardRequest = {
 export type CreateBoardResponse = {
     message: string;
     board: Board;
+};
+
+export type GetBoardResponse = {
+  board: Board;
+};
+
+export type UpdateBoardRequest = {
+  title?: string;
+  description?: string;
+  backgroundColor?: string;
+  coverImage?: string;
+};
+
+export type UpdateBoardResponse = {
+  message: string;
+  board: Board;
 };

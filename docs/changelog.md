@@ -6,6 +6,102 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 
 ---
 
+# [0.4.0] - Boards
+
+## Added
+
+### Backend
+
+* Model `Board`.
+* Model `BoardMember`.
+* Enum `BoardRole`.
+* Endpoint para criação de Boards.
+* Endpoint para listagem de Boards.
+* Endpoint para busca de Board por ID.
+* Endpoint para atualização de Board.
+* Associação automática do criador como `OWNER`.
+* Validação de acesso ao Workspace antes da criação.
+* Integração das rotas de Boards ao Fastify.
+
+### Comunicação com a API
+
+* Serviço `listBoards()`.
+* Serviço `createBoard()`.
+* Integração com o endpoint `GET /workspaces/:workspaceId/boards`.
+* Integração com o endpoint `POST /workspaces/:workspaceId/boards`.
+* Serviço `getBoardById()`.
+* Integração com o endpoint `GET /boards/:id`.
+* Busca individual de Boards.
+* Serviço `updateBoard()`.
+* Integração com o endpoint `PATCH /boards/:id`.
+* Atualização de Boards pelo frontend.
+
+### Boards no Frontend
+
+* Listagem de Boards por Workspace na `WorkspacePage`.
+* Criação de Boards pelo frontend por meio de modal.
+* Formulário de criação utilizando React Hook Form e Zod.
+* Campo opcional para descrição.
+* Campo opcional para cor de fundo.
+* Campo opcional para imagem de capa.
+* Atualização automática da lista de Boards após criação.
+* Estado vazio para Workspaces sem Boards.
+* Estado de carregamento durante a busca de Boards.
+* Navegação da WorkspacePage para a BoardPage.
+* Página de visualização de Board.
+* Exibição das informações gerais do Board.
+* Breadcrumb da BoardPage.
+* Cards de resumo do Board.
+* Lista de membros do Board.
+* Área preparada para a futura implementação das Lists.
+* Modal de edição de Board.
+* Atualização automática da interface após edição.
+
+### Estilização
+
+* Grid responsivo de Boards.
+* Cards de Boards.
+* Modal de criação de Boards.
+* Seletor visual de cor.
+* Suporte para imagem de capa.
+* Estado vazio dos Boards.
+* Estado de carregamento dos Boards.
+* Feedback visual para erros de carregamento dos Boards.
+* Layout da BoardPage.
+* Breadcrumb da BoardPage.
+* Cards de resumo do Board.
+* Lista de membros do Board.
+* Área destinada às Lists.
+* Modal de edição de Board.
+* Estados de carregamento da BoardPage.
+* Estados de erro da BoardPage.
+
+### Segurança e Permissões
+
+* Controle visual para impedir criação por usuários `VIEWER`.
+* OWNER e ADMIN do Workspace podem visualizar todos os Boards do Workspace.
+* MEMBER e VIEWER visualizam apenas Boards dos quais participam.
+* Usuários externos ao Workspace não possuem acesso aos Boards.
+
+### Documentação
+
+* Documentação da API de Boards.
+* Atualização da documentação das páginas com a listagem de Boards.
+* Atualização da documentação das páginas com a criação de Boards.
+* Atualização da documentação dos serviços com `listBoards()`.
+* Atualização da documentação dos serviços com `createBoard()`.
+* Atualização da documentação da estilização para a área de Boards.
+* Atualização da arquitetura do frontend para incluir a Feature Boards.
+* Atualização da documentação da API de Boards com busca por ID.
+* Atualização da documentação da API de Boards com atualização.
+* Atualização da documentação das páginas para incluir a BoardPage.
+* Atualização da documentação dos serviços com `getBoardById()`.
+* Atualização da documentação dos serviços com `updateBoard()`.
+* Atualização da arquitetura do frontend para documentar a BoardPage.
+* Atualização da documentação da estilização da BoardPage.
+
+---
+
 # [0.3.0] - Frontend Integration
 
 ## Added
@@ -60,13 +156,6 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Integração com o endpoint `PATCH /workspaces/:id`.
 * Atualização de Workspaces pelo frontend.
 * Serviço `deleteWorkspace()`.
-* Serviço `listBoards()`.
-* Serviço `createBoard()`.
-* Integração com o endpoint `GET /workspaces/:workspaceId/boards`.
-* Integração com o endpoint `POST /workspaces/:workspaceId/boards`.
-* Listagem de Boards por Workspace.
-* Criação de Boards pelo frontend.
-* Atualização automática da lista de Boards após criação.
 * Integração com o endpoint `DELETE /workspaces/:id`.
 * Exclusão de Workspaces pelo frontend.
 
@@ -178,17 +267,6 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Página `AcceptWorkspaceInvitationPage`.
 * Atualização automática da lista de convites após aceitação.
 * Atualização automática da lista de Workspaces após aceitar um convite.
-* Listagem de Boards na WorkspacePage.
-* Modal de criação de Boards.
-* Formulário de criação utilizando React Hook Form e Zod.
-* Campo opcional para descrição.
-* Campo opcional para cor de fundo.
-* Campo opcional para imagem de capa.
-* Atualização automática da lista de Boards após criação.
-* Estado vazio para Workspaces sem Boards.
-* Estado de carregamento durante a busca de Boards.
-* Controle visual para impedir criação por usuários `VIEWER`.
-
 ### Estilização
 
 * Estilos globais iniciais.
@@ -248,15 +326,6 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Estados visuais da recuperação de senha.
 * Estados visuais da redefinição de senha.
 * Responsividade do fluxo de recuperação de senha.
-* Grid responsivo de Boards.
-* Cards de Boards.
-* Modal de criação de Boards.
-* Seletor visual de cor.
-* Suporte para imagem de capa.
-* Estado vazio dos Boards.
-* Estado de carregamento dos Boards.
-* Feedback visual para erros de carregamento dos Boards.
-
 ### Documentação
 
 * Documentação da arquitetura inicial do frontend.
@@ -326,14 +395,6 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Atualização da documentação de roteamento para incluir as rotas de recuperação e redefinição de senha.
 * Atualização da documentação de estilização para o fluxo de recuperação de senha.
 * Atualização da arquitetura do frontend com o fluxo de recuperação de senha.
-* Documentação da API de Boards.
-* Atualização da documentação das páginas com a listagem de Boards.
-* Atualização da documentação das páginas com a criação de Boards.
-* Atualização da documentação dos serviços com `listBoards()`.
-* Atualização da documentação dos serviços com `createBoard()`.
-* Atualização da documentação da estilização para a área de Boards.
-* Atualização da arquitetura do frontend para incluir a Feature Boards.
-
 ---
 
 # [0.2.0] - Workspace Management

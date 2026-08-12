@@ -186,8 +186,9 @@ Cada milestone representa um conjunto de funcionalidades relacionadas.
 * [x] Model BoardMember
 * [x] Criar Board
 * [x] Listar Boards
-* [ ] Buscar Board por ID
-* [ ] Atualizar Board
+* [x] Buscar Board por ID
+* [x] Atualizar Board
+* [x] Controle de acesso aos Boards
 * [ ] Excluir Board
 * [ ] Favoritar Board
 * [ ] Arquivar Board
@@ -197,8 +198,10 @@ Cada milestone representa um conjunto de funcionalidades relacionadas.
 
 * [x] Listar Boards
 * [x] Criar Board
-* [ ] Visualizar Board
-* [ ] Atualizar Board
+* [x] Visualizar Board
+* [x] BoardPage
+* [x] Atualizar Board
+* [x] Navegação workspace → Board
 * [ ] Excluir Board
 * [ ] Favoritar Board
 * [ ] Arquivar Board

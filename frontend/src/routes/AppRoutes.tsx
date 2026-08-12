@@ -15,6 +15,7 @@ import { WorkspacePage } from "../features/workspaces/pages/WorkspacePage";
 import { AuthenticatedLayout } from "../layouts/AuthenticatedLayout";
 import { DashboardPage } from "../pages/DashboardPage";
 import { NotFoundPage } from "../pages/NotFoundPage";
+import { BoardPage } from "../features/boards/pages/BoardPage";
 
 type RouteGuardProps = {
   children: ReactNode;
@@ -128,11 +129,16 @@ export function AppRoutes() {
         />
 
         <Route
+        path="/boards/:id"
+        element={<BoardPage />}
+        />
+
+        <Route
           path="/workspace-invitations/:token/accept"
           element={<AcceptWorkspaceInvitationPage />}
         />
       </Route>
-
+      
       <Route
         path="*"
         element={<NotFoundPage />}

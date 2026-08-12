@@ -853,8 +853,10 @@ export function WorkspacePage() {
 
                     <button
                       type="button"
-                      disabled
-                      title="A visualização do Board será implementada no próximo passo"
+                      className="secondary-button"
+                      onClick={() =>
+                        navigate(`/boards/${board.id}`)
+                      }
                     >
                       Abrir
                     </button>

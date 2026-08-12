@@ -1,0 +1,446 @@
+import axios from "axios";
+import {
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import {
+  Link,
+  useNavigate,
+  useParams,
+} from "react-router";
+
+import { useAuth } from "../../auth/hooks/useAuth";
+import { getBoardById } from "../services/board.service";
+import type {
+  Board,
+  BoardMember,
+  BoardRole,
+} from "../types/board.types";
+
+const boardRoleLabels: Record<BoardRole, string> = {
+  OWNER: "Proprietário",
+  ADMIN: "Administrador",
+  MEMBER: "Membro",
+  VIEWER: "Visualizador",
+};
+
+export function BoardPage() {
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const { user } = useAuth();
+
+  const [board, setBoard] =
+    useState<Board | null>(null);
+
+  const [isLoading, setIsLoading] =
+    useState(true);
+
+  const [boardError, setBoardError] =
+    useState<string | null>(null);
+
+  useEffect(() => {
+    async function loadBoard() {
+      if (!id) {
+        setBoardError(
+          "ID do Board não informado.",
+        );
+
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+        setBoardError(null);
+
+        const data = await getBoardById(id);
+
+        setBoard({
+          ...data,
+          members: data.members ?? [],
+        });
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          const message =
+            error.response?.data?.message ??
+            "Não foi possível carregar o Board.";
+
+          setBoardError(message);
+          return;
+        }
+
+        setBoardError(
+          "Ocorreu um erro inesperado ao carregar o Board.",
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    void loadBoard();
+  }, [id]);
+
+  const currentMember:
+    | BoardMember
+    | undefined = useMemo(
+    () =>
+      board?.members.find(
+        (member) =>
+          member.user?.id === user?.id ||
+          member.userId === user?.id,
+      ),
+    [board?.members, user?.id],
+  );
+
+  function handleRetry() {
+    if (!id) {
+      return;
+    }
+
+    setIsLoading(true);
+    setBoardError(null);
+
+    void getBoardById(id)
+      .then((data) => {
+        setBoard({
+          ...data,
+          members: data.members ?? [],
+        });
+      })
+      .catch((error: unknown) => {
+        if (axios.isAxiosError(error)) {
+          setBoardError(
+            error.response?.data?.message ??
+              "Não foi possível carregar o Board.",
+          );
+
+          return;
+        }
+
+        setBoardError(
+          "Ocorreu um erro inesperado ao carregar o Board.",
+        );
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }
+
+  if (isLoading) {
+    return (
+      <main className="board-page">
+        <div
+          className="board-page-feedback"
+          role="status"
+        >
+          Carregando Board...
+        </div>
+      </main>
+    );
+  }
+
+  if (boardError || !board) {
+    return (
+      <main className="board-page">
+        <div className="board-page-error">
+          <h1>
+            Não foi possível abrir o Board
+          </h1>
+
+          <p>
+            {boardError ??
+              "O Board solicitado não foi encontrado."}
+          </p>
+
+          <div className="board-page-error-actions">
+            <button
+              type="button"
+              className="secondary-button"
+              onClick={() => navigate(-1)}
+            >
+              Voltar
+            </button>
+
+            {id && (
+              <button
+                type="button"
+                className="primary-button"
+                onClick={handleRetry}
+              >
+                Tentar novamente
+              </button>
+            )}
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  const formattedCreatedAt =
+    new Intl.DateTimeFormat("pt-BR", {
+      dateStyle: "long",
+    }).format(new Date(board.createdAt));
+
+  return (
+    <main className="board-page">
+      <nav
+        className="board-breadcrumb"
+        aria-label="Navegação estrutural"
+      >
+        <Link to="/dashboard">
+          Dashboard
+        </Link>
+
+        <span aria-hidden="true">/</span>
+
+        {board.workspace && (
+          <>
+            <Link
+              to={`/workspaces/${board.workspace.id}`}
+            >
+              {board.workspace.name}
+            </Link>
+
+            <span aria-hidden="true">/</span>
+          </>
+        )}
+
+        <span>{board.title}</span>
+      </nav>
+
+      <header
+        className="board-page-header"
+        style={{
+          backgroundColor:
+            board.backgroundColor ??
+            "#0c66e4",
+          backgroundImage:
+            board.coverImage
+              ? `linear-gradient(
+                  rgb(9 30 66 / 44%),
+                  rgb(9 30 66 / 72%)
+                ),
+                url("${board.coverImage}")`
+              : undefined,
+        }}
+      >
+        <div className="board-page-header-content">
+          <span className="board-page-label">
+            Board
+          </span>
+
+          <h1>{board.title}</h1>
+
+          <p>
+            {board.description ||
+              "Este Board não possui descrição."}
+          </p>
+        </div>
+
+        <div className="board-page-header-actions">
+          {board.workspace && (
+            <button
+              type="button"
+              className="secondary-button"
+              onClick={() =>
+                navigate(
+                  `/workspaces/${board.workspace?.id}`,
+                )
+              }
+            >
+              Voltar ao Workspace
+            </button>
+          )}
+        </div>
+      </header>
+
+      <section
+        className="board-summary-grid"
+        aria-label="Resumo do Board"
+      >
+        <article className="board-summary-card">
+          <span>Workspace</span>
+
+          <strong>
+            {board.workspace?.name ??
+              "Não identificado"}
+          </strong>
+
+          <p>
+            Workspace ao qual este Board pertence.
+          </p>
+        </article>
+
+        <article className="board-summary-card">
+          <span>Sua permissão</span>
+
+          <strong>
+            {currentMember
+              ? boardRoleLabels[
+                  currentMember.role
+                ]
+              : "Não identificada"}
+          </strong>
+
+          <p>
+            Define as ações disponíveis dentro deste Board.
+          </p>
+        </article>
+
+        <article className="board-summary-card">
+          <span>Membros</span>
+
+          <strong>
+            {board.members.length}
+          </strong>
+
+          <p>
+            {board.members.length === 1
+              ? "pessoa participa deste Board"
+              : "pessoas participam deste Board"}
+          </p>
+        </article>
+
+        <article className="board-summary-card">
+          <span>Criado em</span>
+
+          <strong>{formattedCreatedAt}</strong>
+
+          <p>
+            Data de criação deste Board.
+          </p>
+        </article>
+      </section>
+
+      <section className="board-members-section">
+        <div className="board-section-header">
+          <div>
+            <h2>Membros</h2>
+
+            <p>
+              Participantes com acesso a este Board.
+            </p>
+          </div>
+
+          <span className="board-members-count">
+            {board.members.length}
+          </span>
+        </div>
+
+        {board.members.length === 0 ? (
+          <div className="board-members-empty">
+            <h3>
+              Nenhum membro encontrado
+            </h3>
+
+            <p>
+              Este Board ainda não possui membros.
+            </p>
+          </div>
+        ) : (
+          <div className="board-members-list">
+            {board.members.map((member) => {
+              const memberName =
+                member.user?.name ??
+                "Usuário";
+
+              const avatarLetter =
+                memberName
+                  .trim()
+                  .charAt(0)
+                  .toUpperCase() || "?";
+
+              const isCurrentUser =
+                member.user?.id ===
+                  user?.id ||
+                member.userId ===
+                  user?.id;
+
+              return (
+                <article
+                  key={member.id}
+                  className="board-member-card"
+                >
+                  <div
+                    className="board-member-avatar"
+                    aria-hidden="true"
+                  >
+                    {avatarLetter}
+                  </div>
+
+                  <div className="board-member-info">
+                    <div className="board-member-name">
+                      <strong>
+                        {memberName}
+                      </strong>
+
+                      {isCurrentUser && (
+                        <span className="current-user-badge">
+                          Você
+                        </span>
+                      )}
+                    </div>
+
+                    <span>
+                      {member.user?.email ??
+                        "Email não disponível"}
+                    </span>
+                  </div>
+
+                  <span
+                    className={`board-role-badge board-role-${member.role.toLowerCase()}`}
+                  >
+                    {
+                      boardRoleLabels[
+                        member.role
+                      ]
+                    }
+                  </span>
+                </article>
+              );
+            })}
+          </div>
+        )}
+      </section>
+
+      <section className="board-lists-section">
+        <div className="board-section-header">
+          <div>
+            <h2>Lists</h2>
+
+            <p>
+              As listas deste Board serão exibidas aqui.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            className="primary-button"
+            disabled
+            title="Disponível na Milestone de Lists"
+          >
+            Criar List
+          </button>
+        </div>
+
+        <div className="board-lists-empty">
+          <div
+            className="board-lists-empty-icon"
+            aria-hidden="true"
+          >
+            L
+          </div>
+
+          <h3>
+            Nenhuma List disponível
+          </h3>
+
+          <p>
+            A criação e listagem de Lists serão implementadas na próxima milestone.
+          </p>
+        </div>
+      </section>
+    </main>
+  );
+}
