@@ -19,6 +19,10 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Endpoint para listagem de Boards.
 * Endpoint para busca de Board por ID.
 * Endpoint para atualização de Board.
+* Exclusão de Boards.
+* Endpoint `DELETE /boards/:id`.
+* Controle de permissão para exclusão restrito ao `OWNER` do Board.
+* Integração da rota de exclusão de Boards ao Fastify.
 * Associação automática do criador como `OWNER`.
 * Validação de acesso ao Workspace antes da criação.
 * Integração das rotas de Boards ao Fastify.
@@ -35,6 +39,8 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Serviço `updateBoard()`.
 * Integração com o endpoint `PATCH /boards/:id`.
 * Atualização de Boards pelo frontend.
+* Serviço `deleteBoard()`.
+* Integração com o endpoint `DELETE /boards/:id`.
 
 ### Boards no Frontend
 
@@ -56,6 +62,11 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Área preparada para a futura implementação das Lists.
 * Modal de edição de Board.
 * Atualização automática da interface após edição.
+* Botão para excluir Board.
+* Modal de confirmação da exclusão do Board.
+* Estado de carregamento durante a exclusão.
+* Mensagens de erro e sucesso da exclusão.
+* Redirecionamento automático para o Workspace após a exclusão.
 
 ### Estilização
 
@@ -75,6 +86,9 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Modal de edição de Board.
 * Estados de carregamento da BoardPage.
 * Estados de erro da BoardPage.
+* Estilos do modal de exclusão do Board.
+* Warning visual para a ação destrutiva.
+* Responsividade do modal de exclusão do Board.
 
 ### Segurança e Permissões
 
@@ -99,6 +113,12 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Atualização da documentação dos serviços com `updateBoard()`.
 * Atualização da arquitetura do frontend para documentar a BoardPage.
 * Atualização da documentação da estilização da BoardPage.
+* Atualização da documentação da API de Boards com a exclusão.
+* Atualização da documentação da BoardPage com o fluxo de exclusão.
+* Atualização da documentação dos serviços com `deleteBoard()`.
+* Atualização da arquitetura do frontend com a exclusão de Boards.
+* Atualização da documentação de estilização com o modal de exclusão.
+* Atualização do roadmap para registrar a exclusão de Boards como concluída.
 
 ---
 

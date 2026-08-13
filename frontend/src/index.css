@@ -2131,3 +2131,65 @@ button {
     margin-left: 56px;
   }
 }
+
+.board-page-header-actions {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.delete-board-content {
+  display: grid;
+  gap: 20px;
+  padding: 24px;
+}
+
+.delete-board-warning {
+  padding: 18px;
+  border: 1px solid #ffd5d2;
+  border-radius: 8px;
+  background: #fff2f1;
+}
+
+.delete-board-warning strong,
+.delete-board-warning span {
+  display: block;
+}
+
+.delete-board-warning strong {
+  color: #ae2e24;
+}
+
+.delete-board-warning span {
+  margin-top: 8px;
+  color: #172b4d;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.delete-board-warning p {
+  margin: 10px 0 0;
+  color: #5e6c84;
+  line-height: 1.5;
+}
+
+@media (max-width: 760px) {
+  .board-page-header-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .board-page-header-actions button {
+    width: 100%;
+  }
+
+  .delete-board-content .modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .delete-board-content .modal-actions button {
+    width: 100%;
+  }
+}

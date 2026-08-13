@@ -1743,7 +1743,7 @@ O acesso é validado pelo backend de acordo com as regras do Workspace e do Boar
 
 ## Objetivos
 
-Permitir a visualização de um Board específico.
+Permitir a visualização, a edição e a exclusão de um Board específico.
 
 Nesta etapa do projeto a página apresenta as informações gerais do Board e prepara a estrutura para a futura implementação das Lists.
 
@@ -1760,6 +1760,11 @@ Nesta etapa do projeto a página apresenta as informações gerais do Board e pr
 - Exibir estado de erro.
 - Permitir nova tentativa.
 - Navegar de volta ao Workspace.
+- Exibir o botão **Excluir Board** somente ao `OWNER` do Board.
+- Solicitar confirmação em modal antes da exclusão.
+- Exibir o estado de carregamento durante a exclusão.
+- Exibir mensagens de erro e sucesso da exclusão.
+- Redirecionar para o Workspace após a exclusão.
 - Preparar a área destinada às Lists.
 
 ---
@@ -1826,6 +1831,16 @@ São exibidos:
 
 ---
 
+### Exclusão do Board
+
+O botão **Excluir Board** é exibido somente ao usuário com role `OWNER` no próprio Board.
+
+Ao acioná-lo, a página abre um modal de confirmação com aviso de que a ação é permanente. Durante a requisição, os controles do modal são desabilitados e o botão apresenta o texto `Excluindo...`.
+
+A página exibe a mensagem de erro retornada pela API quando a operação falha. Após o sucesso, exibe a mensagem de confirmação e redireciona automaticamente para a `WorkspacePage` do Board.
+
+---
+
 ## Fluxo
 
 ```text
@@ -1842,6 +1857,32 @@ GET /boards/:id
 ↓
 
 BoardPage
+```
+
+### Fluxo de exclusão
+
+```text
+BoardPage
+
+↓
+
+Botão Excluir Board
+
+↓
+
+Modal de confirmação
+
+↓
+
+DELETE /boards/:id
+
+↓
+
+Mensagem de sucesso
+
+↓
+
+WorkspacePage
 ```
 
 ---
@@ -1943,6 +1984,12 @@ Responsabilidades planejadas:
 - Cards de resumo do Board.
 - Exibição de membros do Board.
 - Área inicial destinada às Lists.
+- Exclusão de Board pelo `OWNER` do Board.
+- Botão Excluir Board.
+- Modal de confirmação da exclusão do Board.
+- Estado de carregamento durante a exclusão do Board.
+- Mensagens de erro e sucesso da exclusão do Board.
+- Redirecionamento automático para o Workspace após excluir o Board.
 
 ## Planejado
 

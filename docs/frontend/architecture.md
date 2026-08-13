@@ -1409,6 +1409,32 @@ Interface atualizada
 
 ---
 
+## Exclusão
+
+```text
+BoardPage
+
+↓
+
+Modal de confirmação
+
+↓
+
+deleteBoard()
+
+↓
+
+DELETE /boards/:id
+
+↓
+
+WorkspacePage
+```
+
+A `BoardPage` concentra a visualização, a edição e a exclusão do Board. O botão e o fluxo de exclusão são disponibilizados somente ao `OWNER` do próprio Board; a autorização definitiva permanece no backend.
+
+---
+
 # Controle Visual de Permissões
 
 O frontend utiliza a role do usuário para controlar quais ações são exibidas.
@@ -1420,6 +1446,7 @@ Pode visualizar:
 - Editar Workspace.
 - Excluir Workspace.
 - Lista de membros.
+- Excluir Board, quando possuir a role `OWNER` no próprio Board.
 
 ## ADMIN
 
@@ -1497,6 +1524,9 @@ Workspaces
 ├── BoardPage
 ├── Visualização de Board
 ├── Atualização de Board
+├── Exclusão de Board
+├── Modal de confirmação da exclusão
+├── Serviço deleteBoard()
 └── Navegação Workspace → Boards
 ```
 
@@ -1627,6 +1657,7 @@ Cada módulo seguirá a mesma organização baseada em features.
 - BoardPage.
 - Visualização de Board.
 - Atualização de Board.
+- Exclusão de Board.
 - Navegação entre Workspace e Board.
 - Breadcrumb da BoardPage.
 - Cards de resumo do Board.
@@ -1634,6 +1665,7 @@ Cada módulo seguirá a mesma organização baseada em features.
 - Área preparada para Lists.
 - Métodos `getBoardById()`.
 - Métodos `updateBoard()`.
+- Método `deleteBoard()`.
 - Atualização automática da lista de Boards.
 
 ## Em desenvolvimento

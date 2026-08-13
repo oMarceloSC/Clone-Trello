@@ -71,3 +71,7 @@ export type UpdateBoardResponse = {
   message: string;
   board: Board;
 };
+
+export type DeleteBoardResponse = {
+    message: string;
+};

@@ -11,7 +11,10 @@ import {
 } from "react-router";
 
 import { useAuth } from "../../auth/hooks/useAuth";
-import { getBoardById } from "../services/board.service";
+import {
+  deleteBoard,
+  getBoardById,
+} from "../services/board.service";
 import type {
   Board,
   BoardMember,
@@ -37,6 +40,18 @@ export function BoardPage() {
     useState(true);
 
   const [boardError, setBoardError] =
+    useState<string | null>(null);
+
+  const [isDeleteModalOpen, setIsDeleteModalOpen] =
+    useState(false);
+
+  const [isDeleting, setIsDeleting] =
+    useState(false);
+
+  const [deleteError, setDeleteError] =
+    useState<string | null>(null);
+
+  const [deleteSuccess, setDeleteSuccess] =
     useState<string | null>(null);
 
   useEffect(() => {
@@ -93,6 +108,9 @@ export function BoardPage() {
     [board?.members, user?.id],
   );
 
+  const canDeleteBoard =
+    currentMember?.role === "OWNER";
+
   function handleRetry() {
     if (!id) {
       return;
@@ -125,6 +143,78 @@ export function BoardPage() {
       .finally(() => {
         setIsLoading(false);
       });
+  }
+
+  function openDeleteModal() {
+    if (!canDeleteBoard) {
+      return;
+    }
+
+    setDeleteError(null);
+    setDeleteSuccess(null);
+    setIsDeleteModalOpen(true);
+  }
+
+  function closeDeleteModal() {
+    if (isDeleting) {
+      return;
+    }
+
+    setIsDeleteModalOpen(false);
+    setDeleteError(null);
+    setDeleteSuccess(null);
+  }
+
+  async function handleDeleteBoard() {
+    if (!id) {
+      setDeleteError(
+        "ID do Board não informado.",
+      );
+
+      return;
+    }
+
+    try {
+      setIsDeleting(true);
+      setDeleteError(null);
+      setDeleteSuccess(null);
+
+      const response = await deleteBoard(id);
+
+      setDeleteSuccess(response.message);
+
+      window.setTimeout(() => {
+        if (board?.workspace?.id) {
+          navigate(
+            `/workspaces/${board.workspace.id}`,
+            {
+              replace: true,
+            },
+          );
+
+          return;
+        }
+
+        navigate("/dashboard", {
+          replace: true,
+        });
+      }, 800);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const message =
+          error.response?.data?.message ??
+          "Não foi possível excluir o Board.";
+
+        setDeleteError(message);
+        return;
+      }
+
+      setDeleteError(
+        "Ocorreu um erro inesperado ao excluir o Board.",
+      );
+    } finally {
+      setIsDeleting(false);
+    }
   }
 
   if (isLoading) {
@@ -239,6 +329,16 @@ export function BoardPage() {
         </div>
 
         <div className="board-page-header-actions">
+          {canDeleteBoard && (
+            <button
+              type="button"
+              className="danger-button"
+              onClick={openDeleteModal}
+            >
+              Excluir Board
+            </button>
+          )}
+
           {board.workspace && (
             <button
               type="button"
@@ -441,6 +541,104 @@ export function BoardPage() {
           </p>
         </div>
       </section>
+
+      {isDeleteModalOpen && (
+        <div
+          className="modal-backdrop"
+          role="presentation"
+          onMouseDown={closeDeleteModal}
+        >
+          <section
+            className="modal-card"
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="delete-board-title"
+            aria-describedby="delete-board-description"
+            onMouseDown={(event) =>
+              event.stopPropagation()
+            }
+          >
+            <header className="modal-header">
+              <div>
+                <h2 id="delete-board-title">
+                  Excluir Board
+                </h2>
+
+                <p id="delete-board-description">
+                  Esta ação não poderá ser desfeita.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                className="modal-close-button"
+                onClick={closeDeleteModal}
+                disabled={isDeleting}
+                aria-label="Fechar modal"
+              >
+                ×
+              </button>
+            </header>
+
+            <div className="delete-board-content">
+              <div className="delete-board-warning">
+                <strong>
+                  Você está prestes a excluir:
+                </strong>
+
+                <span>{board.title}</span>
+
+                <p>
+                  Todos os dados vinculados a este Board serão
+                  removidos permanentemente.
+                </p>
+              </div>
+
+              {deleteError && (
+                <div
+                  className="api-error"
+                  role="alert"
+                >
+                  {deleteError}
+                </div>
+              )}
+
+              {deleteSuccess && (
+                <div
+                  className="success-message"
+                  role="status"
+                >
+                  {deleteSuccess}
+                </div>
+              )}
+
+              <footer className="modal-actions">
+                <button
+                  type="button"
+                  className="secondary-button"
+                  onClick={closeDeleteModal}
+                  disabled={isDeleting}
+                >
+                  Cancelar
+                </button>
+
+                <button
+                  type="button"
+                  className="danger-button"
+                  onClick={() => {
+                    void handleDeleteBoard();
+                  }}
+                  disabled={isDeleting}
+                >
+                  {isDeleting
+                    ? "Excluindo..."
+                    : "Excluir definitivamente"}
+                </button>
+              </footer>
+            </div>
+          </section>
+        </div>
+      )}
     </main>
   );
 }

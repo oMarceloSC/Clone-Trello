@@ -4,6 +4,7 @@ import type {
   Board,
   CreateBoardRequest,
   CreateBoardResponse,
+  DeleteBoardResponse,
   GetBoardResponse,
   UpdateBoardRequest,
   UpdateBoardResponse,
@@ -53,4 +54,15 @@ export async function updateBoard(
     );
 
   return response.data;
+}
+
+export async function deleteBoard(
+    boardId: string,
+): Promise<DeleteBoardResponse> {
+    const response = 
+        await api.delete(
+            `/boards/${boardId}`,
+        );
+
+    return response.data;
 }

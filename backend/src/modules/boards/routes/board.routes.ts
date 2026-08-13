@@ -30,4 +30,9 @@ export async function boardRoutes(
     "/boards/:id",
     boardController.update,
   );
+
+  app.delete(
+    "/boards/:id",
+    boardController.delete,
+  );
 }

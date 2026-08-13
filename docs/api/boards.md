@@ -423,6 +423,131 @@ Todos os campos são opcionais.
 
 ---
 
+# Excluir Board
+
+## DELETE
+
+```http
+DELETE /boards/:id
+```
+
+### Descrição
+
+Exclui permanentemente um Board.
+
+### Autenticação
+
+Endpoint protegido por JWT. O usuário deve estar autenticado e ser `OWNER` do próprio Board.
+
+### Headers
+
+```text
+Authorization: Bearer TOKEN
+```
+
+### Parâmetros
+
+| Parâmetro | Tipo | Obrigatório | Descrição |
+|---|---|---|---|
+| `id` | UUID | Sim | Identificador do Board que será excluído. |
+
+O parâmetro é validado com Zod e deve conter um UUID válido.
+
+### Resposta
+
+**200 OK**
+
+```json
+{
+  "message": "Board excluído com sucesso"
+}
+```
+
+### Regras de Negócio
+
+- somente o `OWNER` do Board pode excluí-lo;
+- `ADMIN`, `MEMBER` e `VIEWER` do Board não podem realizar a exclusão;
+- `OWNER` e `ADMIN` do Workspace não podem excluir o Board quando não forem `OWNER` do próprio Board;
+- possuir acesso de visualização ao Board ou privilégios no Workspace não concede permissão de exclusão;
+- a exclusão é permanente e remove o Board pelo seu identificador.
+
+### Fluxo
+
+```text
+Usuário autenticado
+
+↓
+
+DELETE /boards/:id
+
+↓
+
+Valida o UUID
+
+↓
+
+Busca a participação do usuário no Board
+
+↓
+
+Valida a role OWNER do Board
+
+↓
+
+Exclui o Board
+
+↓
+
+Retorna mensagem de sucesso
+```
+
+### Possíveis Erros
+
+#### ID inválido
+
+**400 Bad Request**
+
+```json
+{
+  "statusCode": 400,
+  "message": "Erro de validação"
+}
+```
+
+#### Token não informado, inválido ou expirado
+
+**401 Unauthorized**
+
+```json
+{
+  "message": "Token inválido ou expirado"
+}
+```
+
+#### Sem permissão
+
+**403 Forbidden**
+
+```json
+{
+  "statusCode": 403,
+  "message": "Você não tem permissão para realizar esta ação neste Board."
+}
+```
+
+#### Board não encontrado ou usuário sem participação
+
+**404 Not Found**
+
+```json
+{
+  "statusCode": 404,
+  "message": "Board não encontrado."
+}
+```
+
+---
+
 # Fluxo de Criação
 
 ```text
@@ -487,6 +612,34 @@ Retorna lista de Boards
 
 ---
 
+# Fluxo de Exclusão
+
+```text
+BoardPage
+
+↓
+
+Confirmação do OWNER do Board
+
+↓
+
+DELETE /boards/:id
+
+↓
+
+Validação de autenticação e permissão
+
+↓
+
+Exclusão permanente do Board
+
+↓
+
+Mensagem de sucesso
+```
+
+---
+
 # Estado Atual
 
 ## Implementado
@@ -495,8 +648,11 @@ Retorna lista de Boards
 - Listagem de Boards.
 - Busca de Board por ID.
 - Atualização de Board.
+- Exclusão de Board.
+- Endpoint `DELETE /boards/:id`.
 - Associação automática do criador como OWNER.
 - Controle de permissões.
+- Exclusão permitida exclusivamente ao `OWNER` do Board.
 - Controle de acesso centralizado (`BoardAccessService`).
 - Visibilidade baseada em permissões do Workspace e participação no Board.
 - Validação de Workspace.
@@ -504,7 +660,6 @@ Retorna lista de Boards
 
 ## Planejado
 
-- Excluir Board.
 - Favoritar Board.
 - Arquivar Board.
 - Gerenciamento de membros do Board.

@@ -498,6 +498,7 @@ Seu objetivo é apresentar todas as informações relacionadas a um Board espec�
 - Cards de resumo.
 - Lista de membros.
 - Área reservada para Lists.
+- Botão destrutivo **Excluir Board**, exibido ao `OWNER` do Board.
 
 A página reutiliza os mesmos padrões visuais utilizados na `WorkspacePage`, garantindo consistência em toda a aplicação.
 
@@ -534,6 +535,26 @@ São exibidos:
 - Cards de resumo.
 - Lista de membros.
 - Área destinada às Lists.
+
+---
+
+## Modal de Exclusão do Board
+
+O fluxo de exclusão reutiliza o padrão visual dos modais da aplicação e destaca o caráter destrutivo da ação.
+
+São exibidos:
+
+- Título **Excluir Board**.
+- Aviso de que a ação não poderá ser desfeita.
+- Warning destrutivo com o nome do Board e a remoção permanente dos dados vinculados.
+- Botão secundário para cancelar.
+- Botão destrutivo para confirmar.
+- Mensagem de erro retornada pela API.
+- Mensagem de sucesso após a exclusão.
+
+Durante a exclusão, o fechamento e os botões do modal ficam desabilitados, e a ação principal apresenta o texto `Excluindo...`.
+
+O modal acompanha a responsividade já aplicada aos diálogos da aplicação, mantendo ações e conteúdo acessíveis em telas menores.
 
 ---
 
@@ -1804,6 +1825,12 @@ As próximas evoluções previstas para a camada de estilos são:
 - Estados de carregamento dos Boards.
 - Estado vazio dos Boards.
 - Feedback visual para erros dos Boards.
+- Botão Excluir Board.
+- Modal de exclusão do Board.
+- Warning destrutivo da exclusão do Board.
+- Estado visual de exclusão do Board.
+- Mensagens de erro e sucesso da exclusão do Board.
+- Responsividade do modal de exclusão do Board.
 
 ## Planejado
 

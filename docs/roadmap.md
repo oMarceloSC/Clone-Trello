@@ -189,7 +189,7 @@ Cada milestone representa um conjunto de funcionalidades relacionadas.
 * [x] Buscar Board por ID
 * [x] Atualizar Board
 * [x] Controle de acesso aos Boards
-* [ ] Excluir Board
+* [x] Excluir Board
 * [ ] Favoritar Board
 * [ ] Arquivar Board
 * [ ] Sistema de permissões do Board
@@ -202,7 +202,7 @@ Cada milestone representa um conjunto de funcionalidades relacionadas.
 * [x] BoardPage
 * [x] Atualizar Board
 * [x] Navegação workspace → Board
-* [ ] Excluir Board
+* [x] Excluir Board
 * [ ] Favoritar Board
 * [ ] Arquivar Board
 

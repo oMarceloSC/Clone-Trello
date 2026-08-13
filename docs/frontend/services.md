@@ -1159,6 +1159,8 @@ getBoardById()
 createBoard()
 
 updateBoard()
+
+deleteBoard()
 ```
 
 ---
@@ -1415,6 +1417,69 @@ Board atualizado
 ↓
 
 Atualização da interface
+```
+
+---
+
+# deleteBoard()
+
+## Endpoint
+
+```http
+DELETE /boards/:id
+```
+
+## Headers
+
+```text
+Authorization: Bearer TOKEN
+```
+
+O JWT é enviado automaticamente pela instância compartilhada do Axios.
+
+## Retorno
+
+```ts
+type DeleteBoardResponse = {
+  message: string;
+}
+```
+
+## Responsabilidades
+
+- Excluir um Board pelo ID.
+- Retornar a mensagem de sucesso enviada pela API.
+- Propagar erros de autenticação, acesso e permissão para a `BoardPage`.
+- Manter a navegação e os estados visuais sob responsabilidade da página.
+
+## Fluxo
+
+```text
+BoardPage
+
+↓
+
+Modal de confirmação
+
+↓
+
+deleteBoard()
+
+↓
+
+DELETE /boards/:id
+
+↓
+
+DeleteBoardResponse
+
+↓
+
+Mensagem de sucesso
+
+↓
+
+WorkspacePage
 ```
 
 ---
@@ -1910,6 +1975,16 @@ type UpdateBoardResponse = {
 
 ---
 
+## DeleteBoardResponse
+
+```ts
+type DeleteBoardResponse = {
+  message: string;
+}
+```
+
+---
+
 # Tratamento de Erros
 
 Os serviços apenas propagam os erros retornados pela API.
@@ -1964,6 +2039,7 @@ Mensagens utilizadas atualmente:
 - Não foi possível criar o Board.
 - Não foi possível carregar o Board.
 - Não foi possível atualizar o Board.
+- Não foi possível excluir o Board.
 
 ---
 
@@ -2040,6 +2116,7 @@ notification.service.ts
 - `createBoard()`.
 - `getBoardById()`
 - `updateBoard()`
+- `deleteBoard()`.
 
 ## Planejado
 

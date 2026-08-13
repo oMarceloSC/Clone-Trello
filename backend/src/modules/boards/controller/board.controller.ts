@@ -9,6 +9,7 @@ import {
 } from "../schemas/create-board.schema.js";
 
 import { getBoardSchema } from "../schemas/get-board.schema.js";
+import { deleteBoardSchema } from "../schemas/delete-board.schema.js";
 
 import {
   updateBoardBodySchema,
@@ -19,6 +20,7 @@ import { CreateBoardUseCase } from "../use-cases/create-board.use-case.js";
 import { ListBoardsUseCase } from "../use-cases/list-boards.use-case.js";
 import { GetBoardUseCase } from "../use-cases/get-board.use-case.js";
 import { UpdateBoardUseCase } from "../use-cases/update-board.use-case.js";
+import { DeleteBoardUseCase } from "../use-cases/delete-board.use-case.js";
 
 const createBoardUseCase =
   new CreateBoardUseCase();
@@ -31,6 +33,9 @@ const getBoardUseCase =
 
 const updateBoardUseCase =
   new UpdateBoardUseCase();
+
+const deleteBoardUseCase = 
+  new DeleteBoardUseCase();
 
 export class BoardController {
   async create(
@@ -124,6 +129,25 @@ export class BoardController {
     return reply.status(200).send({
       message: "Board atualizado com sucesso",
       board,
+    });
+  }
+
+  async delete(
+    request: FastifyRequest,
+    reply: FastifyReply,
+  ) {
+    const { id } =
+        deleteBoardSchema.parse(
+            request.params,
+        );
+
+    await deleteBoardUseCase.execute({
+        boardId: id,
+        userId: request.user.id,
+    });
+
+    return reply.status(200).send({
+        message: "Board exlcuído com sucesso",
     });
   }
 }
