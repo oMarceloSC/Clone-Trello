@@ -31,6 +31,11 @@ export async function boardRoutes(
     boardController.update,
   );
 
+  app.patch(
+    "/boards/:id/favorite",
+    boardController.favorite,
+  );
+
   app.delete(
     "/boards/:id",
     boardController.delete,

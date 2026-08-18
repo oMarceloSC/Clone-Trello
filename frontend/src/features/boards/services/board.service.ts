@@ -5,6 +5,8 @@ import type {
   CreateBoardRequest,
   CreateBoardResponse,
   DeleteBoardResponse,
+  FavoriteBoardRequest,
+  FavoriteBoardResponse,
   GetBoardResponse,
   UpdateBoardRequest,
   UpdateBoardResponse,
@@ -65,4 +67,17 @@ export async function deleteBoard(
         );
 
     return response.data;
+}
+
+export async function favoriteBoard(
+  boardId: string,
+  data: FavoriteBoardRequest,
+): Promise<FavoriteBoardResponse> {
+  const response =
+    await api.patch<FavoriteBoardResponse>(
+      `/boards/${boardId}/favorite`,
+      data,
+    );
+
+    return response.data
 }

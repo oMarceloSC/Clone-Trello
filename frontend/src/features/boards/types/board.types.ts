@@ -75,3 +75,13 @@ export type UpdateBoardResponse = {
 export type DeleteBoardResponse = {
     message: string;
 };
+
+export type FavoriteBoardRequest = {
+    isFavorite: boolean;
+};
+
+export type FavoriteBoardResponse = {
+    message: string;
+    member: BoardMember;
+};
+

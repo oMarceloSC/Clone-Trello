@@ -16,11 +16,17 @@ import {
   updateBoardParamsSchema,
 } from "../schemas/update-board.schema.js";
 
+import {
+  favoriteBoardBodySchema,
+  favoriteBoardParamsSchema,
+} from "../schemas/favorite-board.schema.js";
+
 import { CreateBoardUseCase } from "../use-cases/create-board.use-case.js";
 import { ListBoardsUseCase } from "../use-cases/list-boards.use-case.js";
 import { GetBoardUseCase } from "../use-cases/get-board.use-case.js";
 import { UpdateBoardUseCase } from "../use-cases/update-board.use-case.js";
 import { DeleteBoardUseCase } from "../use-cases/delete-board.use-case.js";
+import { FavoriteBoardUseCase } from "../use-cases/favorite-board.use-case.js";
 
 const createBoardUseCase =
   new CreateBoardUseCase();
@@ -36,6 +42,9 @@ const updateBoardUseCase =
 
 const deleteBoardUseCase = 
   new DeleteBoardUseCase();
+
+const favoriteBoardUseCase = 
+  new FavoriteBoardUseCase();
 
 export class BoardController {
   async create(
@@ -150,4 +159,33 @@ export class BoardController {
         message: "Board exlcuído com sucesso",
     });
   }
+
+  async favorite(
+  request: FastifyRequest,
+  reply: FastifyReply,
+) {
+  const { id } =
+    favoriteBoardParamsSchema.parse(
+      request.params,
+    );
+
+  const { isFavorite } =
+    favoriteBoardBodySchema.parse(
+      request.body,
+    );
+
+  const member =
+    await favoriteBoardUseCase.execute({
+      boardId: id,
+      userId: request.user.id,
+      isFavorite,
+    });
+
+  return reply.status(200).send({
+    message: isFavorite
+      ? "Board favoritado com sucesso"
+      : "Board removido dos favoritos com sucesso",
+    member,
+  });
+}
 }

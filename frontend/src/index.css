@@ -2193,3 +2193,74 @@ button {
     width: 100%;
   }
 }
+
+.board-favorite-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 18px;
+  border: 1px solid rgb(255 255 255 / 45%);
+  border-radius: 6px;
+  background: rgb(255 255 255 / 16%);
+  color: #ffffff;
+  font-weight: 700;
+  backdrop-filter: blur(4px);
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.board-favorite-button span {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.board-favorite-button:hover:not(:disabled) {
+  border-color: rgb(255 255 255 / 70%);
+  background: rgb(255 255 255 / 26%);
+}
+
+.board-favorite-button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.board-favorite-button-active {
+  border-color: #f5cd47;
+  background: #f5cd47;
+  color: #172b4d;
+}
+
+.board-favorite-button-active:hover:not(:disabled) {
+  border-color: #e2b203;
+  background: #e2b203;
+}
+
+.board-favorite-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.board-favorite-error {
+  width: fit-content;
+  max-width: 100%;
+  margin-top: 16px;
+  padding: 10px 12px;
+  border: 1px solid rgb(255 255 255 / 30%);
+  border-radius: 6px;
+  background: rgb(174 46 36 / 88%);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+@media (max-width: 760px) {
+  .board-favorite-button {
+    width: 100%;
+  }
+
+  .board-favorite-error {
+    width: 100%;
+  }
+}

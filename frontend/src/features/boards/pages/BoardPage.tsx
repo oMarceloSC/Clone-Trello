@@ -13,6 +13,7 @@ import {
 import { useAuth } from "../../auth/hooks/useAuth";
 import {
   deleteBoard,
+  favoriteBoard,
   getBoardById,
 } from "../services/board.service";
 import type {
@@ -52,6 +53,12 @@ export function BoardPage() {
     useState<string | null>(null);
 
   const [deleteSuccess, setDeleteSuccess] =
+    useState<string | null>(null);
+
+  const [isUpdatingFavorite, setIsUpdatingFavorite] =
+    useState(false);
+
+  const [favoriteError, setFavoriteError] =
     useState<string | null>(null);
 
   useEffect(() => {
@@ -111,6 +118,9 @@ export function BoardPage() {
   const canDeleteBoard =
     currentMember?.role === "OWNER";
 
+  const isFavorite =
+    currentMember?.isFavorite ?? false;
+
   function handleRetry() {
     if (!id) {
       return;
@@ -143,6 +153,69 @@ export function BoardPage() {
       .finally(() => {
         setIsLoading(false);
       });
+  }
+
+  async function handleFavoriteBoard() {
+    if (
+      !id ||
+      !currentMember ||
+      isUpdatingFavorite
+    ) {
+      return;
+    }
+
+    const nextFavoriteState =
+      !currentMember.isFavorite;
+
+    try {
+      setIsUpdatingFavorite(true);
+      setFavoriteError(null);
+
+      const response =
+        await favoriteBoard(id, {
+          isFavorite: nextFavoriteState,
+        });
+
+      setBoard((currentBoard) => {
+        if (!currentBoard) {
+          return currentBoard;
+        }
+
+        return {
+          ...currentBoard,
+          members: currentBoard.members.map(
+            (member) =>
+              member.id ===
+              response.member.id
+                ? {
+                    ...member,
+                    isFavorite:
+                      response.member
+                        .isFavorite,
+                    updatedAt:
+                      response.member
+                        .updatedAt,
+                  }
+                : member,
+          ),
+        };
+      });
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const message =
+          error.response?.data?.message ??
+          "Não foi possível atualizar o favorito.";
+
+        setFavoriteError(message);
+        return;
+      }
+
+      setFavoriteError(
+        "Ocorreu um erro inesperado ao atualizar o favorito.",
+      );
+    } finally {
+      setIsUpdatingFavorite(false);
+    }
   }
 
   function openDeleteModal() {
@@ -179,7 +252,8 @@ export function BoardPage() {
       setDeleteError(null);
       setDeleteSuccess(null);
 
-      const response = await deleteBoard(id);
+      const response =
+        await deleteBoard(id);
 
       setDeleteSuccess(response.message);
 
@@ -270,7 +344,9 @@ export function BoardPage() {
   const formattedCreatedAt =
     new Intl.DateTimeFormat("pt-BR", {
       dateStyle: "long",
-    }).format(new Date(board.createdAt));
+    }).format(
+      new Date(board.createdAt),
+    );
 
   return (
     <main className="board-page">
@@ -282,7 +358,9 @@ export function BoardPage() {
           Dashboard
         </Link>
 
-        <span aria-hidden="true">/</span>
+        <span aria-hidden="true">
+          /
+        </span>
 
         {board.workspace && (
           <>
@@ -292,7 +370,9 @@ export function BoardPage() {
               {board.workspace.name}
             </Link>
 
-            <span aria-hidden="true">/</span>
+            <span aria-hidden="true">
+              /
+            </span>
           </>
         )}
 
@@ -326,9 +406,53 @@ export function BoardPage() {
             {board.description ||
               "Este Board não possui descrição."}
           </p>
+
+          {favoriteError && (
+            <div
+              className="board-favorite-error"
+              role="alert"
+            >
+              {favoriteError}
+            </div>
+          )}
         </div>
 
         <div className="board-page-header-actions">
+          {currentMember && (
+            <button
+              type="button"
+              className={`board-favorite-button ${
+                isFavorite
+                  ? "board-favorite-button-active"
+                  : ""
+              }`}
+              onClick={() => {
+                void handleFavoriteBoard();
+              }}
+              disabled={
+                isUpdatingFavorite
+              }
+              aria-pressed={isFavorite}
+              title={
+                isFavorite
+                  ? "Remover dos favoritos"
+                  : "Favoritar Board"
+              }
+            >
+              <span aria-hidden="true">
+                {isFavorite
+                  ? "★"
+                  : "☆"}
+              </span>
+
+              {isUpdatingFavorite
+                ? "Salvando..."
+                : isFavorite
+                  ? "Favoritado"
+                  : "Favoritar"}
+            </button>
+          )}
+
           {canDeleteBoard && (
             <button
               type="button"
@@ -405,7 +529,9 @@ export function BoardPage() {
         <article className="board-summary-card">
           <span>Criado em</span>
 
-          <strong>{formattedCreatedAt}</strong>
+          <strong>
+            {formattedCreatedAt}
+          </strong>
 
           <p>
             Data de criação deste Board.
@@ -440,66 +566,70 @@ export function BoardPage() {
           </div>
         ) : (
           <div className="board-members-list">
-            {board.members.map((member) => {
-              const memberName =
-                member.user?.name ??
-                "Usuário";
+            {board.members.map(
+              (member) => {
+                const memberName =
+                  member.user?.name ??
+                  "Usuário";
 
-              const avatarLetter =
-                memberName
-                  .trim()
-                  .charAt(0)
-                  .toUpperCase() || "?";
+                const avatarLetter =
+                  memberName
+                    .trim()
+                    .charAt(0)
+                    .toUpperCase() ||
+                  "?";
 
-              const isCurrentUser =
-                member.user?.id ===
-                  user?.id ||
-                member.userId ===
-                  user?.id;
+                const isCurrentUser =
+                  member.user?.id ===
+                    user?.id ||
+                  member.userId ===
+                    user?.id;
 
-              return (
-                <article
-                  key={member.id}
-                  className="board-member-card"
-                >
-                  <div
-                    className="board-member-avatar"
-                    aria-hidden="true"
+                return (
+                  <article
+                    key={member.id}
+                    className="board-member-card"
                   >
-                    {avatarLetter}
-                  </div>
-
-                  <div className="board-member-info">
-                    <div className="board-member-name">
-                      <strong>
-                        {memberName}
-                      </strong>
-
-                      {isCurrentUser && (
-                        <span className="current-user-badge">
-                          Você
-                        </span>
-                      )}
+                    <div
+                      className="board-member-avatar"
+                      aria-hidden="true"
+                    >
+                      {avatarLetter}
                     </div>
 
-                    <span>
-                      {member.user?.email ??
-                        "Email não disponível"}
-                    </span>
-                  </div>
+                    <div className="board-member-info">
+                      <div className="board-member-name">
+                        <strong>
+                          {memberName}
+                        </strong>
 
-                  <span
-                    className={`board-role-badge board-role-${member.role.toLowerCase()}`}
-                  >
-                    {
-                      boardRoleLabels[
-                        member.role
-                      ]
-                    }
-                  </span>
-                </article>
-              );
-            })}
+                        {isCurrentUser && (
+                          <span className="current-user-badge">
+                            Você
+                          </span>
+                        )}
+                      </div>
+
+                      <span>
+                        {member.user
+                          ?.email ??
+                          "Email não disponível"}
+                      </span>
+                    </div>
+
+                    <span
+                      className={`board-role-badge board-role-${member.role.toLowerCase()}`}
+                    >
+                      {
+                        boardRoleLabels[
+                          member.role
+                        ]
+                      }
+                    </span>
+                  </article>
+                );
+              },
+            )}
           </div>
         )}
       </section>
@@ -546,7 +676,9 @@ export function BoardPage() {
         <div
           className="modal-backdrop"
           role="presentation"
-          onMouseDown={closeDeleteModal}
+          onMouseDown={
+            closeDeleteModal
+          }
         >
           <section
             className="modal-card"
@@ -572,7 +704,9 @@ export function BoardPage() {
               <button
                 type="button"
                 className="modal-close-button"
-                onClick={closeDeleteModal}
+                onClick={
+                  closeDeleteModal
+                }
                 disabled={isDeleting}
                 aria-label="Fechar modal"
               >
@@ -586,11 +720,12 @@ export function BoardPage() {
                   Você está prestes a excluir:
                 </strong>
 
-                <span>{board.title}</span>
+                <span>
+                  {board.title}
+                </span>
 
                 <p>
-                  Todos os dados vinculados a este Board serão
-                  removidos permanentemente.
+                  Todos os dados vinculados a este Board serão removidos permanentemente.
                 </p>
               </div>
 
@@ -616,8 +751,12 @@ export function BoardPage() {
                 <button
                   type="button"
                   className="secondary-button"
-                  onClick={closeDeleteModal}
-                  disabled={isDeleting}
+                  onClick={
+                    closeDeleteModal
+                  }
+                  disabled={
+                    isDeleting
+                  }
                 >
                   Cancelar
                 </button>
@@ -628,7 +767,9 @@ export function BoardPage() {
                   onClick={() => {
                     void handleDeleteBoard();
                   }}
-                  disabled={isDeleting}
+                  disabled={
+                    isDeleting
+                  }
                 >
                   {isDeleting
                     ? "Excluindo..."
