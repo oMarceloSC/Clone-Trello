@@ -1435,6 +1435,43 @@ A `BoardPage` concentra a visualização, a edição e a exclusão do Board. O b
 
 ---
 
+## Favorito
+
+```text
+BoardPage
+
+↓
+
+favoriteBoard()
+
+↓
+
+PATCH /boards/:id/favorite
+
+↓
+
+BoardMember.isFavorite
+
+↓
+
+Atualização local da BoardPage
+```
+
+O favorito pertence ao `BoardMember`, é específico para cada usuário e não é uma propriedade global do Board. A `BoardPage` disponibiliza visualização, atualização, exclusão e favorito por usuário.
+
+O `board.service.ts` disponibiliza:
+
+```text
+listBoards()
+getBoardById()
+createBoard()
+updateBoard()
+deleteBoard()
+favoriteBoard()
+```
+
+---
+
 # Controle Visual de Permissões
 
 O frontend utiliza a role do usuário para controlar quais ações são exibidas.
@@ -1527,6 +1564,8 @@ Workspaces
 ├── Exclusão de Board
 ├── Modal de confirmação da exclusão
 ├── Serviço deleteBoard()
+├── Favorito de Board por usuário
+├── Serviço favoriteBoard()
 └── Navegação Workspace → Boards
 ```
 
@@ -1658,6 +1697,7 @@ Cada módulo seguirá a mesma organização baseada em features.
 - Visualização de Board.
 - Atualização de Board.
 - Exclusão de Board.
+- Favorito de Board por usuário.
 - Navegação entre Workspace e Board.
 - Breadcrumb da BoardPage.
 - Cards de resumo do Board.
@@ -1666,6 +1706,7 @@ Cada módulo seguirá a mesma organização baseada em features.
 - Métodos `getBoardById()`.
 - Métodos `updateBoard()`.
 - Método `deleteBoard()`.
+- Método `favoriteBoard()`.
 - Atualização automática da lista de Boards.
 
 ## Em desenvolvimento

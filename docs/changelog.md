@@ -23,6 +23,9 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Endpoint `DELETE /boards/:id`.
 * Controle de permissão para exclusão restrito ao `OWNER` do Board.
 * Integração da rota de exclusão de Boards ao Fastify.
+* Endpoint para favoritar e desfavoritar Boards.
+* Atualização individual de `BoardMember.isFavorite`.
+* Validação de participação no Board antes da alteração do favorito.
 * Associação automática do criador como `OWNER`.
 * Validação de acesso ao Workspace antes da criação.
 * Integração das rotas de Boards ao Fastify.
@@ -41,6 +44,8 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Atualização de Boards pelo frontend.
 * Serviço `deleteBoard()`.
 * Integração com o endpoint `DELETE /boards/:id`.
+* Serviço `favoriteBoard()`.
+* Integração com o endpoint `PATCH /boards/:id/favorite`.
 
 ### Boards no Frontend
 
@@ -67,6 +72,12 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Estado de carregamento durante a exclusão.
 * Mensagens de erro e sucesso da exclusão.
 * Redirecionamento automático para o Workspace após a exclusão.
+* Favoritar Boards pela BoardPage.
+* Remover Boards dos favoritos.
+* Atualização local do estado de favorito sem recarregar a página.
+* Exibição do estado atual do favorito.
+* Estado de carregamento durante alteração do favorito.
+* Tratamento de erros do favorito.
 
 ### Estilização
 
@@ -89,6 +100,10 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Estilos do modal de exclusão do Board.
 * Warning visual para a ação destrutiva.
 * Responsividade do modal de exclusão do Board.
+* Botão visual de favorito na BoardPage.
+* Estado visual ativo para Boards favoritados.
+* Feedback visual durante atualização do favorito.
+* Responsividade do botão de favorito.
 
 ### Segurança e Permissões
 
@@ -96,6 +111,8 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * OWNER e ADMIN do Workspace podem visualizar todos os Boards do Workspace.
 * MEMBER e VIEWER visualizam apenas Boards dos quais participam.
 * Usuários externos ao Workspace não possuem acesso aos Boards.
+* Favorito disponível apenas para usuários que possuem `BoardMember`.
+* Administradores do Workspace sem participação no Board permanecem sem acesso ao favorito.
 
 ### Documentação
 
@@ -119,6 +136,12 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Atualização da arquitetura do frontend com a exclusão de Boards.
 * Atualização da documentação de estilização com o modal de exclusão.
 * Atualização do roadmap para registrar a exclusão de Boards como concluída.
+* Atualização da documentação da API de Boards com o favorito por usuário.
+* Atualização da documentação da BoardPage com o fluxo de favorito.
+* Atualização da documentação dos serviços com `favoriteBoard()`.
+* Atualização da arquitetura do frontend com o favorito de Boards.
+* Atualização da documentação de estilização com os estados do favorito.
+* Atualização do roadmap para registrar o favorito de Boards como concluído.
 
 ---
 

@@ -190,7 +190,7 @@ Cada milestone representa um conjunto de funcionalidades relacionadas.
 * [x] Atualizar Board
 * [x] Controle de acesso aos Boards
 * [x] Excluir Board
-* [ ] Favoritar Board
+* [x] Favoritar Board
 * [ ] Arquivar Board
 * [ ] Sistema de permissões do Board
 
@@ -203,7 +203,7 @@ Cada milestone representa um conjunto de funcionalidades relacionadas.
 * [x] Atualizar Board
 * [x] Navegação workspace → Board
 * [x] Excluir Board
-* [ ] Favoritar Board
+* [x] Favoritar Board
 * [ ] Arquivar Board
 
 ---

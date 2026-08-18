@@ -1161,6 +1161,8 @@ createBoard()
 updateBoard()
 
 deleteBoard()
+
+favoriteBoard()
 ```
 
 ---
@@ -1480,6 +1482,75 @@ Mensagem de sucesso
 ↓
 
 WorkspacePage
+```
+
+---
+
+# favoriteBoard()
+
+## Endpoint
+
+```http
+PATCH /boards/:id/favorite
+```
+
+## Headers
+
+```text
+Authorization: Bearer TOKEN
+```
+
+O JWT é enviado automaticamente pela instância compartilhada do Axios.
+
+## Entrada
+
+```ts
+type FavoriteBoardRequest = {
+  isFavorite: boolean;
+}
+```
+
+## Resposta
+
+```ts
+type FavoriteBoardResponse = {
+  message: string;
+  member: BoardMember;
+}
+```
+
+## Responsabilidades
+
+- Favoritar um Board para o usuário autenticado.
+- Remover um Board dos favoritos.
+- Alterar apenas o `BoardMember` correspondente ao usuário autenticado.
+- Retornar o estado atualizado do membro.
+- Propagar erros para a `BoardPage`.
+
+## Fluxo
+
+```text
+BoardPage
+
+↓
+
+favoriteBoard()
+
+↓
+
+PATCH /boards/:id/favorite
+
+↓
+
+FavoriteBoardResponse
+
+↓
+
+BoardMember atualizado
+
+↓
+
+Interface atualizada
 ```
 
 ---
@@ -1985,6 +2056,27 @@ type DeleteBoardResponse = {
 
 ---
 
+## FavoriteBoardRequest
+
+```ts
+type FavoriteBoardRequest = {
+  isFavorite: boolean;
+}
+```
+
+---
+
+## FavoriteBoardResponse
+
+```ts
+type FavoriteBoardResponse = {
+  message: string;
+  member: BoardMember;
+}
+```
+
+---
+
 # Tratamento de Erros
 
 Os serviços apenas propagam os erros retornados pela API.
@@ -2040,6 +2132,7 @@ Mensagens utilizadas atualmente:
 - Não foi possível carregar o Board.
 - Não foi possível atualizar o Board.
 - Não foi possível excluir o Board.
+- Não foi possível atualizar o favorito.
 
 ---
 
@@ -2117,6 +2210,7 @@ notification.service.ts
 - `getBoardById()`
 - `updateBoard()`
 - `deleteBoard()`.
+- `favoriteBoard()`.
 
 ## Planejado
 

@@ -548,6 +548,168 @@ Retorna mensagem de sucesso
 
 ---
 
+# Favoritar ou Desfavoritar Board
+
+## PATCH
+
+```http
+PATCH /boards/:id/favorite
+```
+
+### Descrição
+
+Atualiza o estado de favorito do Board para o usuário autenticado. O favorito pertence ao `BoardMember` e, portanto, é individual para cada usuário.
+
+### Autenticação
+
+Endpoint protegido por JWT. O usuário autenticado deve possuir um `BoardMember` no Board informado.
+
+### Headers
+
+```text
+Authorization: Bearer TOKEN
+Content-Type: application/json
+```
+
+### Parâmetros
+
+| Parâmetro | Tipo | Obrigatório | Descrição |
+|---|---|---|---|
+| `id` | UUID | Sim | Identificador do Board. |
+
+### Request Body
+
+Para favoritar:
+
+```json
+{
+  "isFavorite": true
+}
+```
+
+Para desfavoritar:
+
+```json
+{
+  "isFavorite": false
+}
+```
+
+O campo `isFavorite` é obrigatório e deve ser booleano.
+
+### Resposta ao Favoritar
+
+**200 OK**
+
+```json
+{
+  "message": "Board favoritado com sucesso",
+  "member": {
+    "id": "uuid",
+    "boardId": "uuid",
+    "userId": "uuid",
+    "role": "OWNER",
+    "isFavorite": true,
+    "createdAt": "2026-08-18T12:00:00.000Z",
+    "updatedAt": "2026-08-18T12:05:00.000Z"
+  }
+}
+```
+
+### Resposta ao Desfavoritar
+
+**200 OK**
+
+```json
+{
+  "message": "Board removido dos favoritos com sucesso",
+  "member": {
+    "id": "uuid",
+    "boardId": "uuid",
+    "userId": "uuid",
+    "role": "OWNER",
+    "isFavorite": false,
+    "createdAt": "2026-08-18T12:00:00.000Z",
+    "updatedAt": "2026-08-18T12:10:00.000Z"
+  }
+}
+```
+
+### Regras de Negócio
+
+- somente usuários que possuem um `BoardMember` podem favoritar ou desfavoritar o Board;
+- `OWNER`, `ADMIN`, `MEMBER` e `VIEWER` do Board podem alterar o próprio favorito;
+- o favorito é individual e não altera o estado dos demais membros;
+- `OWNER` e `ADMIN` do Workspace com acesso apenas de visualização não podem favoritar o Board;
+- usuários sem participação no Board recebem `404 Board não encontrado.`;
+- o único campo atualizado é `BoardMember.isFavorite`.
+
+### Fluxo
+
+```text
+Usuário autenticado
+
+↓
+
+PATCH /boards/:id/favorite
+
+↓
+
+Valida ID do Board
+
+↓
+
+Valida isFavorite
+
+↓
+
+Valida se o usuário é BoardMember
+
+↓
+
+Atualiza BoardMember.isFavorite
+
+↓
+
+Retorna BoardMember atualizado
+```
+
+### Possíveis Erros
+
+#### ID ou body inválido
+
+**400 Bad Request**
+
+```json
+{
+  "statusCode": 400,
+  "message": "Erro de validação"
+}
+```
+
+#### Token não informado, inválido ou expirado
+
+**401 Unauthorized**
+
+```json
+{
+  "message": "Token inválido ou expirado"
+}
+```
+
+#### Board não encontrado ou usuário sem participação
+
+**404 Not Found**
+
+```json
+{
+  "statusCode": 404,
+  "message": "Board não encontrado."
+}
+```
+
+---
+
 # Fluxo de Criação
 
 ```text
@@ -640,6 +802,30 @@ Mensagem de sucesso
 
 ---
 
+# Fluxo de Favorito
+
+```text
+Usuário autenticado
+
+↓
+
+PATCH /boards/:id/favorite
+
+↓
+
+Valida o BoardMember
+
+↓
+
+Atualiza isFavorite apenas para o usuário
+
+↓
+
+Retorna BoardMember atualizado
+```
+
+---
+
 # Estado Atual
 
 ## Implementado
@@ -650,9 +836,13 @@ Mensagem de sucesso
 - Atualização de Board.
 - Exclusão de Board.
 - Endpoint `DELETE /boards/:id`.
+- Favoritar e desfavoritar Board.
+- Endpoint `PATCH /boards/:id/favorite`.
+- Atualização individual de `BoardMember.isFavorite`.
 - Associação automática do criador como OWNER.
 - Controle de permissões.
 - Exclusão permitida exclusivamente ao `OWNER` do Board.
+- Favorito disponível para todas as roles que possuem `BoardMember`.
 - Controle de acesso centralizado (`BoardAccessService`).
 - Visibilidade baseada em permissões do Workspace e participação no Board.
 - Validação de Workspace.
@@ -660,6 +850,5 @@ Mensagem de sucesso
 
 ## Planejado
 
-- Favoritar Board.
 - Arquivar Board.
 - Gerenciamento de membros do Board.

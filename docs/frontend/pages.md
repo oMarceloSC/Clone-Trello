@@ -1765,6 +1765,10 @@ Nesta etapa do projeto a página apresenta as informações gerais do Board e pr
 - Exibir o estado de carregamento durante a exclusão.
 - Exibir mensagens de erro e sucesso da exclusão.
 - Redirecionar para o Workspace após a exclusão.
+- Permitir favoritar e desfavoritar o Board.
+- Exibir o estado atual do favorito do usuário autenticado.
+- Atualizar localmente `isFavorite` sem recarregar o Board.
+- Exibir o estado de salvamento e erros específicos do favorito.
 - Preparar a área destinada às Lists.
 
 ---
@@ -1841,6 +1845,20 @@ A página exibe a mensagem de erro retornada pela API quando a operação falha.
 
 ---
 
+### Favorito do Board
+
+O botão de favorito é exibido somente quando o usuário autenticado possui um `BoardMember`. Administradores do Workspace que possuem apenas acesso de visualização ao Board não visualizam essa ação.
+
+Estados apresentados pelo botão:
+
+- `☆ Favoritar` quando o Board não está favoritado pelo usuário.
+- `★ Favoritado` quando o Board está favoritado pelo usuário.
+- `Salvando...` enquanto a atualização está em andamento.
+
+Erros do favorito são exibidos no header do Board. Após uma resposta bem-sucedida, a página atualiza localmente o `isFavorite` do membro correspondente, sem realizar um novo carregamento completo do Board.
+
+---
+
 ## Fluxo
 
 ```text
@@ -1883,6 +1901,32 @@ Mensagem de sucesso
 ↓
 
 WorkspacePage
+```
+
+### Fluxo de favorito
+
+```text
+BoardPage
+
+↓
+
+Usuário clica em Favoritar
+
+↓
+
+favoriteBoard()
+
+↓
+
+PATCH /boards/:id/favorite
+
+↓
+
+BoardMember atualizado
+
+↓
+
+Atualização local de isFavorite
 ```
 
 ---
@@ -1990,6 +2034,10 @@ Responsabilidades planejadas:
 - Estado de carregamento durante a exclusão do Board.
 - Mensagens de erro e sucesso da exclusão do Board.
 - Redirecionamento automático para o Workspace após excluir o Board.
+- Favoritar e desfavoritar Boards pela BoardPage.
+- Estados visuais `☆ Favoritar`, `★ Favoritado` e `Salvando...`.
+- Atualização local do favorito sem recarregar o Board.
+- Tratamento de erro específico do favorito.
 
 ## Planejado
 

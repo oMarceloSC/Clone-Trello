@@ -558,6 +558,46 @@ O modal acompanha a responsividade já aplicada aos diálogos da aplicação, ma
 
 ---
 
+## Favorito do Board
+
+O favorito utiliza as classes:
+
+```text
+board-favorite-button
+board-favorite-button-active
+board-favorite-error
+```
+
+O botão possui fundo translúcido sobre o header do Board. Quando ativo, recebe destaque visual para indicar que o Board está nos favoritos do usuário.
+
+### Não favoritado
+
+```text
+☆ Favoritar
+```
+
+### Favoritado
+
+```text
+★ Favoritado
+```
+
+### Salvando
+
+```text
+Salvando...
+```
+
+Durante a requisição, o botão permanece desabilitado e apresenta opacidade reduzida.
+
+### Erro
+
+A mensagem de erro é exibida dentro do header do Board por meio de `board-favorite-error`.
+
+Em telas menores, o botão e a mensagem de erro ocupam toda a largura disponível.
+
+---
+
 # AuthenticatedLayout
 
 Dashboard, WorkspacePage e BoardPage compartilham o mesmo layout autenticado.
@@ -1831,6 +1871,11 @@ As próximas evoluções previstas para a camada de estilos são:
 - Estado visual de exclusão do Board.
 - Mensagens de erro e sucesso da exclusão do Board.
 - Responsividade do modal de exclusão do Board.
+- Estilos `board-favorite-button`, `board-favorite-button-active` e `board-favorite-error`.
+- Estados visuais de Board não favoritado, favoritado e salvando.
+- Botão de favorito translúcido e estado ativo destacado.
+- Estado desabilitado durante a atualização do favorito.
+- Responsividade do botão e do erro de favorito.
 
 ## Planejado
 
