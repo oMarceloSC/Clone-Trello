@@ -1418,6 +1418,8 @@ A `WorkspacePage` também é responsável pelo gerenciamento inicial dos Boards 
 - Exibir estados de carregamento.
 - Exibir estado vazio.
 - Atualizar automaticamente a interface após a criação.
+- Listar Boards arquivados em uma seção separada.
+- Restaurar Boards quando o usuário possui permissão.
 
 ---
 
@@ -1516,6 +1518,25 @@ Após sucesso:
 
 ---
 
+### Boards arquivados
+
+A `WorkspacePage` possui o botão **Boards arquivados**, que abre uma seção separada. Enquanto a seção está aberta, o botão apresenta o texto **Ocultar arquivados**.
+
+A seção apresenta:
+
+- contador de Boards arquivados;
+- estado `Carregando Boards arquivados...`;
+- estado vazio `Nenhum Board arquivado`;
+- tratamento de erros durante a listagem;
+- badge `Arquivado` em cada item;
+- botão **Restaurar** para usuários autorizados;
+- estado `Restaurando...` durante a requisição;
+- estado **Somente leitura** para usuários sem permissão de restauração.
+
+Após a restauração, o Board é removido imediatamente da lista de arquivados e volta para a lista de Boards ativos, sem recarregar a página.
+
+---
+
 ## Fluxo
 
 ```text
@@ -1574,7 +1595,10 @@ Informações gerais
 ├── Lista de membros
 ├── GET /workspaces/:workspaceId/boards
 ├── Lista de Boards
-└── Modal de criação de Board
+├── Modal de criação de Board
+├── GET /workspaces/:workspaceId/boards/archived
+├── Lista de Boards arquivados
+└── Restauração de Board
 ```
 
 Fluxo de atualização:
@@ -1743,7 +1767,7 @@ O acesso é validado pelo backend de acordo com as regras do Workspace e do Boar
 
 ## Objetivos
 
-Permitir a visualização, a edição e a exclusão de um Board específico.
+Permitir a visualização, a edição, a exclusão e o arquivamento de um Board específico.
 
 Nesta etapa do projeto a página apresenta as informações gerais do Board e prepara a estrutura para a futura implementação das Lists.
 
@@ -1769,6 +1793,10 @@ Nesta etapa do projeto a página apresenta as informações gerais do Board e pr
 - Exibir o estado atual do favorito do usuário autenticado.
 - Atualizar localmente `isFavorite` sem recarregar o Board.
 - Exibir o estado de salvamento e erros específicos do favorito.
+- Exibir o botão **Arquivar Board** somente para `OWNER` e `ADMIN` do Board.
+- Solicitar confirmação antes do arquivamento.
+- Exibir o estado `Arquivando...` e mensagens de erro e sucesso.
+- Redirecionar automaticamente para o Workspace após arquivar.
 - Preparar a área destinada às Lists.
 
 ---
@@ -1859,6 +1887,16 @@ Erros do favorito são exibidos no header do Board. Após uma resposta bem-suced
 
 ---
 
+### Arquivamento do Board
+
+O botão **Arquivar Board** é exibido apenas para usuários com role `OWNER` ou `ADMIN` no próprio Board.
+
+Ao acioná-lo, a página abre um modal de confirmação informando que o Board deixará a lista de ativos, mas poderá ser restaurado. Durante a requisição, os controles ficam desabilitados e o botão apresenta `Arquivando...`.
+
+A página exibe mensagens de erro e sucesso do arquivamento. Após o sucesso, redireciona automaticamente para a `WorkspacePage` do Board.
+
+---
+
 ## Fluxo
 
 ```text
@@ -1927,6 +1965,32 @@ BoardMember atualizado
 ↓
 
 Atualização local de isFavorite
+```
+
+### Fluxo de arquivamento
+
+```text
+BoardPage
+
+↓
+
+Modal de confirmação
+
+↓
+
+archiveBoard({ isArchived: true })
+
+↓
+
+PATCH /boards/:id/archive
+
+↓
+
+Mensagem de sucesso
+
+↓
+
+WorkspacePage
 ```
 
 ---
@@ -2038,6 +2102,14 @@ Responsabilidades planejadas:
 - Estados visuais `☆ Favoritar`, `★ Favoritado` e `Salvando...`.
 - Atualização local do favorito sem recarregar o Board.
 - Tratamento de erro específico do favorito.
+- Arquivamento de Board por `OWNER` e `ADMIN` do Board.
+- Modal de confirmação e estado `Arquivando...`.
+- Redirecionamento ao Workspace após arquivamento.
+- Área de Boards arquivados na WorkspacePage.
+- Contador, carregamento, estado vazio e tratamento de erro dos arquivados.
+- Restauração de Boards com estado `Restaurando...`.
+- Atualização imediata das listas de Boards ativos e arquivados.
+- Estado somente leitura para usuários sem permissão de restauração.
 
 ## Planejado
 

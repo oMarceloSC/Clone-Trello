@@ -598,6 +598,47 @@ Em telas menores, o botão e a mensagem de erro ocupam toda a largura disponíve
 
 ---
 
+## Modal de Arquivamento do Board
+
+O modal de confirmação informa que o Board deixará a lista de ativos e poderá ser restaurado posteriormente. A classe `archive-board-warning` destaca o nome do Board e explica o efeito da ação.
+
+O modal apresenta feedback de erro e sucesso. Durante a requisição, os controles ficam desabilitados e o botão principal exibe `Arquivando...`.
+
+---
+
+# Área de Boards Arquivados
+
+A `WorkspacePage` utiliza uma seção visual separada para consultar e restaurar Boards arquivados.
+
+Classes utilizadas:
+
+```text
+workspace-board-actions
+workspace-archived-boards-section
+workspace-archived-count
+workspace-archived-boards-list
+workspace-archived-board-card
+workspace-archived-board-info
+workspace-archived-board-label
+workspace-archived-board-actions
+workspace-archived-board-readonly
+archive-board-warning
+```
+
+A seção apresenta:
+
+- contador de Boards arquivados;
+- cards próprios para os itens arquivados;
+- badge **Arquivado**;
+- botão **Restaurar**;
+- texto **Somente leitura** quando a restauração não é permitida;
+- feedback de carregamento, sucesso e erro;
+- estados `Arquivando...` e `Restaurando...`.
+
+Em telas menores, as ações passam a ocupar toda a largura, os cards são organizados verticalmente e o estado somente leitura é centralizado.
+
+---
+
 # AuthenticatedLayout
 
 Dashboard, WorkspacePage e BoardPage compartilham o mesmo layout autenticado.
@@ -1876,6 +1917,13 @@ As próximas evoluções previstas para a camada de estilos são:
 - Botão de favorito translúcido e estado ativo destacado.
 - Estado desabilitado durante a atualização do favorito.
 - Responsividade do botão e do erro de favorito.
+- Estilos da área separada de Boards arquivados.
+- Badge visual `Arquivado` e contador de arquivados.
+- Estilos do botão Restaurar e do estado `Restaurando...`.
+- Estado visual `Somente leitura`.
+- Modal de confirmação de arquivamento e `archive-board-warning`.
+- Estado `Arquivando...` e feedback de sucesso e erro.
+- Responsividade da área e dos cards de Boards arquivados.
 
 ## Planejado
 

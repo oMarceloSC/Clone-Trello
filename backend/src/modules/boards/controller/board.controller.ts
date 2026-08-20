@@ -21,12 +21,19 @@ import {
   favoriteBoardParamsSchema,
 } from "../schemas/favorite-board.schema.js";
 
+import {
+  archiveBoardBodySchema,
+  archiveBoardParamsSchema,
+} from "../schemas/archive-board.schema.js";
+
 import { CreateBoardUseCase } from "../use-cases/create-board.use-case.js";
 import { ListBoardsUseCase } from "../use-cases/list-boards.use-case.js";
 import { GetBoardUseCase } from "../use-cases/get-board.use-case.js";
 import { UpdateBoardUseCase } from "../use-cases/update-board.use-case.js";
 import { DeleteBoardUseCase } from "../use-cases/delete-board.use-case.js";
 import { FavoriteBoardUseCase } from "../use-cases/favorite-board.use-case.js";
+import { ArchiveBoardUseCase } from "../use-cases/archive-board.use-case.js";
+import { ListArchivedBoardsUseCase } from "../use-cases/list-archived-boards.use-case.js";
 
 const createBoardUseCase =
   new CreateBoardUseCase();
@@ -45,6 +52,12 @@ const deleteBoardUseCase =
 
 const favoriteBoardUseCase = 
   new FavoriteBoardUseCase();
+
+const archiveBoardUseCase =
+  new ArchiveBoardUseCase();
+
+const listArchivedBoardsUseCase =
+  new ListArchivedBoardsUseCase();
 
 export class BoardController {
   async create(
@@ -156,7 +169,7 @@ export class BoardController {
     });
 
     return reply.status(200).send({
-        message: "Board exlcuído com sucesso",
+        message: "Board excluído com sucesso",
     });
   }
 
@@ -188,4 +201,53 @@ export class BoardController {
     member,
   });
 }
+
+  async archive(
+    request: FastifyRequest,
+    reply: FastifyReply,
+  ) {
+    const { id } =
+      archiveBoardParamsSchema.parse(
+        request.params,
+      );
+
+    const { isArchived } =
+      archiveBoardBodySchema.parse(
+        request.body,
+      );
+
+    const board =
+      await archiveBoardUseCase.execute({
+        boardId: id,
+        userId: request.user.id,
+        isArchived,
+      });
+
+    return reply.status(200).send({
+      message: isArchived
+        ? "Board arquivado com sucesso"
+        : "Board desarquivado com sucesso",
+      board,
+    });
+  }
+
+  async listArchived(
+    request: FastifyRequest,
+    reply: FastifyReply,
+  ) {
+    const { workspaceId } =
+      createBoardParamsSchema.parse(
+        request.params,
+      );
+
+    const boards = 
+      await listArchivedBoardsUseCase.execute({
+        workspaceId,
+        userId: request.user.id,
+      });
+
+      return reply.status(200).send({
+        boards,
+      });
+  }
 }

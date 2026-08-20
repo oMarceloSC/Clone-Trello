@@ -22,6 +22,11 @@ export async function boardRoutes(
   );
 
   app.get(
+    "/workspaces/:workspaceId/boards/archived",
+    boardController.listArchived,
+  );
+
+  app.get(
     "/boards/:id",
     boardController.getById,
   );
@@ -34,6 +39,11 @@ export async function boardRoutes(
   app.patch(
     "/boards/:id/favorite",
     boardController.favorite,
+  );
+
+  app.patch(
+    "/boards/:id/archive",
+    boardController.archive,
   );
 
   app.delete(

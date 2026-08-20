@@ -710,6 +710,208 @@ Retorna BoardMember atualizado
 
 ---
 
+# Arquivar ou Restaurar Board
+
+## PATCH
+
+```http
+PATCH /boards/:id/archive
+```
+
+### Descrição
+
+Arquiva ou restaura um Board por meio da atualização de `Board.isArchived`.
+
+### Autenticação
+
+Endpoint protegido por JWT. O usuário autenticado deve ser `OWNER` ou `ADMIN` do próprio Board.
+
+### Headers
+
+```text
+Authorization: Bearer TOKEN
+Content-Type: application/json
+```
+
+### Parâmetros
+
+| Parâmetro | Tipo | Obrigatório | Descrição |
+|---|---|---|---|
+| `id` | UUID | Sim | Identificador do Board. |
+
+### Request Body
+
+Para arquivar:
+
+```json
+{
+  "isArchived": true
+}
+```
+
+Para restaurar:
+
+```json
+{
+  "isArchived": false
+}
+```
+
+O campo `isArchived` é obrigatório e deve ser booleano.
+
+### Resposta ao Arquivar
+
+**200 OK**
+
+```json
+{
+  "message": "Board arquivado com sucesso",
+  "board": {
+    "id": "uuid",
+    "isArchived": true
+  }
+}
+```
+
+### Resposta ao Restaurar
+
+**200 OK**
+
+```json
+{
+  "message": "Board desarquivado com sucesso",
+  "board": {
+    "id": "uuid",
+    "isArchived": false
+  }
+}
+```
+
+### Regras de Negócio
+
+- `OWNER` e `ADMIN` do Board podem arquivar e restaurar;
+- `MEMBER` e `VIEWER` do Board não podem arquivar nem restaurar;
+- `OWNER` e `ADMIN` do Workspace que não sejam membros do Board podem visualizá-lo conforme as regras atuais, mas não podem arquivar nem restaurar;
+- o campo alterado é `Board.isArchived`.
+
+### Fluxo
+
+```text
+Usuário autenticado
+
+↓
+
+PATCH /boards/:id/archive
+
+↓
+
+Valida ID e isArchived
+
+↓
+
+Valida role OWNER ou ADMIN do Board
+
+↓
+
+Atualiza Board.isArchived
+
+↓
+
+Retorna Board atualizado
+```
+
+### Possíveis Erros
+
+- `400 Bad Request` para ID ou body inválido.
+- `401 Unauthorized` para token ausente, inválido ou expirado.
+- `403 Forbidden` para `BoardMember` sem permissão.
+- `404 Not Found` quando o Board não é encontrado ou o usuário não participa dele.
+
+---
+
+# Listar Boards Arquivados
+
+## GET
+
+```http
+GET /workspaces/:workspaceId/boards/archived
+```
+
+### Descrição
+
+Lista os Boards arquivados visíveis para o usuário autenticado em um Workspace.
+
+### Autenticação e Headers
+
+```text
+Authorization: Bearer TOKEN
+```
+
+### Parâmetros
+
+| Parâmetro | Tipo | Obrigatório | Descrição |
+|---|---|---|---|
+| `workspaceId` | UUID | Sim | Identificador do Workspace. |
+
+### Resposta
+
+**200 OK**
+
+```json
+{
+  "boards": [
+    {
+      "id": "uuid",
+      "title": "Board arquivado",
+      "isArchived": true,
+      "updatedAt": "2026-08-20T12:00:00.000Z",
+      "members": []
+    }
+  ]
+}
+```
+
+### Regras de Negócio
+
+- valida a participação do usuário no Workspace;
+- `OWNER` e `ADMIN` do Workspace visualizam todos os Boards arquivados;
+- `MEMBER` e `VIEWER` do Workspace visualizam apenas Boards arquivados dos quais participam;
+- retorna somente Boards com `isArchived = true`;
+- ordena os resultados por `updatedAt` em ordem decrescente.
+
+### Fluxo
+
+```text
+Usuário autenticado
+
+↓
+
+GET /workspaces/:workspaceId/boards/archived
+
+↓
+
+Valida participação no Workspace
+
+↓
+
+Aplica regra de visibilidade
+
+↓
+
+Busca Boards com isArchived = true
+
+↓
+
+Retorna lista de Boards arquivados
+```
+
+### Possíveis Erros
+
+- `401 Unauthorized` para token ausente, inválido ou expirado.
+- `404 Not Found` quando o Workspace não existe ou o usuário não participa dele.
+
+---
+
 # Fluxo de Criação
 
 ```text
@@ -826,6 +1028,30 @@ Retorna BoardMember atualizado
 
 ---
 
+# Fluxo de Arquivamento e Restauração
+
+```text
+BoardPage ou WorkspacePage
+
+↓
+
+PATCH /boards/:id/archive
+
+↓
+
+Valida OWNER ou ADMIN do Board
+
+↓
+
+Atualiza Board.isArchived
+
+↓
+
+Retorna Board atualizado
+```
+
+---
+
 # Estado Atual
 
 ## Implementado
@@ -839,10 +1065,15 @@ Retorna BoardMember atualizado
 - Favoritar e desfavoritar Board.
 - Endpoint `PATCH /boards/:id/favorite`.
 - Atualização individual de `BoardMember.isFavorite`.
+- Arquivamento e restauração de Boards.
+- Endpoint `PATCH /boards/:id/archive`.
+- Listagem de Boards arquivados.
+- Endpoint `GET /workspaces/:workspaceId/boards/archived`.
 - Associação automática do criador como OWNER.
 - Controle de permissões.
 - Exclusão permitida exclusivamente ao `OWNER` do Board.
 - Favorito disponível para todas as roles que possuem `BoardMember`.
+- Arquivamento e restauração disponíveis para `OWNER` e `ADMIN` do Board.
 - Controle de acesso centralizado (`BoardAccessService`).
 - Visibilidade baseada em permissões do Workspace e participação no Board.
 - Validação de Workspace.
@@ -850,5 +1081,4 @@ Retorna BoardMember atualizado
 
 ## Planejado
 
-- Arquivar Board.
 - Gerenciamento de membros do Board.

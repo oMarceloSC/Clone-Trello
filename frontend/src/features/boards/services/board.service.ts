@@ -1,6 +1,8 @@
 import { api } from "../../../services/api";
 
 import type {
+  ArchiveBoardRequest,
+  ArchiveBoardResponse,
   Board,
   CreateBoardRequest,
   CreateBoardResponse,
@@ -8,6 +10,7 @@ import type {
   FavoriteBoardRequest,
   FavoriteBoardResponse,
   GetBoardResponse,
+  ListArchivedBoardsResponse,
   UpdateBoardRequest,
   UpdateBoardResponse,
 } from "../types/board.types";
@@ -59,14 +62,14 @@ export async function updateBoard(
 }
 
 export async function deleteBoard(
-    boardId: string,
+  boardId: string,
 ): Promise<DeleteBoardResponse> {
-    const response = 
-        await api.delete(
-            `/boards/${boardId}`,
-        );
+  const response = 
+    await api.delete<DeleteBoardResponse>(
+      `/boards/${boardId}`,
+    );
 
-    return response.data;
+  return response.data;
 }
 
 export async function favoriteBoard(
@@ -80,4 +83,28 @@ export async function favoriteBoard(
     );
 
     return response.data
+}
+
+export async function archiveBoard(
+  boardId: string,
+  data: ArchiveBoardRequest,
+): Promise<ArchiveBoardResponse> {
+  const response =
+    await api.patch<ArchiveBoardResponse>(
+      `/boards/${boardId}/archive`,
+      data,
+    );
+
+    return response.data
+}
+
+export async function listArchivedBoards(
+  workspaceId: string,
+): Promise<Board[]> {
+  const response =
+    await api.get<ListArchivedBoardsResponse>(
+      `/workspaces/${workspaceId}/boards/archived`,
+    );
+
+    return response.data.boards;
 }

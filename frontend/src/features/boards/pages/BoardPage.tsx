@@ -12,6 +12,7 @@ import {
 
 import { useAuth } from "../../auth/hooks/useAuth";
 import {
+  archiveBoard,
   deleteBoard,
   favoriteBoard,
   getBoardById,
@@ -59,6 +60,18 @@ export function BoardPage() {
     useState(false);
 
   const [favoriteError, setFavoriteError] =
+    useState<string | null>(null);
+
+  const [isArchiveModalOpen, setIsArchiveModalOpen] =
+    useState(false);
+
+  const [isArchiving, setIsArchiving] =
+    useState(false);
+
+  const [archiveError, setArchiveError] =
+    useState<string | null>(null);
+
+  const [archiveSuccess, setArchiveSuccess] =
     useState<string | null>(null);
 
   useEffect(() => {
@@ -117,6 +130,10 @@ export function BoardPage() {
 
   const canDeleteBoard =
     currentMember?.role === "OWNER";
+
+  const canArchiveBoard =
+    currentMember?.role === "OWNER" ||
+    currentMember?.role === "ADMIN";
 
   const isFavorite =
     currentMember?.isFavorite ?? false;
@@ -185,16 +202,13 @@ export function BoardPage() {
           ...currentBoard,
           members: currentBoard.members.map(
             (member) =>
-              member.id ===
-              response.member.id
+              member.id === response.member.id
                 ? {
                     ...member,
                     isFavorite:
-                      response.member
-                        .isFavorite,
+                      response.member.isFavorite,
                     updatedAt:
-                      response.member
-                        .updatedAt,
+                      response.member.updatedAt,
                   }
                 : member,
           ),
@@ -215,6 +229,81 @@ export function BoardPage() {
       );
     } finally {
       setIsUpdatingFavorite(false);
+    }
+  }
+
+  function openArchiveModal() {
+    if (!canArchiveBoard) {
+      return;
+    }
+
+    setArchiveError(null);
+    setArchiveSuccess(null);
+    setIsArchiveModalOpen(true);
+  }
+
+  function closeArchiveModal() {
+    if (isArchiving) {
+      return;
+    }
+
+    setIsArchiveModalOpen(false);
+    setArchiveError(null);
+    setArchiveSuccess(null);
+  }
+
+  async function handleArchiveBoard() {
+    if (!id) {
+      setArchiveError(
+        "ID do Board não informado.",
+      );
+
+      return;
+    }
+
+    try {
+      setIsArchiving(true);
+      setArchiveError(null);
+      setArchiveSuccess(null);
+
+      const response =
+        await archiveBoard(id, {
+          isArchived: true,
+        });
+
+      setArchiveSuccess(response.message);
+
+      window.setTimeout(() => {
+        if (board?.workspace?.id) {
+          navigate(
+            `/workspaces/${board.workspace.id}`,
+            {
+              replace: true,
+            },
+          );
+
+          return;
+        }
+
+        navigate("/dashboard", {
+          replace: true,
+        });
+      }, 800);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const message =
+          error.response?.data?.message ??
+          "Não foi possível arquivar o Board.";
+
+        setArchiveError(message);
+        return;
+      }
+
+      setArchiveError(
+        "Ocorreu um erro inesperado ao arquivar o Board.",
+      );
+    } finally {
+      setIsArchiving(false);
     }
   }
 
@@ -429,9 +518,7 @@ export function BoardPage() {
               onClick={() => {
                 void handleFavoriteBoard();
               }}
-              disabled={
-                isUpdatingFavorite
-              }
+              disabled={isUpdatingFavorite}
               aria-pressed={isFavorite}
               title={
                 isFavorite
@@ -440,9 +527,7 @@ export function BoardPage() {
               }
             >
               <span aria-hidden="true">
-                {isFavorite
-                  ? "★"
-                  : "☆"}
+                {isFavorite ? "★" : "☆"}
               </span>
 
               {isUpdatingFavorite
@@ -450,6 +535,16 @@ export function BoardPage() {
                 : isFavorite
                   ? "Favoritado"
                   : "Favoritar"}
+            </button>
+          )}
+
+          {canArchiveBoard && (
+            <button
+              type="button"
+              className="secondary-button"
+              onClick={openArchiveModal}
+            >
+              Arquivar Board
             </button>
           )}
 
@@ -611,8 +706,7 @@ export function BoardPage() {
                       </div>
 
                       <span>
-                        {member.user
-                          ?.email ??
+                        {member.user?.email ??
                           "Email não disponível"}
                       </span>
                     </div>
@@ -672,13 +766,110 @@ export function BoardPage() {
         </div>
       </section>
 
+      {isArchiveModalOpen && (
+        <div
+          className="modal-backdrop"
+          role="presentation"
+          onMouseDown={closeArchiveModal}
+        >
+          <section
+            className="modal-card"
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="archive-board-title"
+            aria-describedby="archive-board-description"
+            onMouseDown={(event) =>
+              event.stopPropagation()
+            }
+          >
+            <header className="modal-header">
+              <div>
+                <h2 id="archive-board-title">
+                  Arquivar Board
+                </h2>
+
+                <p id="archive-board-description">
+                  O Board deixará de aparecer na lista de Boards ativos.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                className="modal-close-button"
+                onClick={closeArchiveModal}
+                disabled={isArchiving}
+                aria-label="Fechar modal"
+              >
+                ×
+              </button>
+            </header>
+
+            <div className="delete-board-content">
+              <div className="archive-board-warning">
+                <strong>
+                  Você está prestes a arquivar:
+                </strong>
+
+                <span>
+                  {board.title}
+                </span>
+
+                <p>
+                  O Board não será excluído. Você poderá restaurá-lo posteriormente pela área de Boards arquivados do Workspace.
+                </p>
+              </div>
+
+              {archiveError && (
+                <div
+                  className="api-error"
+                  role="alert"
+                >
+                  {archiveError}
+                </div>
+              )}
+
+              {archiveSuccess && (
+                <div
+                  className="success-message"
+                  role="status"
+                >
+                  {archiveSuccess}
+                </div>
+              )}
+
+              <footer className="modal-actions">
+                <button
+                  type="button"
+                  className="secondary-button"
+                  onClick={closeArchiveModal}
+                  disabled={isArchiving}
+                >
+                  Cancelar
+                </button>
+
+                <button
+                  type="button"
+                  className="primary-button"
+                  onClick={() => {
+                    void handleArchiveBoard();
+                  }}
+                  disabled={isArchiving}
+                >
+                  {isArchiving
+                    ? "Arquivando..."
+                    : "Arquivar Board"}
+                </button>
+              </footer>
+            </div>
+          </section>
+        </div>
+      )}
+
       {isDeleteModalOpen && (
         <div
           className="modal-backdrop"
           role="presentation"
-          onMouseDown={
-            closeDeleteModal
-          }
+          onMouseDown={closeDeleteModal}
         >
           <section
             className="modal-card"
@@ -704,9 +895,7 @@ export function BoardPage() {
               <button
                 type="button"
                 className="modal-close-button"
-                onClick={
-                  closeDeleteModal
-                }
+                onClick={closeDeleteModal}
                 disabled={isDeleting}
                 aria-label="Fechar modal"
               >
@@ -751,12 +940,8 @@ export function BoardPage() {
                 <button
                   type="button"
                   className="secondary-button"
-                  onClick={
-                    closeDeleteModal
-                  }
-                  disabled={
-                    isDeleting
-                  }
+                  onClick={closeDeleteModal}
+                  disabled={isDeleting}
                 >
                   Cancelar
                 </button>
@@ -767,9 +952,7 @@ export function BoardPage() {
                   onClick={() => {
                     void handleDeleteBoard();
                   }}
-                  disabled={
-                    isDeleting
-                  }
+                  disabled={isDeleting}
                 >
                   {isDeleting
                     ? "Excluindo..."

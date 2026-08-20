@@ -26,6 +26,11 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Endpoint para favoritar e desfavoritar Boards.
 * Atualização individual de `BoardMember.isFavorite`.
 * Validação de participação no Board antes da alteração do favorito.
+* Arquivamento e restauração de Boards.
+* Endpoint `PATCH /boards/:id/archive`.
+* Endpoint `GET /workspaces/:workspaceId/boards/archived`.
+* Listagem de Boards arquivados.
+* Controle de permissões para arquivamento e restauração.
 * Associação automática do criador como `OWNER`.
 * Validação de acesso ao Workspace antes da criação.
 * Integração das rotas de Boards ao Fastify.
@@ -46,6 +51,10 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Integração com o endpoint `DELETE /boards/:id`.
 * Serviço `favoriteBoard()`.
 * Integração com o endpoint `PATCH /boards/:id/favorite`.
+* Serviço `archiveBoard()`.
+* Serviço `listArchivedBoards()`.
+* Integração com `PATCH /boards/:id/archive`.
+* Integração com `GET /workspaces/:workspaceId/boards/archived`.
 
 ### Boards no Frontend
 
@@ -78,6 +87,14 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Exibição do estado atual do favorito.
 * Estado de carregamento durante alteração do favorito.
 * Tratamento de erros do favorito.
+* Arquivamento de Boards pela BoardPage.
+* Modal de confirmação de arquivamento.
+* Área de Boards arquivados na WorkspacePage.
+* Restauração de Boards arquivados.
+* Atualização local das listas de Boards ativos e arquivados.
+* Estado de carregamento dos Boards arquivados.
+* Estado vazio dos Boards arquivados.
+* Tratamento de erros durante listagem e restauração.
 
 ### Estilização
 
@@ -104,6 +121,12 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Estado visual ativo para Boards favoritados.
 * Feedback visual durante atualização do favorito.
 * Responsividade do botão de favorito.
+* Estilos da área de Boards arquivados.
+* Badge visual de Board arquivado.
+* Estilos do botão Restaurar.
+* Estado visual somente leitura.
+* Responsividade da área de Boards arquivados.
+* Estilos do modal de arquivamento.
 
 ### Segurança e Permissões
 
@@ -113,6 +136,8 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Usuários externos ao Workspace não possuem acesso aos Boards.
 * Favorito disponível apenas para usuários que possuem `BoardMember`.
 * Administradores do Workspace sem participação no Board permanecem sem acesso ao favorito.
+* Arquivamento e restauração restritos a `OWNER` e `ADMIN` do Board.
+* Visualização de Boards arquivados respeitando as permissões do Workspace e participação no Board.
 
 ### Documentação
 
@@ -142,6 +167,12 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Atualização da arquitetura do frontend com o favorito de Boards.
 * Atualização da documentação de estilização com os estados do favorito.
 * Atualização do roadmap para registrar o favorito de Boards como concluído.
+* Atualização da documentação da API de Boards com arquivamento, restauração e listagem de arquivados.
+* Atualização da documentação das páginas com os fluxos de arquivamento e restauração.
+* Atualização da documentação dos serviços com `archiveBoard()` e `listArchivedBoards()`.
+* Atualização da arquitetura do frontend com Boards arquivados.
+* Atualização da documentação de estilização da área de Boards arquivados.
+* Atualização do roadmap para registrar o arquivamento de Boards como concluído.
 
 ---
 

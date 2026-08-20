@@ -1163,6 +1163,10 @@ updateBoard()
 deleteBoard()
 
 favoriteBoard()
+
+archiveBoard()
+
+listArchivedBoards()
 ```
 
 ---
@@ -1551,6 +1555,111 @@ BoardMember atualizado
 ↓
 
 Interface atualizada
+```
+
+---
+
+# archiveBoard()
+
+## Endpoint
+
+```http
+PATCH /boards/:id/archive
+```
+
+## Entrada
+
+```ts
+type ArchiveBoardRequest = {
+  isArchived: boolean;
+}
+```
+
+## Resposta
+
+```ts
+type ArchiveBoardResponse = {
+  message: string;
+  board: Board;
+}
+```
+
+## Responsabilidades
+
+- Arquivar um Board com `isArchived: true`.
+- Restaurar um Board com `isArchived: false`.
+- Retornar a mensagem e o Board atualizado.
+- Propagar erros para a `BoardPage` ou `WorkspacePage`.
+
+## Fluxo
+
+```text
+BoardPage ou WorkspacePage
+
+↓
+
+archiveBoard()
+
+↓
+
+PATCH /boards/:id/archive
+
+↓
+
+ArchiveBoardResponse
+
+↓
+
+Interface atualizada
+```
+
+---
+
+# listArchivedBoards()
+
+## Endpoint
+
+```http
+GET /workspaces/:workspaceId/boards/archived
+```
+
+## Resposta
+
+```ts
+type ListArchivedBoardsResponse = {
+  boards: Board[];
+}
+```
+
+O serviço retorna diretamente `Board[]` para consumo da `WorkspacePage`.
+
+## Responsabilidades
+
+- Buscar os Boards arquivados visíveis no Workspace.
+- Retornar apenas Boards com `isArchived: true`.
+- Fornecer os dados da seção de Boards arquivados.
+- Propagar erros de autenticação e acesso para a `WorkspacePage`.
+
+## Fluxo
+
+```text
+WorkspacePage
+
+↓
+
+listArchivedBoards()
+
+↓
+
+GET /workspaces/:workspaceId/boards/archived
+
+↓
+
+ListArchivedBoardsResponse
+
+↓
+
+Seção de Boards arquivados
 ```
 
 ---
@@ -2077,6 +2186,37 @@ type FavoriteBoardResponse = {
 
 ---
 
+## ArchiveBoardRequest
+
+```ts
+type ArchiveBoardRequest = {
+  isArchived: boolean;
+}
+```
+
+---
+
+## ArchiveBoardResponse
+
+```ts
+type ArchiveBoardResponse = {
+  message: string;
+  board: Board;
+}
+```
+
+---
+
+## ListArchivedBoardsResponse
+
+```ts
+type ListArchivedBoardsResponse = {
+  boards: Board[];
+}
+```
+
+---
+
 # Tratamento de Erros
 
 Os serviços apenas propagam os erros retornados pela API.
@@ -2133,6 +2273,9 @@ Mensagens utilizadas atualmente:
 - Não foi possível atualizar o Board.
 - Não foi possível excluir o Board.
 - Não foi possível atualizar o favorito.
+- Não foi possível arquivar o Board.
+- Não foi possível carregar os Boards arquivados.
+- Não foi possível restaurar o Board.
 
 ---
 
@@ -2211,6 +2354,8 @@ notification.service.ts
 - `updateBoard()`
 - `deleteBoard()`.
 - `favoriteBoard()`.
+- `archiveBoard()`.
+- `listArchivedBoards()`.
 
 ## Planejado
 

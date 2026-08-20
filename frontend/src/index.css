@@ -2264,3 +2264,152 @@ button {
     width: 100%;
   }
 }
+
+/* =========================================================
+   BOARDS ARQUIVADOS
+   ========================================================= */
+
+.workspace-board-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.workspace-archived-boards-section {
+  padding: 28px;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgb(9 30 66 / 10%);
+}
+
+.workspace-archived-count {
+  flex-shrink: 0;
+  padding: 7px 11px;
+  border-radius: 999px;
+  background: #f1f2f4;
+  color: #44546f;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.workspace-archived-boards-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.workspace-archived-board-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 18px 20px;
+  border: 1px solid #dfe1e6;
+  border-radius: 10px;
+  background: #ffffff;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.workspace-archived-board-card:hover {
+  border-color: #b6c2cf;
+  box-shadow: 0 2px 8px rgb(9 30 66 / 8%);
+}
+
+.workspace-archived-board-info {
+  min-width: 0;
+  flex: 1;
+}
+
+.workspace-archived-board-info h3,
+.workspace-archived-board-info p {
+  margin: 0;
+}
+
+.workspace-archived-board-info h3 {
+  margin-top: 6px;
+  color: #172b4d;
+  font-size: 18px;
+}
+
+.workspace-archived-board-info p {
+  margin-top: 6px;
+  color: #5e6c84;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.workspace-archived-board-label {
+  display: inline-flex;
+  width: fit-content;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #f1f2f4;
+  color: #44546f;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.workspace-archived-board-actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.workspace-archived-board-readonly {
+  padding: 7px 10px;
+  border-radius: 6px;
+  background: #f1f2f4;
+  color: #626f86;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* =========================================================
+   RESPONSIVIDADE DOS BOARDS ARQUIVADOS
+   ========================================================= */
+
+@media (max-width: 700px) {
+  .workspace-board-actions {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .workspace-board-actions button {
+    width: 100%;
+  }
+
+  .workspace-archived-boards-section {
+    padding: 20px;
+  }
+
+  .workspace-archived-board-card {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .workspace-archived-board-actions {
+    width: 100%;
+  }
+
+  .workspace-archived-board-actions button {
+    width: 100%;
+  }
+
+  .workspace-archived-board-readonly {
+    width: 100%;
+    text-align: center;
+  }
+
+  .workspace-archived-count {
+    align-self: flex-start;
+  }
+}

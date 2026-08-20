@@ -85,3 +85,15 @@ export type FavoriteBoardResponse = {
     member: BoardMember;
 };
 
+export type ArchiveBoardRequest = {
+    isArchived: boolean;
+};
+
+export type ArchiveBoardResponse = {
+    message: string;
+    board: Board;
+};
+
+export type ListArchivedBoardsResponse = {
+    boards: Board[];
+};

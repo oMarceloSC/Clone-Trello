@@ -1468,7 +1468,75 @@ createBoard()
 updateBoard()
 deleteBoard()
 favoriteBoard()
+archiveBoard()
+listArchivedBoards()
 ```
+
+---
+
+## Arquivamento
+
+```text
+BoardPage
+
+↓
+
+Modal de confirmação
+
+↓
+
+archiveBoard()
+
+↓
+
+PATCH /boards/:id/archive
+
+↓
+
+isArchived = true
+
+↓
+
+WorkspacePage
+```
+
+---
+
+## Restauração e Listagem de Arquivados
+
+```text
+WorkspacePage
+
+↓
+
+Boards arquivados
+
+↓
+
+listArchivedBoards()
+
+↓
+
+GET /workspaces/:workspaceId/boards/archived
+
+↓
+
+Restaurar
+
+↓
+
+archiveBoard({ isArchived: false })
+
+↓
+
+Board removido dos arquivados
+
+↓
+
+Board volta para a lista de ativos
+```
+
+O arquivamento e a restauração alteram `Board.isArchived`. A listagem de arquivados permanece separada da lista de Boards ativos e respeita as regras de visibilidade do backend.
 
 ---
 
@@ -1566,6 +1634,11 @@ Workspaces
 ├── Serviço deleteBoard()
 ├── Favorito de Board por usuário
 ├── Serviço favoriteBoard()
+├── Arquivamento de Board
+├── Restauração de Board
+├── Listagem de Boards arquivados
+├── Serviço archiveBoard()
+├── Serviço listArchivedBoards()
 └── Navegação Workspace → Boards
 ```
 
@@ -1698,6 +1771,9 @@ Cada módulo seguirá a mesma organização baseada em features.
 - Atualização de Board.
 - Exclusão de Board.
 - Favorito de Board por usuário.
+- Arquivamento de Board.
+- Restauração de Board.
+- Listagem de Boards arquivados.
 - Navegação entre Workspace e Board.
 - Breadcrumb da BoardPage.
 - Cards de resumo do Board.
@@ -1707,6 +1783,8 @@ Cada módulo seguirá a mesma organização baseada em features.
 - Métodos `updateBoard()`.
 - Método `deleteBoard()`.
 - Método `favoriteBoard()`.
+- Método `archiveBoard()`.
+- Método `listArchivedBoards()`.
 - Atualização automática da lista de Boards.
 
 ## Em desenvolvimento

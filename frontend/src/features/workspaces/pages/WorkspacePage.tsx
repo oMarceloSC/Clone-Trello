@@ -12,29 +12,41 @@ import {
   createBoardSchema,
   type CreateBoardFormData,
 } from "../../boards/schemas/create-board.schema";
+
 import {
+  archiveBoard,
   createBoard,
+  listArchivedBoards,
   listBoards,
 } from "../../boards/services/board.service";
+
 import type { Board } from "../../boards/types/board.types";
+
 import { useAuth } from "../../auth/hooks/useAuth";
+
 import { WorkspaceMembersSection } from "../components/WorkspaceMembersSection";
+
 import {
   updateWorkspaceSchema,
   type UpdateWorkspaceFormData,
 } from "../schemas/update-workspace.schema";
+
 import {
   deleteWorkspace,
   getWorkspaceById,
   updateWorkspace,
 } from "../services/workspace.service";
+
 import type {
   Workspace,
   WorkspaceMember,
   WorkspaceRole,
 } from "../types/workspace.types";
 
-const workspaceRoleLabels: Record<WorkspaceRole, string> = {
+const workspaceRoleLabels: Record<
+  WorkspaceRole,
+  string
+> = {
   OWNER: "Proprietário",
   ADMIN: "Administrador",
   MEMBER: "Membro",
@@ -43,36 +55,85 @@ const workspaceRoleLabels: Record<WorkspaceRole, string> = {
 
 export function WorkspacePage() {
   const navigate = useNavigate();
+
   const { id } = useParams();
+
   const { user } = useAuth();
 
   const [workspace, setWorkspace] =
     useState<Workspace | null>(null);
 
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] =
+    useState(true);
 
   const [workspaceError, setWorkspaceError] =
     useState<string | null>(null);
 
-  const [boards, setBoards] = useState<Board[]>([]);
+  const [boards, setBoards] =
+    useState<Board[]>([]);
 
-  const [isLoadingBoards, setIsLoadingBoards] =
-    useState(true);
+  const [
+    isLoadingBoards,
+    setIsLoadingBoards,
+  ] = useState(true);
 
   const [boardsError, setBoardsError] =
     useState<string | null>(null);
 
-  const [isCreateBoardModalOpen, setIsCreateBoardModalOpen] =
-    useState(false);
+  const [
+    archivedBoards,
+    setArchivedBoards,
+  ] = useState<Board[]>([]);
 
-  const [createBoardError, setCreateBoardError] =
-    useState<string | null>(null);
+  const [
+    isArchivedBoardsOpen,
+    setIsArchivedBoardsOpen,
+  ] = useState(false);
 
-  const [createBoardSuccess, setCreateBoardSuccess] =
-    useState<string | null>(null);
+  const [
+    isLoadingArchivedBoards,
+    setIsLoadingArchivedBoards,
+  ] = useState(false);
 
-  const [isEditModalOpen, setIsEditModalOpen] =
-    useState(false);
+  const [
+    archivedBoardsError,
+    setArchivedBoardsError,
+  ] = useState<string | null>(null);
+
+  const [
+    restoringBoardId,
+    setRestoringBoardId,
+  ] = useState<string | null>(null);
+
+  const [
+    restoreBoardError,
+    setRestoreBoardError,
+  ] = useState<string | null>(null);
+
+  const [
+    restoreBoardSuccess,
+    setRestoreBoardSuccess,
+  ] = useState<string | null>(null);
+
+  const [
+    isCreateBoardModalOpen,
+    setIsCreateBoardModalOpen,
+  ] = useState(false);
+
+  const [
+    createBoardError,
+    setCreateBoardError,
+  ] = useState<string | null>(null);
+
+  const [
+    createBoardSuccess,
+    setCreateBoardSuccess,
+  ] = useState<string | null>(null);
+
+  const [
+    isEditModalOpen,
+    setIsEditModalOpen,
+  ] = useState(false);
 
   const [updateError, setUpdateError] =
     useState<string | null>(null);
@@ -80,10 +141,13 @@ export function WorkspacePage() {
   const [updateSuccess, setUpdateSuccess] =
     useState<string | null>(null);
 
-  const [isDeleteModalOpen, setIsDeleteModalOpen] =
-    useState(false);
+  const [
+    isDeleteModalOpen,
+    setIsDeleteModalOpen,
+  ] = useState(false);
 
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [isDeleting, setIsDeleting] =
+    useState(false);
 
   const [deleteError, setDeleteError] =
     useState<string | null>(null);
@@ -93,14 +157,18 @@ export function WorkspacePage() {
 
   const {
     register: registerWorkspaceUpdate,
-    handleSubmit: handleWorkspaceUpdateSubmit,
+    handleSubmit:
+      handleWorkspaceUpdateSubmit,
     reset: resetWorkspaceUpdate,
     formState: {
       errors: workspaceUpdateErrors,
-      isSubmitting: isUpdatingWorkspace,
+      isSubmitting:
+        isUpdatingWorkspace,
     },
   } = useForm<UpdateWorkspaceFormData>({
-    resolver: zodResolver(updateWorkspaceSchema),
+    resolver: zodResolver(
+      updateWorkspaceSchema,
+    ),
     defaultValues: {
       name: "",
       description: "",
@@ -116,7 +184,9 @@ export function WorkspacePage() {
       isSubmitting: isCreatingBoard,
     },
   } = useForm<CreateBoardFormData>({
-    resolver: zodResolver(createBoardSchema),
+    resolver: zodResolver(
+      createBoardSchema,
+    ),
     defaultValues: {
       title: "",
       description: "",
@@ -133,26 +203,36 @@ export function WorkspacePage() {
         );
 
         setIsLoading(false);
+
         return;
       }
 
       try {
         setIsLoading(true);
+
         setWorkspaceError(null);
 
-        const data = await getWorkspaceById(id);
+        const data =
+          await getWorkspaceById(id);
 
         setWorkspace({
           ...data,
-          members: data.members ?? [],
+          members:
+            data.members ?? [],
         });
       } catch (error) {
-        if (axios.isAxiosError(error)) {
+        if (
+          axios.isAxiosError(error)
+        ) {
           const message =
-            error.response?.data?.message ??
+            error.response?.data
+              ?.message ??
             "Não foi possível carregar o Workspace.";
 
-          setWorkspaceError(message);
+          setWorkspaceError(
+            message,
+          );
+
           return;
         }
 
@@ -175,23 +255,30 @@ export function WorkspacePage() {
         );
 
         setIsLoadingBoards(false);
+
         return;
       }
 
       try {
         setIsLoadingBoards(true);
+
         setBoardsError(null);
 
-        const data = await listBoards(id);
+        const data =
+          await listBoards(id);
 
         setBoards(data);
       } catch (error) {
-        if (axios.isAxiosError(error)) {
+        if (
+          axios.isAxiosError(error)
+        ) {
           const message =
-            error.response?.data?.message ??
+            error.response?.data
+              ?.message ??
             "Não foi possível carregar os Boards.";
 
           setBoardsError(message);
+
           return;
         }
 
@@ -206,48 +293,68 @@ export function WorkspacePage() {
     void loadBoards();
   }, [id]);
 
-  const currentMember: WorkspaceMember | undefined =
+  const currentMember:
+    | WorkspaceMember
+    | undefined =
     workspace?.members?.find(
       (member) =>
-        member.user?.id === user?.id ||
-        member.userId === user?.id,
+        member.user?.id ===
+          user?.id ||
+        member.userId ===
+          user?.id,
     );
 
   const canUpdateWorkspace =
-    currentMember?.role === "OWNER" ||
-    currentMember?.role === "ADMIN";
+    currentMember?.role ===
+      "OWNER" ||
+    currentMember?.role ===
+      "ADMIN";
 
   const canDeleteWorkspace =
-    currentMember?.role === "OWNER";
+    currentMember?.role ===
+    "OWNER";
 
   const canCreateBoard =
-    currentMember?.role === "OWNER" ||
-    currentMember?.role === "ADMIN" ||
-    currentMember?.role === "MEMBER";
+    currentMember?.role ===
+      "OWNER" ||
+    currentMember?.role ===
+      "ADMIN" ||
+    currentMember?.role ===
+      "MEMBER";
 
   function openEditModal() {
-    if (!workspace || !canUpdateWorkspace) {
+    if (
+      !workspace ||
+      !canUpdateWorkspace
+    ) {
       return;
     }
 
     setUpdateError(null);
+
     setUpdateSuccess(null);
 
     resetWorkspaceUpdate({
       name: workspace.name,
-      description: workspace.description ?? "",
+      description:
+        workspace.description ??
+        "",
     });
 
     setIsEditModalOpen(true);
   }
 
   function closeEditModal() {
-    if (isUpdatingWorkspace) {
+    if (
+      isUpdatingWorkspace
+    ) {
       return;
     }
 
     setIsEditModalOpen(false);
+
     setUpdateError(null);
+
     setUpdateSuccess(null);
   }
 
@@ -264,45 +371,75 @@ export function WorkspacePage() {
 
     try {
       setUpdateError(null);
+
       setUpdateSuccess(null);
 
-      const response = await updateWorkspace(id, {
-        name: data.name,
-        description: data.description.trim(),
-      });
+      const response =
+        await updateWorkspace(id, {
+          name: data.name,
+          description:
+            data.description.trim(),
+        });
 
-      setWorkspace((currentWorkspace) => {
-        if (!currentWorkspace) {
+      setWorkspace(
+        (
+          currentWorkspace,
+        ) => {
+          if (
+            !currentWorkspace
+          ) {
+            return {
+              ...response.workspace,
+
+              members:
+                response.workspace
+                  .members ?? [],
+            };
+          }
+
           return {
+            ...currentWorkspace,
+
             ...response.workspace,
+
             members:
-              response.workspace.members ?? [],
+              response.workspace
+                .members ??
+              currentWorkspace.members ??
+              [],
           };
-        }
+        },
+      );
 
-        return {
-          ...currentWorkspace,
-          ...response.workspace,
-          members:
-            response.workspace.members ??
-            currentWorkspace.members ??
-            [],
-        };
-      });
+      setUpdateSuccess(
+        response.message,
+      );
 
-      setUpdateSuccess(response.message);
+      window.setTimeout(
+        () => {
+          setIsEditModalOpen(
+            false,
+          );
 
-      window.setTimeout(() => {
-        setIsEditModalOpen(false);
-        setUpdateSuccess(null);
-      }, 800);
+          setUpdateSuccess(
+            null,
+          );
+        },
+        800,
+      );
     } catch (error) {
-      if (axios.isAxiosError(error)) {
+      if (
+        axios.isAxiosError(error)
+      ) {
         const message =
-          error.response?.data?.message ??
+          error.response?.data
+            ?.message ??
           "Não foi possível atualizar o Workspace.";
 
-        setUpdateError(message);
+        setUpdateError(
+          message,
+        );
+
         return;
       }
 
@@ -318,16 +455,20 @@ export function WorkspacePage() {
     }
 
     setCreateBoardError(null);
+
     setCreateBoardSuccess(null);
 
     resetBoardForm({
       title: "",
       description: "",
-      backgroundColor: "#0c66e4",
+      backgroundColor:
+        "#0c66e4",
       coverImage: "",
     });
 
-    setIsCreateBoardModalOpen(true);
+    setIsCreateBoardModalOpen(
+      true,
+    );
   }
 
   function closeCreateBoardModal() {
@@ -335,14 +476,19 @@ export function WorkspacePage() {
       return;
     }
 
-    setIsCreateBoardModalOpen(false);
+    setIsCreateBoardModalOpen(
+      false,
+    );
+
     setCreateBoardError(null);
+
     setCreateBoardSuccess(null);
 
     resetBoardForm({
       title: "",
       description: "",
-      backgroundColor: "#0c66e4",
+      backgroundColor:
+        "#0c66e4",
       coverImage: "",
     });
   }
@@ -360,52 +506,79 @@ export function WorkspacePage() {
 
     try {
       setCreateBoardError(null);
+
       setCreateBoardSuccess(null);
 
-      const response = await createBoard(id, {
-        title: data.title,
-        description:
-          data.description &&
-          data.description.length > 0
-            ? data.description
-            : undefined,
-        backgroundColor:
-          data.backgroundColor &&
-          data.backgroundColor.length > 0
-            ? data.backgroundColor
-            : undefined,
-        coverImage:
-          data.coverImage &&
-          data.coverImage.length > 0
-            ? data.coverImage
-            : undefined,
-      });
+      const response =
+        await createBoard(id, {
+          title: data.title,
 
-      setBoards((currentBoards) => [
-        response.board,
-        ...currentBoards,
-      ]);
+          description:
+            data.description &&
+            data.description
+              .length > 0
+              ? data.description
+              : undefined,
 
-      setCreateBoardSuccess(response.message);
+          backgroundColor:
+            data.backgroundColor &&
+            data.backgroundColor
+              .length > 0
+              ? data.backgroundColor
+              : undefined,
 
-      window.setTimeout(() => {
-        setIsCreateBoardModalOpen(false);
-        setCreateBoardSuccess(null);
-
-        resetBoardForm({
-          title: "",
-          description: "",
-          backgroundColor: "#0c66e4",
-          coverImage: "",
+          coverImage:
+            data.coverImage &&
+            data.coverImage
+              .length > 0
+              ? data.coverImage
+              : undefined,
         });
-      }, 800);
+
+      setBoards(
+        (currentBoards) => [
+          response.board,
+          ...currentBoards,
+        ],
+      );
+
+      setCreateBoardSuccess(
+        response.message,
+      );
+
+      window.setTimeout(
+        () => {
+          setIsCreateBoardModalOpen(
+            false,
+          );
+
+          setCreateBoardSuccess(
+            null,
+          );
+
+          resetBoardForm({
+            title: "",
+            description: "",
+            backgroundColor:
+              "#0c66e4",
+            coverImage: "",
+          });
+        },
+        800,
+      );
     } catch (error) {
-      if (axios.isAxiosError(error)) {
+      if (
+        axios.isAxiosError(error)
+      ) {
         const message =
-          error.response?.data?.message ??
+          error.response?.data
+            ?.message ??
           "Não foi possível criar o Board.";
 
-        setCreateBoardError(message);
+        setCreateBoardError(
+          message,
+        );
+
         return;
       }
 
@@ -422,15 +595,20 @@ export function WorkspacePage() {
 
     try {
       setIsLoadingBoards(true);
+
       setBoardsError(null);
 
-      const data = await listBoards(id);
+      const data =
+        await listBoards(id);
 
       setBoards(data);
     } catch (error) {
-      if (axios.isAxiosError(error)) {
+      if (
+        axios.isAxiosError(error)
+      ) {
         setBoardsError(
-          error.response?.data?.message ??
+          error.response?.data
+            ?.message ??
             "Não foi possível carregar os Boards.",
         );
 
@@ -441,18 +619,200 @@ export function WorkspacePage() {
         "Ocorreu um erro inesperado ao carregar os Boards.",
       );
     } finally {
-      setIsLoadingBoards(false);
+      setIsLoadingBoards(
+        false,
+      );
+    }
+  }
+
+  async function handleOpenArchivedBoards() {
+    if (!id) {
+      return;
+    }
+
+    if (
+      isArchivedBoardsOpen
+    ) {
+      setIsArchivedBoardsOpen(
+        false,
+      );
+
+      return;
+    }
+
+    try {
+      setIsArchivedBoardsOpen(
+        true,
+      );
+
+      setIsLoadingArchivedBoards(
+        true,
+      );
+
+      setArchivedBoardsError(
+        null,
+      );
+
+      setRestoreBoardError(null);
+
+      setRestoreBoardSuccess(
+        null,
+      );
+
+      const data =
+        await listArchivedBoards(
+          id,
+        );
+
+      setArchivedBoards(data);
+    } catch (error) {
+      if (
+        axios.isAxiosError(error)
+      ) {
+        setArchivedBoardsError(
+          error.response?.data
+            ?.message ??
+            "Não foi possível carregar os Boards arquivados.",
+        );
+
+        return;
+      }
+
+      setArchivedBoardsError(
+        "Ocorreu um erro inesperado ao carregar os Boards arquivados.",
+      );
+    } finally {
+      setIsLoadingArchivedBoards(
+        false,
+      );
+    }
+  }
+
+  async function handleRetryArchivedBoards() {
+    if (!id) {
+      return;
+    }
+
+    try {
+      setIsLoadingArchivedBoards(
+        true,
+      );
+
+      setArchivedBoardsError(
+        null,
+      );
+
+      const data =
+        await listArchivedBoards(
+          id,
+        );
+
+      setArchivedBoards(data);
+    } catch (error) {
+      if (
+        axios.isAxiosError(error)
+      ) {
+        setArchivedBoardsError(
+          error.response?.data
+            ?.message ??
+            "Não foi possível carregar os Boards arquivados.",
+        );
+
+        return;
+      }
+
+      setArchivedBoardsError(
+        "Ocorreu um erro inesperado ao carregar os Boards arquivados.",
+      );
+    } finally {
+      setIsLoadingArchivedBoards(
+        false,
+      );
+    }
+  }
+
+  async function handleRestoreBoard(
+    boardId: string,
+  ) {
+    try {
+      setRestoringBoardId(
+        boardId,
+      );
+
+      setRestoreBoardError(
+        null,
+      );
+
+      setRestoreBoardSuccess(
+        null,
+      );
+
+      const response =
+        await archiveBoard(
+          boardId,
+          {
+            isArchived: false,
+          },
+        );
+
+      setArchivedBoards(
+        (
+          currentArchivedBoards,
+        ) =>
+          currentArchivedBoards.filter(
+            (board) =>
+              board.id !==
+              boardId,
+          ),
+      );
+
+      setBoards(
+        (currentBoards) => [
+          response.board,
+          ...currentBoards,
+        ],
+      );
+
+      setRestoreBoardSuccess(
+        response.message,
+      );
+    } catch (error) {
+      if (
+        axios.isAxiosError(error)
+      ) {
+        setRestoreBoardError(
+          error.response?.data
+            ?.message ??
+            "Não foi possível restaurar o Board.",
+        );
+
+        return;
+      }
+
+      setRestoreBoardError(
+        "Ocorreu um erro inesperado ao restaurar o Board.",
+      );
+    } finally {
+      setRestoringBoardId(
+        null,
+      );
     }
   }
 
   function openDeleteModal() {
-    if (!canDeleteWorkspace) {
+    if (
+      !canDeleteWorkspace
+    ) {
       return;
     }
 
     setDeleteError(null);
+
     setDeleteSuccess(null);
-    setIsDeleteModalOpen(true);
+
+    setIsDeleteModalOpen(
+      true,
+    );
   }
 
   function closeDeleteModal() {
@@ -460,8 +820,12 @@ export function WorkspacePage() {
       return;
     }
 
-    setIsDeleteModalOpen(false);
+    setIsDeleteModalOpen(
+      false,
+    );
+
     setDeleteError(null);
+
     setDeleteSuccess(null);
   }
 
@@ -476,25 +840,40 @@ export function WorkspacePage() {
 
     try {
       setIsDeleting(true);
+
       setDeleteError(null);
+
       setDeleteSuccess(null);
 
-      const response = await deleteWorkspace(id);
+      const response =
+        await deleteWorkspace(id);
 
-      setDeleteSuccess(response.message);
+      setDeleteSuccess(
+        response.message,
+      );
 
-      window.setTimeout(() => {
-        navigate("/dashboard", {
-          replace: true,
-        });
-      }, 800);
+      window.setTimeout(
+        () => {
+          navigate(
+            "/dashboard",
+            {
+              replace: true,
+            },
+          );
+        },
+        800,
+      );
     } catch (error) {
-      if (axios.isAxiosError(error)) {
+      if (
+        axios.isAxiosError(error)
+      ) {
         const message =
-          error.response?.data?.message ??
+          error.response?.data
+            ?.message ??
           "Não foi possível excluir o Workspace.";
 
         setDeleteError(message);
+
         return;
       }
 
@@ -512,29 +891,40 @@ export function WorkspacePage() {
     }
 
     setIsLoading(true);
+
     setWorkspaceError(null);
 
     void getWorkspaceById(id)
       .then((data) => {
         setWorkspace({
           ...data,
-          members: data.members ?? [],
+
+          members:
+            data.members ?? [],
         });
       })
-      .catch((error: unknown) => {
-        if (axios.isAxiosError(error)) {
+      .catch(
+        (error: unknown) => {
+          if (
+            axios.isAxiosError(
+              error,
+            )
+          ) {
+            setWorkspaceError(
+              error.response
+                ?.data
+                ?.message ??
+                "Não foi possível carregar o Workspace.",
+            );
+
+            return;
+          }
+
           setWorkspaceError(
-            error.response?.data?.message ??
-              "Não foi possível carregar o Workspace.",
+            "Ocorreu um erro inesperado ao carregar o Workspace.",
           );
-
-          return;
-        }
-
-        setWorkspaceError(
-          "Ocorreu um erro inesperado ao carregar o Workspace.",
-        );
-      })
+        },
+      )
       .finally(() => {
         setIsLoading(false);
       });
@@ -553,7 +943,10 @@ export function WorkspacePage() {
     );
   }
 
-  if (workspaceError || !workspace) {
+  if (
+    workspaceError ||
+    !workspace
+  ) {
     return (
       <main className="workspace-page">
         <div className="workspace-page-error">
@@ -571,7 +964,9 @@ export function WorkspacePage() {
               type="button"
               className="secondary-button"
               onClick={() =>
-                navigate("/dashboard")
+                navigate(
+                  "/dashboard",
+                )
               }
             >
               Voltar ao Dashboard
@@ -581,7 +976,9 @@ export function WorkspacePage() {
               <button
                 type="button"
                 className="primary-button"
-                onClick={handleRetry}
+                onClick={
+                  handleRetry
+                }
               >
                 Tentar novamente
               </button>
@@ -592,12 +989,17 @@ export function WorkspacePage() {
     );
   }
 
-  const formattedCreatedAt = new Intl.DateTimeFormat(
-    "pt-BR",
-    {
-      dateStyle: "long",
-    },
-  ).format(new Date(workspace.createdAt));
+  const formattedCreatedAt =
+    new Intl.DateTimeFormat(
+      "pt-BR",
+      {
+        dateStyle: "long",
+      },
+    ).format(
+      new Date(
+        workspace.createdAt,
+      ),
+    );
 
   return (
     <main className="workspace-page">
@@ -609,9 +1011,13 @@ export function WorkspacePage() {
           Dashboard
         </Link>
 
-        <span aria-hidden="true">/</span>
+        <span aria-hidden="true">
+          /
+        </span>
 
-        <span>{workspace.name}</span>
+        <span>
+          {workspace.name}
+        </span>
       </nav>
 
       <header className="workspace-page-header">
@@ -620,7 +1026,9 @@ export function WorkspacePage() {
             Workspace
           </span>
 
-          <h1>{workspace.name}</h1>
+          <h1>
+            {workspace.name}
+          </h1>
 
           <p>
             {workspace.description ||
@@ -633,7 +1041,9 @@ export function WorkspacePage() {
             <button
               type="button"
               className="primary-button"
-              onClick={openEditModal}
+              onClick={
+                openEditModal
+              }
             >
               Editar Workspace
             </button>
@@ -643,7 +1053,9 @@ export function WorkspacePage() {
             <button
               type="button"
               className="danger-button"
-              onClick={openDeleteModal}
+              onClick={
+                openDeleteModal
+              }
             >
               Excluir Workspace
             </button>
@@ -653,7 +1065,9 @@ export function WorkspacePage() {
             type="button"
             className="secondary-button"
             onClick={() =>
-              navigate("/dashboard")
+              navigate(
+                "/dashboard",
+              )
             }
           >
             Voltar
@@ -669,18 +1083,24 @@ export function WorkspacePage() {
           <span>Membros</span>
 
           <strong>
-            {workspace.members.length}
+            {
+              workspace.members
+                .length
+            }
           </strong>
 
           <p>
-            {workspace.members.length === 1
+            {workspace.members
+              .length === 1
               ? "pessoa participa deste Workspace"
               : "pessoas participam deste Workspace"}
           </p>
         </article>
 
         <article className="workspace-summary-card">
-          <span>Sua permissão</span>
+          <span>
+            Sua permissão
+          </span>
 
           <strong>
             {currentMember
@@ -698,7 +1118,9 @@ export function WorkspacePage() {
         <article className="workspace-summary-card">
           <span>Criado em</span>
 
-          <strong>{formattedCreatedAt}</strong>
+          <strong>
+            {formattedCreatedAt}
+          </strong>
 
           <p>
             Data de criação do espaço de trabalho.
@@ -707,23 +1129,39 @@ export function WorkspacePage() {
       </section>
 
       <WorkspaceMembersSection
-        workspaceId={workspace.id}
-        currentUserId={user?.id}
-        onMemberRemoved={(memberId) => {
-          setWorkspace((currentWorkspace) => {
-            if (!currentWorkspace) {
-              return currentWorkspace;
-            }
+        workspaceId={
+          workspace.id
+        }
+        currentUserId={
+          user?.id
+        }
+        onMemberRemoved={(
+          memberId,
+        ) => {
+          setWorkspace(
+            (
+              currentWorkspace,
+            ) => {
+              if (
+                !currentWorkspace
+              ) {
+                return currentWorkspace;
+              }
 
-            return {
-              ...currentWorkspace,
-              members:
-                currentWorkspace.members.filter(
-                  (member) =>
-                    member.id !== memberId,
-                ),
-            };
-          });
+              return {
+                ...currentWorkspace,
+
+                members:
+                  currentWorkspace.members.filter(
+                    (
+                      member,
+                    ) =>
+                      member.id !==
+                      memberId,
+                  ),
+              };
+            },
+          );
         }}
       />
 
@@ -733,20 +1171,35 @@ export function WorkspacePage() {
             <h2>Boards</h2>
 
             <p>
-              Organize as tarefas deste Workspace em
-              quadros.
+              Organize as tarefas deste Workspace em quadros.
             </p>
           </div>
 
-          {canCreateBoard && (
+          <div className="workspace-board-actions">
             <button
               type="button"
-              className="primary-button"
-              onClick={openCreateBoardModal}
+              className="secondary-button"
+              onClick={() => {
+                void handleOpenArchivedBoards();
+              }}
             >
-              Criar Board
+              {isArchivedBoardsOpen
+                ? "Ocultar arquivados"
+                : "Boards arquivados"}
             </button>
-          )}
+
+            {canCreateBoard && (
+              <button
+                type="button"
+                className="primary-button"
+                onClick={
+                  openCreateBoardModal
+                }
+              >
+                Criar Board
+              </button>
+            )}
+          </div>
         </div>
 
         {isLoadingBoards && (
@@ -758,30 +1211,32 @@ export function WorkspacePage() {
           </div>
         )}
 
-        {!isLoadingBoards && boardsError && (
-          <div className="workspace-boards-error">
-            <div
-              className="api-error"
-              role="alert"
-            >
-              {boardsError}
-            </div>
+        {!isLoadingBoards &&
+          boardsError && (
+            <div className="workspace-boards-error">
+              <div
+                className="api-error"
+                role="alert"
+              >
+                {boardsError}
+              </div>
 
-            <button
-              type="button"
-              className="secondary-button"
-              onClick={() => {
-                void handleRetryBoards();
-              }}
-            >
-              Tentar novamente
-            </button>
-          </div>
-        )}
+              <button
+                type="button"
+                className="secondary-button"
+                onClick={() => {
+                  void handleRetryBoards();
+                }}
+              >
+                Tentar novamente
+              </button>
+            </div>
+          )}
 
         {!isLoadingBoards &&
           !boardsError &&
-          boards.length === 0 && (
+          boards.length ===
+            0 && (
             <div className="workspace-boards-empty">
               <div
                 className="workspace-boards-empty-icon"
@@ -790,18 +1245,21 @@ export function WorkspacePage() {
                 B
               </div>
 
-              <h3>Nenhum Board disponível</h3>
+              <h3>
+                Nenhum Board disponível
+              </h3>
 
               <p>
-                Crie o primeiro Board para organizar as
-                tarefas deste Workspace.
+                Crie o primeiro Board para organizar as tarefas deste Workspace.
               </p>
 
               {canCreateBoard && (
                 <button
                   type="button"
                   className="primary-button"
-                  onClick={openCreateBoardModal}
+                  onClick={
+                    openCreateBoardModal
+                  }
                 >
                   Criar primeiro Board
                 </button>
@@ -813,72 +1271,267 @@ export function WorkspacePage() {
           !boardsError &&
           boards.length > 0 && (
             <div className="workspace-boards-grid">
-              {boards.map((board) => (
-                <article
-                  key={board.id}
-                  className="workspace-board-card"
-                  style={{
-                    backgroundColor:
-                      board.backgroundColor ??
-                      "#0c66e4",
-                    backgroundImage: board.coverImage
-                      ? `linear-gradient(
-                          rgb(9 30 66 / 42%),
-                          rgb(9 30 66 / 72%)
-                        ),
-                        url("${board.coverImage}")`
-                      : undefined,
-                  }}
-                >
-                  <div className="workspace-board-card-content">
-                    <span className="workspace-board-card-role">
-                      {board.members[0]?.role ??
-                        "MEMBER"}
-                    </span>
+              {boards.map(
+                (board) => (
+                  <article
+                    key={
+                      board.id
+                    }
+                    className="workspace-board-card"
+                    style={{
+                      backgroundColor:
+                        board.backgroundColor ??
+                        "#0c66e4",
 
-                    <h3>{board.title}</h3>
+                      backgroundImage:
+                        board.coverImage
+                          ? `linear-gradient(
+                              rgb(9 30 66 / 42%),
+                              rgb(9 30 66 / 72%)
+                            ),
+                            url("${board.coverImage}")`
+                          : undefined,
+                    }}
+                  >
+                    <div className="workspace-board-card-content">
+                      <span className="workspace-board-card-role">
+                        {board
+                          .members?.[0]
+                          ?.role ??
+                          "MEMBER"}
+                      </span>
 
-                    <p>
-                      {board.description ||
-                        "Este Board não possui descrição."}
-                    </p>
-                  </div>
+                      <h3>
+                        {
+                          board.title
+                        }
+                      </h3>
 
-                  <footer className="workspace-board-card-footer">
-                    <span>
-                      {board.members[0]?.isFavorite
-                        ? "★ Favorito"
-                        : "Board ativo"}
-                    </span>
+                      <p>
+                        {board.description ||
+                          "Este Board não possui descrição."}
+                      </p>
+                    </div>
 
-                    <button
-                      type="button"
-                      className="secondary-button"
-                      onClick={() =>
-                        navigate(`/boards/${board.id}`)
-                      }
-                    >
-                      Abrir
-                    </button>
-                  </footer>
-                </article>
-              ))}
+                    <footer className="workspace-board-card-footer">
+                      <span>
+                        {board
+                          .members?.[0]
+                          ?.isFavorite
+                          ? "★ Favorito"
+                          : "Board ativo"}
+                      </span>
+
+                      <button
+                        type="button"
+                        className="secondary-button"
+                        onClick={() =>
+                          navigate(
+                            `/boards/${board.id}`,
+                          )
+                        }
+                      >
+                        Abrir
+                      </button>
+                    </footer>
+                  </article>
+                ),
+              )}
             </div>
           )}
       </section>
+
+      {isArchivedBoardsOpen && (
+        <section className="workspace-archived-boards-section">
+          <div className="workspace-section-header">
+            <div>
+              <h2>
+                Boards arquivados
+              </h2>
+
+              <p>
+                Consulte os Boards arquivados deste Workspace e restaure aqueles que deseja utilizar novamente.
+              </p>
+            </div>
+
+            <span className="workspace-archived-count">
+              {
+                archivedBoards.length
+              }
+            </span>
+          </div>
+
+          {restoreBoardError && (
+            <div
+              className="api-error"
+              role="alert"
+            >
+              {
+                restoreBoardError
+              }
+            </div>
+          )}
+
+          {restoreBoardSuccess && (
+            <div
+              className="success-message"
+              role="status"
+            >
+              {
+                restoreBoardSuccess
+              }
+            </div>
+          )}
+
+          {isLoadingArchivedBoards && (
+            <div
+              className="workspace-page-feedback"
+              role="status"
+            >
+              Carregando Boards arquivados...
+            </div>
+          )}
+
+          {!isLoadingArchivedBoards &&
+            archivedBoardsError && (
+              <div className="workspace-boards-error">
+                <div
+                  className="api-error"
+                  role="alert"
+                >
+                  {
+                    archivedBoardsError
+                  }
+                </div>
+
+                <button
+                  type="button"
+                  className="secondary-button"
+                  onClick={() => {
+                    void handleRetryArchivedBoards();
+                  }}
+                >
+                  Tentar novamente
+                </button>
+              </div>
+            )}
+
+          {!isLoadingArchivedBoards &&
+            !archivedBoardsError &&
+            archivedBoards.length ===
+              0 && (
+              <div className="workspace-boards-empty">
+                <div
+                  className="workspace-boards-empty-icon"
+                  aria-hidden="true"
+                >
+                  A
+                </div>
+
+                <h3>
+                  Nenhum Board arquivado
+                </h3>
+
+                <p>
+                  Os Boards arquivados deste Workspace aparecerão aqui.
+                </p>
+              </div>
+            )}
+
+          {!isLoadingArchivedBoards &&
+            !archivedBoardsError &&
+            archivedBoards.length >
+              0 && (
+              <div className="workspace-archived-boards-list">
+                {archivedBoards.map(
+                  (
+                    archivedBoard,
+                  ) => {
+                    const canRestoreBoard =
+                      archivedBoard
+                        .members?.[0]
+                        ?.role ===
+                        "OWNER" ||
+                      archivedBoard
+                        .members?.[0]
+                        ?.role ===
+                        "ADMIN";
+
+                    return (
+                      <article
+                        key={
+                          archivedBoard.id
+                        }
+                        className="workspace-archived-board-card"
+                      >
+                        <div className="workspace-archived-board-info">
+                          <span className="workspace-archived-board-label">
+                            Arquivado
+                          </span>
+
+                          <h3>
+                            {
+                              archivedBoard.title
+                            }
+                          </h3>
+
+                          <p>
+                            {archivedBoard.description ||
+                              "Este Board não possui descrição."}
+                          </p>
+                        </div>
+
+                        <div className="workspace-archived-board-actions">
+                          {canRestoreBoard ? (
+                            <button
+                              type="button"
+                              className="primary-button"
+                              onClick={() => {
+                                void handleRestoreBoard(
+                                  archivedBoard.id,
+                                );
+                              }}
+                              disabled={
+                                restoringBoardId ===
+                                archivedBoard.id
+                              }
+                            >
+                              {restoringBoardId ===
+                              archivedBoard.id
+                                ? "Restaurando..."
+                                : "Restaurar"}
+                            </button>
+                          ) : (
+                            <span className="workspace-archived-board-readonly">
+                              Somente leitura
+                            </span>
+                          )}
+                        </div>
+                      </article>
+                    );
+                  },
+                )}
+              </div>
+            )}
+        </section>
+      )}
 
       {isCreateBoardModalOpen && (
         <div
           className="modal-backdrop"
           role="presentation"
-          onMouseDown={closeCreateBoardModal}
+          onMouseDown={
+            closeCreateBoardModal
+          }
         >
           <section
             className="modal-card"
             role="dialog"
             aria-modal="true"
             aria-labelledby="create-board-title"
-            onMouseDown={(event) =>
+            onMouseDown={(
+              event,
+            ) =>
               event.stopPropagation()
             }
           >
@@ -889,16 +1542,19 @@ export function WorkspacePage() {
                 </h2>
 
                 <p>
-                  Crie um quadro para organizar as tarefas
-                  deste Workspace.
+                  Crie um quadro para organizar as tarefas deste Workspace.
                 </p>
               </div>
 
               <button
                 type="button"
                 className="modal-close-button"
-                onClick={closeCreateBoardModal}
-                disabled={isCreatingBoard}
+                onClick={
+                  closeCreateBoardModal
+                }
+                disabled={
+                  isCreatingBoard
+                }
                 aria-label="Fechar modal"
               >
                 ×
@@ -921,13 +1577,16 @@ export function WorkspacePage() {
                   type="text"
                   placeholder="Ex.: Desenvolvimento"
                   autoFocus
-                  {...registerBoard("title")}
+                  {...registerBoard(
+                    "title",
+                  )}
                 />
 
                 {boardFormErrors.title && (
                   <span className="field-error">
                     {
-                      boardFormErrors.title
+                      boardFormErrors
+                        .title
                         .message
                     }
                   </span>
@@ -951,7 +1610,8 @@ export function WorkspacePage() {
                 {boardFormErrors.description && (
                   <span className="field-error">
                     {
-                      boardFormErrors.description
+                      boardFormErrors
+                        .description
                         .message
                     }
                   </span>
@@ -975,7 +1635,8 @@ export function WorkspacePage() {
                   <span className="field-error">
                     {
                       boardFormErrors
-                        .backgroundColor.message
+                        .backgroundColor
+                        .message
                     }
                   </span>
                 )}
@@ -990,13 +1651,16 @@ export function WorkspacePage() {
                   id="board-cover-image"
                   type="url"
                   placeholder="https://exemplo.com/imagem.jpg"
-                  {...registerBoard("coverImage")}
+                  {...registerBoard(
+                    "coverImage",
+                  )}
                 />
 
                 {boardFormErrors.coverImage && (
                   <span className="field-error">
                     {
-                      boardFormErrors.coverImage
+                      boardFormErrors
+                        .coverImage
                         .message
                     }
                   </span>
@@ -1008,7 +1672,9 @@ export function WorkspacePage() {
                   className="api-error"
                   role="alert"
                 >
-                  {createBoardError}
+                  {
+                    createBoardError
+                  }
                 </div>
               )}
 
@@ -1017,7 +1683,9 @@ export function WorkspacePage() {
                   className="success-message"
                   role="status"
                 >
-                  {createBoardSuccess}
+                  {
+                    createBoardSuccess
+                  }
                 </div>
               )}
 
@@ -1025,8 +1693,12 @@ export function WorkspacePage() {
                 <button
                   type="button"
                   className="secondary-button"
-                  onClick={closeCreateBoardModal}
-                  disabled={isCreatingBoard}
+                  onClick={
+                    closeCreateBoardModal
+                  }
+                  disabled={
+                    isCreatingBoard
+                  }
                 >
                   Cancelar
                 </button>
@@ -1034,7 +1706,9 @@ export function WorkspacePage() {
                 <button
                   type="submit"
                   className="primary-button"
-                  disabled={isCreatingBoard}
+                  disabled={
+                    isCreatingBoard
+                  }
                 >
                   {isCreatingBoard
                     ? "Criando..."
@@ -1050,14 +1724,18 @@ export function WorkspacePage() {
         <div
           className="modal-backdrop"
           role="presentation"
-          onMouseDown={closeEditModal}
+          onMouseDown={
+            closeEditModal
+          }
         >
           <section
             className="modal-card"
             role="dialog"
             aria-modal="true"
             aria-labelledby="edit-workspace-title"
-            onMouseDown={(event) =>
+            onMouseDown={(
+              event,
+            ) =>
               event.stopPropagation()
             }
           >
@@ -1068,16 +1746,19 @@ export function WorkspacePage() {
                 </h2>
 
                 <p>
-                  Atualize o nome e a descrição do
-                  Workspace.
+                  Atualize o nome e a descrição do Workspace.
                 </p>
               </div>
 
               <button
                 type="button"
                 className="modal-close-button"
-                onClick={closeEditModal}
-                disabled={isUpdatingWorkspace}
+                onClick={
+                  closeEditModal
+                }
+                disabled={
+                  isUpdatingWorkspace
+                }
                 aria-label="Fechar modal"
               >
                 ×
@@ -1107,7 +1788,8 @@ export function WorkspacePage() {
                 {workspaceUpdateErrors.name && (
                   <span className="field-error">
                     {
-                      workspaceUpdateErrors.name
+                      workspaceUpdateErrors
+                        .name
                         .message
                     }
                   </span>
@@ -1131,7 +1813,8 @@ export function WorkspacePage() {
                   <span className="field-error">
                     {
                       workspaceUpdateErrors
-                        .description.message
+                        .description
+                        .message
                     }
                   </span>
                 )}
@@ -1151,7 +1834,9 @@ export function WorkspacePage() {
                   className="success-message"
                   role="status"
                 >
-                  {updateSuccess}
+                  {
+                    updateSuccess
+                  }
                 </div>
               )}
 
@@ -1159,8 +1844,12 @@ export function WorkspacePage() {
                 <button
                   type="button"
                   className="secondary-button"
-                  onClick={closeEditModal}
-                  disabled={isUpdatingWorkspace}
+                  onClick={
+                    closeEditModal
+                  }
+                  disabled={
+                    isUpdatingWorkspace
+                  }
                 >
                   Cancelar
                 </button>
@@ -1168,7 +1857,9 @@ export function WorkspacePage() {
                 <button
                   type="submit"
                   className="primary-button"
-                  disabled={isUpdatingWorkspace}
+                  disabled={
+                    isUpdatingWorkspace
+                  }
                 >
                   {isUpdatingWorkspace
                     ? "Salvando..."
@@ -1184,7 +1875,9 @@ export function WorkspacePage() {
         <div
           className="modal-backdrop"
           role="presentation"
-          onMouseDown={closeDeleteModal}
+          onMouseDown={
+            closeDeleteModal
+          }
         >
           <section
             className="modal-card"
@@ -1192,7 +1885,9 @@ export function WorkspacePage() {
             aria-modal="true"
             aria-labelledby="delete-workspace-title"
             aria-describedby="delete-workspace-description"
-            onMouseDown={(event) =>
+            onMouseDown={(
+              event,
+            ) =>
               event.stopPropagation()
             }
           >
@@ -1210,8 +1905,12 @@ export function WorkspacePage() {
               <button
                 type="button"
                 className="modal-close-button"
-                onClick={closeDeleteModal}
-                disabled={isDeleting}
+                onClick={
+                  closeDeleteModal
+                }
+                disabled={
+                  isDeleting
+                }
                 aria-label="Fechar modal"
               >
                 ×
@@ -1224,12 +1923,12 @@ export function WorkspacePage() {
                   Você está prestes a excluir:
                 </strong>
 
-                <span>{workspace.name}</span>
+                <span>
+                  {workspace.name}
+                </span>
 
                 <p>
-                  Todos os dados vinculados a este
-                  Workspace serão removidos
-                  permanentemente.
+                  Todos os dados vinculados a este Workspace serão removidos permanentemente.
                 </p>
               </div>
 
@@ -1238,7 +1937,9 @@ export function WorkspacePage() {
                   className="api-error"
                   role="alert"
                 >
-                  {deleteError}
+                  {
+                    deleteError
+                  }
                 </div>
               )}
 
@@ -1247,7 +1948,9 @@ export function WorkspacePage() {
                   className="success-message"
                   role="status"
                 >
-                  {deleteSuccess}
+                  {
+                    deleteSuccess
+                  }
                 </div>
               )}
 
@@ -1255,8 +1958,12 @@ export function WorkspacePage() {
                 <button
                   type="button"
                   className="secondary-button"
-                  onClick={closeDeleteModal}
-                  disabled={isDeleting}
+                  onClick={
+                    closeDeleteModal
+                  }
+                  disabled={
+                    isDeleting
+                  }
                 >
                   Cancelar
                 </button>
@@ -1267,7 +1974,9 @@ export function WorkspacePage() {
                   onClick={() => {
                     void handleDeleteWorkspace();
                   }}
-                  disabled={isDeleting}
+                  disabled={
+                    isDeleting
+                  }
                 >
                   {isDeleting
                     ? "Excluindo..."
