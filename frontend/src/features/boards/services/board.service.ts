@@ -1,6 +1,8 @@
 import { api } from "../../../services/api";
 
 import type {
+  AddBoardMemberRequest,
+  AddBoardMemberResponse,
   ArchiveBoardRequest,
   ArchiveBoardResponse,
   Board,
@@ -11,8 +13,12 @@ import type {
   FavoriteBoardResponse,
   GetBoardResponse,
   ListArchivedBoardsResponse,
+  ListBoardMembersResponse,
+  RemoveBoardMemberResponse,
   UpdateBoardRequest,
   UpdateBoardResponse,
+  UpdateBoardMemberRoleRequest,
+  UpdateBoardMemberRoleResponse,
 } from "../types/board.types";
 
 export async function listBoards(
@@ -107,4 +113,54 @@ export async function listArchivedBoards(
     );
 
     return response.data.boards;
+}
+
+export async function listBoardMembers(
+  boardId: string,
+): Promise<Board["members"]> {
+  const response =
+    await api.get<ListBoardMembersResponse>(
+      `/boards/${boardId}/members`,
+    );
+
+  return response.data.members;
+}
+
+export async function addBoardMember(
+  boardId: string,
+  data: AddBoardMemberRequest,
+): Promise<AddBoardMemberResponse> {
+  const response =
+    await api.post<AddBoardMemberResponse>(
+      `/boards/${boardId}/members`,
+      data,
+    );
+
+  return response.data;
+}
+
+export async function updateBoardMemberRole(
+  boardId: string,
+  memberId: string,
+  data: UpdateBoardMemberRoleRequest,
+): Promise<UpdateBoardMemberRoleResponse> {
+  const response =
+    await api.patch<UpdateBoardMemberRoleResponse>(
+      `/boards/${boardId}/members/${memberId}`,
+      data,
+    );
+
+  return response.data;
+}
+
+export async function removeBoardMember(
+  boardId: string,
+  memberId: string,
+): Promise<RemoveBoardMemberResponse> {
+  const response =
+    await api.delete<RemoveBoardMemberResponse>(
+      `/boards/${boardId}/members/${memberId}`,
+    );
+
+  return response.data;
 }

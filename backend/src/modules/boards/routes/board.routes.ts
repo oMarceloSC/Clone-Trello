@@ -16,6 +16,11 @@ export async function boardRoutes(
     boardController.create,
   );
 
+  app.post(
+    "/boards/:id/members",
+    boardController.addMember,
+  );
+
   app.get(
     "/workspaces/:workspaceId/boards",
     boardController.list,
@@ -31,6 +36,11 @@ export async function boardRoutes(
     boardController.getById,
   );
 
+  app.get(
+    "/boards/:id/members",
+    boardController.listMembers,
+  );
+
   app.patch(
     "/boards/:id",
     boardController.update,
@@ -44,6 +54,16 @@ export async function boardRoutes(
   app.patch(
     "/boards/:id/archive",
     boardController.archive,
+  );
+
+  app.patch(
+    "/boards/:id/members/:memberId",
+    boardController.updateMemberRole,
+  );
+
+  app.delete(
+    "/boards/:id/members/:memberId",
+    boardController.removeMember,
   );
 
   app.delete(

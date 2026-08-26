@@ -1052,6 +1052,186 @@ Retorna Board atualizado
 
 ---
 
+# Listar Membros do Board
+
+## GET
+
+```http
+GET /boards/:id/members
+```
+
+Lista os `BoardMember` do Board. Requer JWT e UUID válido em `id`.
+
+**200 OK**
+
+```json
+{
+  "members": [
+    {
+      "id": "uuid",
+      "boardId": "uuid",
+      "userId": "uuid",
+      "role": "OWNER",
+      "isFavorite": false,
+      "createdAt": "2026-08-26T12:00:00.000Z",
+      "updatedAt": "2026-08-26T12:00:00.000Z",
+      "user": {
+        "id": "uuid",
+        "name": "Nome",
+        "email": "email@exemplo.com",
+        "avatarUrl": null
+      }
+    }
+  ]
+}
+```
+
+### Regras
+
+- todas as roles do Board podem listar membros;
+- `OWNER` e `ADMIN` do Workspace podem listar mesmo sem `BoardMember`, conforme `ensureViewAccess()`;
+- usuários sem acesso recebem `404 Board não encontrado.`;
+- acesso de visualização não concede ações administrativas sobre membros.
+
+---
+
+# Adicionar Membro ao Board
+
+## POST
+
+```http
+POST /boards/:id/members
+```
+
+```json
+{
+  "memberUserId": "uuid",
+  "role": "MEMBER"
+}
+```
+
+Roles aceitas: `ADMIN`, `MEMBER` e `VIEWER`.
+
+**201 Created**
+
+```json
+{
+  "message": "Membro adicionado ao Board com sucesso",
+  "member": {
+    "id": "uuid",
+    "boardId": "uuid",
+    "userId": "uuid",
+    "role": "MEMBER",
+    "isFavorite": false,
+    "createdAt": "2026-08-26T12:00:00.000Z",
+    "updatedAt": "2026-08-26T12:00:00.000Z",
+    "user": {
+      "id": "uuid",
+      "name": "Nome",
+      "email": "email@exemplo.com",
+      "avatarUrl": null
+    }
+  }
+}
+```
+
+### Regras e Erros
+
+- somente `OWNER` e `ADMIN` do Board podem adicionar;
+- o usuário alvo precisa ser `WorkspaceMember` do Workspace do Board;
+- `OWNER` não pode ser atribuído pelo endpoint;
+- membro duplicado retorna `409` com `Este usuário já é membro do Board.`;
+- usuário fora do Workspace retorna `400` com `O usuário precisa pertencer ao Workspace antes de ser adicionado ao Board.`;
+- falta de permissão retorna `403`;
+- Board inexistente ou inacessível retorna `404`;
+- UUID ou role inválidos retornam `400`.
+
+---
+
+# Alterar Role de Membro
+
+## PATCH
+
+```http
+PATCH /boards/:id/members/:memberId
+```
+
+```json
+{
+  "role": "ADMIN"
+}
+```
+
+**200 OK**
+
+```json
+{
+  "message": "Permissão do membro atualizada com sucesso",
+  "member": {
+    "id": "uuid",
+    "boardId": "uuid",
+    "userId": "uuid",
+    "role": "ADMIN",
+    "isFavorite": false,
+    "createdAt": "2026-08-26T12:00:00.000Z",
+    "updatedAt": "2026-08-26T12:05:00.000Z",
+    "user": {
+      "id": "uuid",
+      "name": "Nome",
+      "email": "email@exemplo.com",
+      "avatarUrl": null
+    }
+  }
+}
+```
+
+Somente o `OWNER` pode alterar roles. `OWNER` não é atribuível, não pode ter sua role alterada e não pode alterar a própria role. A busca combina `memberId` e `boardId`, portanto membros de outro Board retornam `404 Membro não encontrado.`.
+
+---
+
+# Remover Membro do Board
+
+## DELETE
+
+```http
+DELETE /boards/:id/members/:memberId
+```
+
+**200 OK**
+
+```json
+{
+  "message": "Membro removido do Board com sucesso"
+}
+```
+
+Somente o `OWNER` pode remover. O proprietário não pode ser removido nem remover a si próprio. A operação valida `memberId + boardId` e exclui somente o `BoardMember`, sem remover `User`, `WorkspaceMember`, Board ou participações em outros Boards.
+
+---
+
+# Permissões de Membros
+
+| Operação | OWNER | ADMIN | MEMBER | VIEWER |
+|---|:---:|:---:|:---:|:---:|
+| Listar membros | Sim | Sim | Sim | Sim |
+| Adicionar membro | Sim | Sim | Não | Não |
+| Alterar role | Sim | Não | Não | Não |
+| Remover membro | Sim | Não | Não | Não |
+
+`OWNER` e `ADMIN` do Workspace sem `BoardMember` possuem somente a visualização concedida por `ensureViewAccess()`.
+
+---
+
+# Fluxo de Gerenciamento de Membros
+
+```text
+Usuário autenticado → BoardPage → GET /boards/:id/members
+→ Lista de BoardMember → Ações permitidas pela BoardRole
+→ Adicionar / Alterar / Remover → Prisma → Interface atualizada
+```
+
+---
+
 # Estado Atual
 
 ## Implementado
@@ -1078,7 +1258,5 @@ Retorna Board atualizado
 - Visibilidade baseada em permissões do Workspace e participação no Board.
 - Validação de Workspace.
 - Integração com autenticação JWT.
-
-## Planejado
-
-- Gerenciamento de membros do Board.
+- Listagem, adição, alteração de role e remoção de membros do Board.
+- Proteção do `OWNER` e contra operações entre Boards.

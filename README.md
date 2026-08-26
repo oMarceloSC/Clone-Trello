@@ -344,6 +344,18 @@ Toda a documentação técnica do projeto está organizada na pasta `docs`, sepa
 
 ---
 
+## Boards
+
+- [x] Criar, listar, visualizar e atualizar Boards.
+- [x] Excluir Boards.
+- [x] Favoritar e desfavoritar Boards por usuário.
+- [x] Arquivar, restaurar e listar Boards arquivados.
+- [x] Gerenciar membros do Board.
+- [x] Adicionar membros existentes no Workspace.
+- [x] Alterar roles e remover membros conforme permissões.
+
+---
+
 # 🗺️ Roadmap
 
 O desenvolvimento do projeto é dividido em milestones, permitindo evolução contínua da aplicação e documentação completa de cada etapa.
@@ -561,10 +573,8 @@ As próximas etapas do projeto incluem:
 
 ## Boards
 
-- CRUD completo.
-- Favoritos.
-- Arquivamento.
-- Permissões.
+- Evolução das permissões do Board.
+- Testes automatizados dos fluxos de Boards.
 
 ---
 

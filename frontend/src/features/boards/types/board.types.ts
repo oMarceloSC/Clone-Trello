@@ -97,3 +97,35 @@ export type ArchiveBoardResponse = {
 export type ListArchivedBoardsResponse = {
     boards: Board[];
 };
+
+export type AssignableBoardRole = Exclude<
+    BoardRole,
+    "OWNER"
+>;
+
+export type ListBoardMembersResponse = {
+    members: BoardMember[];
+};
+
+export type AddBoardMemberRequest = {
+    memberUserId: string;
+    role: AssignableBoardRole;
+};
+
+export type AddBoardMemberResponse = {
+    message: string;
+    member: BoardMember;
+};
+
+export type UpdateBoardMemberRoleRequest = {
+    role: AssignableBoardRole;
+};
+
+export type UpdateBoardMemberRoleResponse = {
+    message: string;
+    member: BoardMember;
+};
+
+export type RemoveBoardMemberResponse = {
+    message: string;
+};

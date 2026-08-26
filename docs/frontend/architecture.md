@@ -1470,6 +1470,10 @@ deleteBoard()
 favoriteBoard()
 archiveBoard()
 listArchivedBoards()
+listBoardMembers()
+addBoardMember()
+updateBoardMemberRole()
+removeBoardMember()
 ```
 
 ---
@@ -1537,6 +1541,59 @@ Board volta para a lista de ativos
 ```
 
 O arquivamento e a restauração alteram `Board.isArchived`. A listagem de arquivados permanece separada da lista de Boards ativos e respeita as regras de visibilidade do backend.
+
+---
+
+# Board Member Management
+
+## Listagem
+
+```text
+BoardPage → listBoardMembers() → GET /boards/:id/members
+→ BoardController → ListBoardMembersUseCase
+→ BoardAccessService.ensureViewAccess() → Prisma → BoardMember[]
+```
+
+## Adição
+
+```text
+BoardPage → listWorkspaceMembers() → Selecionar usuário e role
+→ addBoardMember() → POST /boards/:id/members
+→ AddBoardMemberUseCase → BoardMember.create()
+→ Atualização local da interface
+```
+
+## Alteração de Role
+
+```text
+BoardPage → updateBoardMemberRole()
+→ PATCH /boards/:id/members/:memberId
+→ UpdateBoardMemberRoleUseCase → BoardMember.update()
+→ Atualização local da interface
+```
+
+## Remoção
+
+```text
+BoardPage → Modal de confirmação → removeBoardMember()
+→ DELETE /boards/:id/members/:memberId
+→ RemoveBoardMemberUseCase → BoardMember.delete()
+→ Lista e contador atualizados
+```
+
+## WorkspaceMember e BoardMember
+
+Pertencer ao Workspace é pré-requisito para ser adicionado ao Board, mas não cria automaticamente um `BoardMember`. `WorkspaceMember.role` controla o acesso ao Workspace e a regra especial de visualização; `BoardMember.role` controla adicionar, alterar e remover participantes dentro do Board.
+
+`OWNER` e `ADMIN` do Workspace podem visualizar membros de Boards conforme a regra existente, mas não recebem automaticamente controles administrativos do Board.
+
+## BoardAccessService
+
+- `ensureMember()` confirma a participação direta no Board.
+- `ensureRole()` exige uma das `BoardRole` permitidas pela operação.
+- `ensureViewAccess()` valida o Board, a participação no Workspace e a visualização especial de `OWNER`/`ADMIN` do Workspace.
+
+As operações de alteração e remoção combinam `memberId` e `boardId`, protegendo contra ações em membros pertencentes a outro Board. UUIDs são validados com Zod, `OWNER` é protegido e a adição confirma previamente o `WorkspaceMember`.
 
 ---
 
@@ -1639,6 +1696,13 @@ Workspaces
 ├── Listagem de Boards arquivados
 ├── Serviço archiveBoard()
 ├── Serviço listArchivedBoards()
+├── BoardMembersSection
+├── Listagem de membros do Board
+├── Adição de membros do Workspace
+├── Alteração de roles
+├── Remoção de membros
+├── Serviços listBoardMembers(), addBoardMember()
+├── Serviços updateBoardMemberRole(), removeBoardMember()
 └── Navegação Workspace → Boards
 ```
 
@@ -1774,6 +1838,7 @@ Cada módulo seguirá a mesma organização baseada em features.
 - Arquivamento de Board.
 - Restauração de Board.
 - Listagem de Boards arquivados.
+- Gerenciamento completo de membros do Board.
 - Navegação entre Workspace e Board.
 - Breadcrumb da BoardPage.
 - Cards de resumo do Board.
@@ -1785,6 +1850,8 @@ Cada módulo seguirá a mesma organização baseada em features.
 - Método `favoriteBoard()`.
 - Método `archiveBoard()`.
 - Método `listArchivedBoards()`.
+- Métodos `listBoardMembers()` e `addBoardMember()`.
+- Métodos `updateBoardMemberRole()` e `removeBoardMember()`.
 - Atualização automática da lista de Boards.
 
 ## Em desenvolvimento

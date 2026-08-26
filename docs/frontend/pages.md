@@ -1797,6 +1797,8 @@ Nesta etapa do projeto a página apresenta as informações gerais do Board e pr
 - Solicitar confirmação antes do arquivamento.
 - Exibir o estado `Arquivando...` e mensagens de erro e sucesso.
 - Redirecionar automaticamente para o Workspace após arquivar.
+- Exibir permanentemente o gerenciamento de membros do Board.
+- Carregar, adicionar, alterar roles e remover membros conforme a `BoardRole`.
 - Preparar a área destinada às Lists.
 
 ---
@@ -1897,6 +1899,41 @@ A página exibe mensagens de erro e sucesso do arquivamento. Após o sucesso, re
 
 ---
 
+### Gerenciamento de Membros do Board
+
+A seção `BoardMembersSection` fica sempre visível na `BoardPage` e carrega os membros por `GET /boards/:id/members`. Ela apresenta contador, avatar, nome, email, role e identificação do usuário atual.
+
+Permissões visuais:
+
+- todos com acesso podem visualizar a lista;
+- `OWNER` e `ADMIN` do Board visualizam **Adicionar membro**;
+- somente `OWNER` visualiza alteração de role e remoção;
+- o registro `OWNER` nunca apresenta controles de alteração ou remoção;
+- `OWNER` e `ADMIN` do Workspace sem `BoardMember` permanecem somente com visualização.
+
+#### Adição
+
+O modal carrega `listWorkspaceMembers()`, remove candidatos que já pertencem ao Board e exibe avatar, nome e email. O usuário seleciona uma pessoa e uma role entre `ADMIN`, `MEMBER` e `VIEWER`; não há entrada manual de UUID nem opção `OWNER`.
+
+Estados: `Carregando candidatos...`, `Adicionando...`, erro inline, sucesso e `Todos os membros do Workspace já pertencem a este Board.` quando não há candidatos.
+
+#### Alteração de Role
+
+O `OWNER` seleciona `ADMIN`, `MEMBER` ou `VIEWER`. Durante a requisição aparece `Salvando...`; a role só é substituída localmente após sucesso, preservando o valor anterior em caso de erro.
+
+#### Remoção
+
+A remoção abre um modal que identifica o membro e informa que a conta e a participação no Workspace serão preservadas. Durante a requisição aparece `Removendo...`. Após sucesso, o membro e o contador são atualizados sem reload completo.
+
+#### Estados da Seção
+
+- `Carregando membros...`;
+- lista vazia `Nenhum membro encontrado`;
+- mensagens inline de erro e sucesso;
+- atualização local depois de adicionar, alterar ou remover.
+
+---
+
 ## Fluxo
 
 ```text
@@ -1991,6 +2028,22 @@ Mensagem de sucesso
 ↓
 
 WorkspacePage
+```
+
+### Fluxo de membros
+
+```text
+BoardPage
+↓
+listBoardMembers()
+↓
+GET /boards/:id/members
+↓
+BoardMembersSection
+↓
+Adicionar / Alterar role / Confirmar remoção
+↓
+Interface e contador atualizados
 ```
 
 ---
@@ -2110,6 +2163,13 @@ Responsabilidades planejadas:
 - Restauração de Boards com estado `Restaurando...`.
 - Atualização imediata das listas de Boards ativos e arquivados.
 - Estado somente leitura para usuários sem permissão de restauração.
+- Gerenciamento completo de membros na BoardPage.
+- Seleção de candidatos do Workspace por avatar, nome e email.
+- Adição de membros e seleção de role.
+- Alteração de role e remoção protegidas pelo `OWNER`.
+- Modal de confirmação de remoção.
+- Estados de carregamento, vazio, erro e sucesso dos membros.
+- Atualização imediata da lista e do contador sem reload.
 
 ## Planejado
 

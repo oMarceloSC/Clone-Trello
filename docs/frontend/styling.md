@@ -639,6 +639,35 @@ Em telas menores, as ações passam a ocupar toda a largura, os cards são organ
 
 ---
 
+# Board Member Management
+
+A seção permanente de membros reutiliza `board-members-section`, `board-members-list`, `board-member-card`, `board-member-avatar`, `board-member-info`, `board-member-name`, `board-role-badge` e `board-members-count`.
+
+O gerenciamento acrescenta as classes reais:
+
+```text
+board-members-management-header
+board-members-header-actions
+board-member-management-actions
+board-member-remove-button
+board-member-processing
+board-members-feedback
+board-member-modal-content
+board-member-field
+board-member-candidates
+board-member-candidate
+board-member-candidate-selected
+board-member-candidate-info
+```
+
+O modal de adição apresenta candidatos em cartões selecionáveis com avatar, nome e email. `board-member-candidate-selected` destaca a escolha; `board-member-field` estiliza a seleção de role.
+
+As ações de gerenciamento incluem botão **Adicionar membro**, select de role, botão destrutivo **Remover** e modal de confirmação. Os estados visuais cobrem `Carregando membros...`, `Carregando candidatos...`, `Adicionando...`, `Salvando...`, `Removendo...`, mensagens de erro/sucesso e os estados vazios.
+
+Em telas de até `760px`, cabeçalho e ações são empilhados, selects e botões ocupam toda a largura, cards permitem quebra de linha e badges ficam centralizados.
+
+---
+
 # AuthenticatedLayout
 
 Dashboard, WorkspacePage e BoardPage compartilham o mesmo layout autenticado.
@@ -1924,6 +1953,12 @@ As próximas evoluções previstas para a camada de estilos são:
 - Modal de confirmação de arquivamento e `archive-board-warning`.
 - Estado `Arquivando...` e feedback de sucesso e erro.
 - Responsividade da área e dos cards de Boards arquivados.
+- Estilos completos do Board Member Management.
+- Lista, avatares, roles e ações dos membros do Board.
+- Candidatos selecionáveis do Workspace.
+- Formulário de adição e controles de role.
+- Modal de confirmação de remoção.
+- Estados visuais e responsividade da seção de membros.
 
 ## Planejado
 

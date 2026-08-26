@@ -31,6 +31,14 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Endpoint `GET /workspaces/:workspaceId/boards/archived`.
 * Listagem de Boards arquivados.
 * Controle de permissões para arquivamento e restauração.
+* Listagem de membros do Board.
+* Adição de membros provenientes do Workspace.
+* Alteração de roles de membros.
+* Remoção de membros do Board.
+* Endpoints `GET` e `POST /boards/:id/members`.
+* Endpoints `PATCH` e `DELETE /boards/:id/members/:memberId`.
+* Proteção do `OWNER` e validação de participação no Workspace.
+* Proteção contra alteração ou remoção de membros de outros Boards.
 * Associação automática do criador como `OWNER`.
 * Validação de acesso ao Workspace antes da criação.
 * Integração das rotas de Boards ao Fastify.
@@ -55,6 +63,10 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Serviço `listArchivedBoards()`.
 * Integração com `PATCH /boards/:id/archive`.
 * Integração com `GET /workspaces/:workspaceId/boards/archived`.
+* Serviços `listBoardMembers()` e `addBoardMember()`.
+* Serviços `updateBoardMemberRole()` e `removeBoardMember()`.
+* Tipos de request e response para gerenciamento de membros.
+* Integração com os quatro endpoints de membros do Board.
 
 ### Boards no Frontend
 
@@ -95,6 +107,14 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Estado de carregamento dos Boards arquivados.
 * Estado vazio dos Boards arquivados.
 * Tratamento de erros durante listagem e restauração.
+* Interface permanente de gerenciamento de membros na BoardPage.
+* Listagem com avatar, nome, email e role.
+* Seleção de candidatos existentes no Workspace.
+* Adição de membros e seleção de role.
+* Alteração de role e remoção com confirmação.
+* Controle visual de ações por `BoardRole`.
+* Estados de loading, vazio, erro e sucesso.
+* Atualização da lista e do contador sem reload completo.
 
 ### Estilização
 
@@ -127,6 +147,10 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Estado visual somente leitura.
 * Responsividade da área de Boards arquivados.
 * Estilos do modal de arquivamento.
+* Estilos da seção de gerenciamento de membros.
+* Candidatos selecionáveis, controles de role e remoção.
+* Modal de confirmação e estados visuais dos membros.
+* Responsividade da interface de membros.
 
 ### Segurança e Permissões
 
@@ -138,6 +162,10 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Administradores do Workspace sem participação no Board permanecem sem acesso ao favorito.
 * Arquivamento e restauração restritos a `OWNER` e `ADMIN` do Board.
 * Visualização de Boards arquivados respeitando as permissões do Workspace e participação no Board.
+* Adição restrita a `OWNER` e `ADMIN` do Board.
+* Alteração de role e remoção restritas ao `OWNER` do Board.
+* `OWNER` protegido contra alteração e remoção.
+* Validação conjunta de Board e membro contra operações entre Boards.
 
 ### Documentação
 
@@ -173,6 +201,12 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 * Atualização da arquitetura do frontend com Boards arquivados.
 * Atualização da documentação de estilização da área de Boards arquivados.
 * Atualização do roadmap para registrar o arquivamento de Boards como concluído.
+* Atualização da API de Boards com os endpoints de membros.
+* Atualização da BoardPage com o gerenciamento de membros.
+* Atualização dos serviços e tipos de membros do Board.
+* Atualização da arquitetura e das regras de segurança dos membros.
+* Atualização da estilização do Board Member Management.
+* Atualização do roadmap e do resumo de funcionalidades do README.
 
 ---
 

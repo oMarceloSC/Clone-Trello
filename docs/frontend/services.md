@@ -1167,6 +1167,14 @@ favoriteBoard()
 archiveBoard()
 
 listArchivedBoards()
+
+listBoardMembers()
+
+addBoardMember()
+
+updateBoardMemberRole()
+
+removeBoardMember()
 ```
 
 ---
@@ -1661,6 +1669,57 @@ ListArchivedBoardsResponse
 
 Seção de Boards arquivados
 ```
+
+---
+
+# listBoardMembers()
+
+```text
+GET /boards/:id/members
+```
+
+Recebe `boardId`, consome `ListBoardMembersResponse` e retorna diretamente `BoardMember[]` para a `BoardMembersSection`.
+
+---
+
+# addBoardMember()
+
+```text
+POST /boards/:id/members
+```
+
+Recebe `boardId` e:
+
+```ts
+type AddBoardMemberRequest = {
+  memberUserId: string;
+  role: AssignableBoardRole;
+}
+```
+
+Retorna `AddBoardMemberResponse` com mensagem e membro criado.
+
+---
+
+# updateBoardMemberRole()
+
+```text
+PATCH /boards/:id/members/:memberId
+```
+
+Recebe `boardId`, `memberId` e `UpdateBoardMemberRoleRequest`. Retorna o membro atualizado em `UpdateBoardMemberRoleResponse`.
+
+---
+
+# removeBoardMember()
+
+```text
+DELETE /boards/:id/members/:memberId
+```
+
+Recebe `boardId` e `memberId` e retorna `RemoveBoardMemberResponse`.
+
+Os quatro serviços apenas comunicam com a API e propagam erros para a camada de interface.
 
 ---
 
@@ -2217,6 +2276,57 @@ type ListArchivedBoardsResponse = {
 
 ---
 
+## AssignableBoardRole
+
+```ts
+type AssignableBoardRole = Exclude<BoardRole, "OWNER">;
+```
+
+## ListBoardMembersResponse
+
+```ts
+type ListBoardMembersResponse = {
+  members: BoardMember[];
+}
+```
+
+## AddBoardMemberRequest e Response
+
+```ts
+type AddBoardMemberRequest = {
+  memberUserId: string;
+  role: AssignableBoardRole;
+}
+
+type AddBoardMemberResponse = {
+  message: string;
+  member: BoardMember;
+}
+```
+
+## UpdateBoardMemberRoleRequest e Response
+
+```ts
+type UpdateBoardMemberRoleRequest = {
+  role: AssignableBoardRole;
+}
+
+type UpdateBoardMemberRoleResponse = {
+  message: string;
+  member: BoardMember;
+}
+```
+
+## RemoveBoardMemberResponse
+
+```ts
+type RemoveBoardMemberResponse = {
+  message: string;
+}
+```
+
+---
+
 # Tratamento de Erros
 
 Os serviços apenas propagam os erros retornados pela API.
@@ -2356,6 +2466,10 @@ notification.service.ts
 - `favoriteBoard()`.
 - `archiveBoard()`.
 - `listArchivedBoards()`.
+- `listBoardMembers()`.
+- `addBoardMember()`.
+- `updateBoardMemberRole()`.
+- `removeBoardMember()`.
 
 ## Planejado
 

@@ -192,6 +192,7 @@ Cada milestone representa um conjunto de funcionalidades relacionadas.
 * [x] Excluir Board
 * [x] Favoritar Board
 * [x] Arquivar Board
+* [x] Gerenciamento de membros do Board
 * [ ] Sistema de permissões do Board
 
 ## Frontend
@@ -205,6 +206,7 @@ Cada milestone representa um conjunto de funcionalidades relacionadas.
 * [x] Excluir Board
 * [x] Favoritar Board
 * [x] Arquivar Board
+* [x] Gerenciamento de membros do Board
 
 ---
 

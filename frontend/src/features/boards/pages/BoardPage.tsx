@@ -1,5 +1,6 @@
 import axios from "axios";
 import {
+  useCallback,
   useEffect,
   useMemo,
   useState,
@@ -11,6 +12,7 @@ import {
 } from "react-router";
 
 import { useAuth } from "../../auth/hooks/useAuth";
+import { BoardMembersSection } from "../components/BoardMembersSection";
 import {
   archiveBoard,
   deleteBoard,
@@ -137,6 +139,20 @@ export function BoardPage() {
 
   const isFavorite =
     currentMember?.isFavorite ?? false;
+
+  const handleMembersChange = useCallback(
+    (members: BoardMember[]) => {
+      setBoard((currentBoard) =>
+        currentBoard
+          ? {
+              ...currentBoard,
+              members,
+            }
+          : currentBoard,
+      );
+    },
+    [],
+  );
 
   function handleRetry() {
     if (!id) {
@@ -634,99 +650,13 @@ export function BoardPage() {
         </article>
       </section>
 
-      <section className="board-members-section">
-        <div className="board-section-header">
-          <div>
-            <h2>Membros</h2>
-
-            <p>
-              Participantes com acesso a este Board.
-            </p>
-          </div>
-
-          <span className="board-members-count">
-            {board.members.length}
-          </span>
-        </div>
-
-        {board.members.length === 0 ? (
-          <div className="board-members-empty">
-            <h3>
-              Nenhum membro encontrado
-            </h3>
-
-            <p>
-              Este Board ainda não possui membros.
-            </p>
-          </div>
-        ) : (
-          <div className="board-members-list">
-            {board.members.map(
-              (member) => {
-                const memberName =
-                  member.user?.name ??
-                  "Usuário";
-
-                const avatarLetter =
-                  memberName
-                    .trim()
-                    .charAt(0)
-                    .toUpperCase() ||
-                  "?";
-
-                const isCurrentUser =
-                  member.user?.id ===
-                    user?.id ||
-                  member.userId ===
-                    user?.id;
-
-                return (
-                  <article
-                    key={member.id}
-                    className="board-member-card"
-                  >
-                    <div
-                      className="board-member-avatar"
-                      aria-hidden="true"
-                    >
-                      {avatarLetter}
-                    </div>
-
-                    <div className="board-member-info">
-                      <div className="board-member-name">
-                        <strong>
-                          {memberName}
-                        </strong>
-
-                        {isCurrentUser && (
-                          <span className="current-user-badge">
-                            Você
-                          </span>
-                        )}
-                      </div>
-
-                      <span>
-                        {member.user?.email ??
-                          "Email não disponível"}
-                      </span>
-                    </div>
-
-                    <span
-                      className={`board-role-badge board-role-${member.role.toLowerCase()}`}
-                    >
-                      {
-                        boardRoleLabels[
-                          member.role
-                        ]
-                      }
-                    </span>
-                  </article>
-                );
-              },
-            )}
-          </div>
-        )}
-      </section>
+      <BoardMembersSection
+        boardId={board.id}
+        workspaceId={board.workspaceId}
+        currentUserId={user?.id}
+        initialMembers={board.members}
+        onMembersChange={handleMembersChange}
+      />
 
       <section className="board-lists-section">
         <div className="board-section-header">
