@@ -42,6 +42,7 @@ export class ArchiveBoardUseCase {
                         select: {
                             id: true,
                             userId: true,
+                            role: true,
                             isFavorite: true,
                             createdAt: true,
                             updatedAt: true,

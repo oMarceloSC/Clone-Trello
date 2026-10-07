@@ -14,10 +14,16 @@ import {
 } from "../../boards/schemas/create-board.schema";
 
 import {
+  updateBoardSchema,
+  type UpdateBoardFormData,
+} from "../../boards/schemas/update-board.schema";
+
+import {
   archiveBoard,
   createBoard,
   listArchivedBoards,
   listBoards,
+  updateBoard,
 } from "../../boards/services/board.service";
 
 import type { Board } from "../../boards/types/board.types";
@@ -141,6 +147,15 @@ export function WorkspacePage() {
   const [updateSuccess, setUpdateSuccess] =
     useState<string | null>(null);
 
+  const [boardToEdit, setBoardToEdit] = 
+    useState<Board | null>(null);
+
+  const [updateBoardError, setUpdateBoardError] =
+    useState<string | null>(null);
+
+  const [updateBoardSuccess, setUpdateBoardSuccess] = 
+    useState<string | null>(null);
+
   const [
     isDeleteModalOpen,
     setIsDeleteModalOpen,
@@ -191,6 +206,24 @@ export function WorkspacePage() {
       title: "",
       description: "",
       backgroundColor: "#0c66e4",
+      coverImage: "",
+    },
+  });
+
+  const {
+    register: registerUpdateBoard,
+    handleSubmit: handleSubmitUpdateBoard,
+    reset: resetUpdateBoard,
+    formState: {
+      errors: updateBoardErrors,
+      isSubmitting: isUpdatingBoard,
+    },
+  } = useForm<UpdateBoardFormData>({
+    resolver: zodResolver(updateBoardSchema),
+    defaultValues: {
+      title: "",
+      description: "",
+      backgroundColor: "",
       coverImage: "",
     },
   });
@@ -321,6 +354,94 @@ export function WorkspacePage() {
       "ADMIN" ||
     currentMember?.role ===
       "MEMBER";
+
+  function getCurrentBoardMember(board: Board) {
+    return board.members?.find(
+      (member) =>
+        member.userId === user?.id ||
+        member.user?.id === user?.id
+    );
+  }
+
+  function canEditBoard(board: Board) {
+    const member = getCurrentBoardMember(board);
+
+    return member?.role === "OWNER" || member?.role === "ADMIN";
+  }
+
+  function openEditBoardModal(board: Board) {
+    if (!canEditBoard(board)) return;
+
+    setUpdateBoardError(null);
+    setUpdateBoardSuccess(null);
+    setBoardToEdit(board);
+    resetUpdateBoard({
+      title: board.title,
+      description: board.description ?? "",
+      backgroundColor: board.backgroundColor ?? "",
+      coverImage: board.coverImage ?? "",
+    });
+  }
+
+  function closeEditBoardModal() {
+    if (isUpdatingBoard) return;
+
+    setBoardToEdit(null);
+    setUpdateBoardError(null);
+    setUpdateBoardSuccess(null);
+    resetUpdateBoard({
+      title: "",
+      description: "",
+      backgroundColor: "",
+      coverImage: "",
+    });
+  }
+
+  useEffect(() => {
+    if (!updateBoardSuccess) return;
+
+    const timeout = window.setTimeout(() => {
+      setBoardToEdit(null);
+      setUpdateBoardError(null);
+      setUpdateBoardSuccess(null);
+      resetUpdateBoard({
+        title: "",
+        description: "",
+        backgroundColor: "",
+        coverImage: "",
+      });
+    }, 800);
+
+    return () => window.clearTimeout(timeout);
+  }, [updateBoardSuccess, resetUpdateBoard]);
+
+  async function handleUpdateBoard(data: UpdateBoardFormData) {
+    if (!boardToEdit || !canEditBoard(boardToEdit)) return;
+
+    try {
+      setUpdateBoardError(null);
+      setUpdateBoardSuccess(null);
+
+      const response = await updateBoard(boardToEdit.id, data);
+
+      // The update endpoint returns scalar fields, without BoardMembers.
+      setBoards((currentBoards) =>
+        currentBoards.map((board) =>
+          board.id === boardToEdit.id
+            ? { ...board, ...response.board, members: board.members }
+            : board,
+        ),
+      );
+      setUpdateBoardSuccess(response.message);
+    } catch (error) {
+      setUpdateBoardError(
+        axios.isAxiosError(error)
+          ? error.response?.data?.message ??
+            "Não foi possível atualizar o Board."
+          : "Ocorreu um erro inesperado ao atualizar o Board.",
+      );
+    }
+  }
 
   function openEditModal() {
     if (
@@ -732,72 +853,92 @@ export function WorkspacePage() {
   }
 
   async function handleRestoreBoard(
-    boardId: string,
-  ) {
-    try {
-      setRestoringBoardId(
+  boardId: string,
+) {
+  const archivedBoard =
+    archivedBoards.find(
+      (board) => board.id === boardId,
+    );
+
+  try {
+    setRestoringBoardId(boardId);
+
+    setRestoreBoardError(null);
+
+    setRestoreBoardSuccess(null);
+
+    const response =
+      await archiveBoard(
         boardId,
+        {
+          isArchived: false,
+        },
       );
 
-      setRestoreBoardError(
-        null,
-      );
+    const restoredBoard: Board = {
+      ...archivedBoard,
+      ...response.board,
+      members:
+        response.board.members ??
+        archivedBoard?.members ??
+        [],
+    };
 
-      setRestoreBoardSuccess(
-        null,
-      );
+    setArchivedBoards(
+      (currentArchivedBoards) =>
+        currentArchivedBoards.filter(
+          (board) =>
+            board.id !== boardId,
+        ),
+    );
 
-      const response =
-        await archiveBoard(
-          boardId,
-          {
-            isArchived: false,
-          },
+    setBoards((currentBoards) => {
+      const boardAlreadyExists =
+        currentBoards.some(
+          (board) =>
+            board.id ===
+            restoredBoard.id,
         );
 
-      setArchivedBoards(
-        (
-          currentArchivedBoards,
-        ) =>
-          currentArchivedBoards.filter(
-            (board) =>
-              board.id !==
-              boardId,
-          ),
-      );
-
-      setBoards(
-        (currentBoards) => [
-          response.board,
-          ...currentBoards,
-        ],
-      );
-
-      setRestoreBoardSuccess(
-        response.message,
-      );
-    } catch (error) {
-      if (
-        axios.isAxiosError(error)
-      ) {
-        setRestoreBoardError(
-          error.response?.data
-            ?.message ??
-            "Não foi possível restaurar o Board.",
+      if (boardAlreadyExists) {
+        return currentBoards.map(
+          (board) =>
+            board.id ===
+            restoredBoard.id
+              ? restoredBoard
+              : board,
         );
-
-        return;
       }
 
+      return [
+        restoredBoard,
+        ...currentBoards,
+      ];
+    });
+
+    setRestoreBoardSuccess(
+      response.message,
+    );
+  } catch (error) {
+    if (
+      axios.isAxiosError(error)
+    ) {
       setRestoreBoardError(
-        "Ocorreu um erro inesperado ao restaurar o Board.",
+        error.response?.data
+          ?.message ??
+          "Não foi possível restaurar o Board.",
       );
-    } finally {
-      setRestoringBoardId(
-        null,
-      );
+
+      return;
     }
+
+    setRestoreBoardError(
+      "Ocorreu um erro inesperado ao restaurar o Board.",
+    );
+  } finally {
+    setRestoringBoardId(null);
   }
+}
 
   function openDeleteModal() {
     if (
@@ -1129,6 +1270,7 @@ export function WorkspacePage() {
       </section>
 
       <WorkspaceMembersSection
+        key={workspace.id}
         workspaceId={
           workspace.id
         }
@@ -1272,70 +1414,81 @@ export function WorkspacePage() {
           boards.length > 0 && (
             <div className="workspace-boards-grid">
               {boards.map(
-                (board) => (
-                  <article
-                    key={
-                      board.id
-                    }
-                    className="workspace-board-card"
-                    style={{
-                      backgroundColor:
-                        board.backgroundColor ??
-                        "#0c66e4",
+                (board) => {
+                  const currentBoardMember =
+                    getCurrentBoardMember(board);
 
-                      backgroundImage:
-                        board.coverImage
-                          ? `linear-gradient(
-                              rgb(9 30 66 / 42%),
-                              rgb(9 30 66 / 72%)
-                            ),
-                            url("${board.coverImage}")`
-                          : undefined,
-                    }}
-                  >
-                    <div className="workspace-board-card-content">
-                      <span className="workspace-board-card-role">
-                        {board
-                          .members?.[0]
-                          ?.role ??
-                          "MEMBER"}
-                      </span>
+                  return (
+                    <article
+                      key={
+                        board.id
+                      }
+                      className="workspace-board-card"
+                      style={{
+                        backgroundColor:
+                          board.backgroundColor ??
+                          "#0c66e4",
 
-                      <h3>
-                        {
-                          board.title
-                        }
-                      </h3>
+                        backgroundImage:
+                          board.coverImage
+                            ? `linear-gradient(
+                                rgb(9 30 66 / 42%),
+                                rgb(9 30 66 / 72%)
+                              ),
+                              url("${board.coverImage}")`
+                            : undefined,
+                      }}
+                    >
+                      <div className="workspace-board-card-content">
+                        <span className="workspace-board-card-role">
+                          {currentBoardMember?.role ??
+                            "Acesso pelo Workspace"}
+                        </span>
 
-                      <p>
-                        {board.description ||
-                          "Este Board não possui descrição."}
-                      </p>
-                    </div>
+                        <h3>
+                          {
+                            board.title
+                          }
+                        </h3>
 
-                    <footer className="workspace-board-card-footer">
-                      <span>
-                        {board
-                          .members?.[0]
-                          ?.isFavorite
-                          ? "★ Favorito"
-                          : "Board ativo"}
-                      </span>
+                        <p>
+                          {board.description ||
+                            "Este Board não possui descrição."}
+                        </p>
+                      </div>
 
-                      <button
-                        type="button"
-                        className="secondary-button"
-                        onClick={() =>
-                          navigate(
-                            `/boards/${board.id}`,
-                          )
-                        }
-                      >
-                        Abrir
-                      </button>
-                    </footer>
-                  </article>
-                ),
+                      <footer className="workspace-board-card-footer">
+                        <span>
+                          {currentBoardMember?.isFavorite
+                            ? "★ Favorito"
+                            : "Board ativo"}
+                        </span>
+
+                        {canEditBoard(board) && (
+                          <button
+                            type="button"
+                            className="secondary-button"
+                            onClick={() => openEditBoardModal(board)}
+                          >
+                            Editar
+                          </button>
+                        )}
+
+                        <button
+                          type="button"
+                          className="secondary-button"
+                          onClick={() =>
+                            navigate(
+                              `/boards/${board.id}`,
+                            )
+                          }
+                        >
+                          Abrir
+                        </button>
+                      </footer>
+                    </article>
+                  );
+                },
               )}
             </div>
           )}
@@ -1447,15 +1600,11 @@ export function WorkspacePage() {
                   (
                     archivedBoard,
                   ) => {
+                    const currentBoardMember =
+                      getCurrentBoardMember(archivedBoard);
                     const canRestoreBoard =
-                      archivedBoard
-                        .members?.[0]
-                        ?.role ===
-                        "OWNER" ||
-                      archivedBoard
-                        .members?.[0]
-                        ?.role ===
-                        "ADMIN";
+                      currentBoardMember?.role === "OWNER" ||
+                      currentBoardMember?.role === "ADMIN";
 
                     return (
                       <article
@@ -1713,6 +1862,210 @@ export function WorkspacePage() {
                   {isCreatingBoard
                     ? "Criando..."
                     : "Criar Board"}
+                </button>
+              </footer>
+            </form>
+          </section>
+        </div>
+      )}
+
+      {boardToEdit && (
+        <div
+          className="modal-backdrop"
+          role="presentation"
+          onMouseDown={
+            closeEditBoardModal
+          }
+        >
+          <section
+            className="modal-card"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="edit-board-title"
+            onMouseDown={(
+              event,
+            ) =>
+              event.stopPropagation()
+            }
+          >
+            <header className="modal-header">
+              <div>
+                <h2 id="edit-board-title">
+                  Editar Board
+                </h2>
+
+                <p>
+                  Atualize as informações deste Board.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                className="modal-close-button"
+                onClick={
+                  closeEditBoardModal
+                }
+                disabled={
+                  isUpdatingBoard || Boolean(updateBoardSuccess)
+                }
+                aria-label="Fechar modal"
+              >
+                ×
+              </button>
+            </header>
+
+            <form
+              className="workspace-form"
+              onSubmit={handleSubmitUpdateBoard(
+                handleUpdateBoard,
+              )}
+            >
+              <div className="form-field">
+                <label htmlFor="edit-board-field-title">
+                  Título
+                </label>
+
+                <input
+                  id="edit-board-field-title"
+                  type="text"
+                  placeholder="Ex.: Desenvolvimento"
+                  autoFocus
+                  {...registerUpdateBoard(
+                    "title",
+                  )}
+                />
+
+                {updateBoardErrors.title && (
+                  <span className="field-error">
+                    {
+                      updateBoardErrors
+                        .title
+                        .message
+                    }
+                  </span>
+                )}
+              </div>
+
+              <div className="form-field">
+                <label htmlFor="edit-board-description">
+                  Descrição
+                </label>
+
+                <textarea
+                  id="edit-board-description"
+                  rows={4}
+                  placeholder="Descreva o objetivo deste Board"
+                  {...registerUpdateBoard(
+                    "description",
+                  )}
+                />
+
+                {updateBoardErrors.description && (
+                  <span className="field-error">
+                    {
+                      updateBoardErrors
+                        .description
+                        .message
+                    }
+                  </span>
+                )}
+              </div>
+
+              <div className="form-field">
+                <label htmlFor="edit-board-background-color">
+                  Cor de fundo
+                </label>
+
+                <input
+                  id="edit-board-background-color"
+                  type="color"
+                  {...registerUpdateBoard(
+                    "backgroundColor",
+                  )}
+                />
+
+                {updateBoardErrors.backgroundColor && (
+                  <span className="field-error">
+                    {
+                      updateBoardErrors
+                        .backgroundColor
+                        .message
+                    }
+                  </span>
+                )}
+              </div>
+
+              <div className="form-field">
+                <label htmlFor="edit-board-cover-image">
+                  Imagem de capa
+                </label>
+
+                <input
+                  id="edit-board-cover-image"
+                  type="url"
+                  placeholder="https://exemplo.com/imagem.jpg"
+                  {...registerUpdateBoard(
+                    "coverImage",
+                  )}
+                />
+
+                {updateBoardErrors.coverImage && (
+                  <span className="field-error">
+                    {
+                      updateBoardErrors
+                        .coverImage
+                        .message
+                    }
+                  </span>
+                )}
+              </div>
+
+              {updateBoardError && (
+                <div
+                  className="api-error"
+                  role="alert"
+                >
+                  {
+                    updateBoardError
+                  }
+                </div>
+              )}
+
+              {updateBoardSuccess && (
+                <div
+                  className="success-message"
+                  role="status"
+                >
+                  {
+                    updateBoardSuccess
+                  }
+                </div>
+              )}
+
+              <footer className="modal-actions">
+                <button
+                  type="button"
+                  className="secondary-button"
+                  onClick={
+                    closeEditBoardModal
+                  }
+                  disabled={
+                    isUpdatingBoard || Boolean(updateBoardSuccess)
+                  }
+                >
+                  Cancelar
+                </button>
+
+                <button
+                  type="submit"
+                  className="primary-button"
+                  disabled={
+                    isUpdatingBoard || Boolean(updateBoardSuccess)
+                  }
+                >
+                  {isUpdatingBoard
+                    ? "Salvando..."
+                    : "Salvar alterações"}
                 </button>
               </footer>
             </form>

@@ -1,6 +1,5 @@
 import axios from "axios";
 import {
-  useEffect,
   useMemo,
   useState,
 } from "react";
@@ -9,7 +8,6 @@ import { listWorkspaceMembers } from "../../workspaces/services/workspace.servic
 import type { WorkspaceMember } from "../../workspaces/types/workspace.types";
 import {
   addBoardMember,
-  listBoardMembers,
   removeBoardMember,
   updateBoardMemberRole,
 } from "../services/board.service";
@@ -23,8 +21,10 @@ type BoardMembersSectionProps = {
   boardId: string;
   workspaceId: string;
   currentUserId?: string;
-  initialMembers: BoardMember[];
-  onMembersChange: (members: BoardMember[]) => void;
+  members: BoardMember[];
+  onMembersChange: (
+    updater: (currentMembers: BoardMember[]) => BoardMember[],
+  ) => void;
 };
 
 const roleLabels: Record<BoardRole, string> = {
@@ -55,15 +55,9 @@ export function BoardMembersSection({
   boardId,
   workspaceId,
   currentUserId,
-  initialMembers,
+  members,
   onMembersChange,
 }: BoardMembersSectionProps) {
-  const [members, setMembers] =
-    useState<BoardMember[]>(initialMembers);
-  const [isLoading, setIsLoading] =
-    useState(true);
-  const [membersError, setMembersError] =
-    useState<string | null>(null);
   const [feedback, setFeedback] =
     useState<string | null>(null);
 
@@ -128,47 +122,6 @@ export function BoardMembersSection({
     });
   }, [members, workspaceMembers]);
 
-  useEffect(() => {
-    let isActive = true;
-
-    async function loadMembers() {
-      try {
-        setIsLoading(true);
-        setMembersError(null);
-        const data = await listBoardMembers(boardId);
-
-        if (isActive) {
-          setMembers(data);
-          onMembersChange(data);
-        }
-      } catch (error) {
-        if (isActive) {
-          setMembersError(
-            getRequestError(
-              error,
-              "Não foi possível carregar os membros do Board.",
-            ),
-          );
-        }
-      } finally {
-        if (isActive) {
-          setIsLoading(false);
-        }
-      }
-    }
-
-    void loadMembers();
-
-    return () => {
-      isActive = false;
-    };
-  }, [boardId, onMembersChange]);
-
-  function updateMembers(nextMembers: BoardMember[]) {
-    setMembers(nextMembers);
-    onMembersChange(nextMembers);
-  }
-
   async function openAddModal() {
     if (!canAdd) {
       return;
@@ -225,7 +178,10 @@ export function BoardMembersSection({
         },
       );
 
-      updateMembers([...members, response.member]);
+      onMembersChange((currentMembers) => [
+        ...currentMembers,
+        response.member,
+      ]);
       setFeedback(response.message);
       setIsAddModalOpen(false);
     } catch (error) {
@@ -256,11 +212,15 @@ export function BoardMembersSection({
           { role },
         );
 
-      updateMembers(
-        members.map((current) =>
-          current.id === response.member.id
-            ? response.member
-            : current,
+      onMembersChange((currentMembers) =>
+        currentMembers.map((member) =>
+          member.id === response.member.id
+            ? {
+                ...member,
+                ...response.member,
+                isFavorite: member.isFavorite,
+              }
+            : member,
         ),
       );
       setFeedback(response.message);
@@ -308,8 +268,8 @@ export function BoardMembersSection({
         boardId,
         memberToRemove.id,
       );
-      updateMembers(
-        members.filter(
+      onMembersChange((currentMembers) =>
+        currentMembers.filter(
           (member) =>
             member.id !== memberToRemove.id,
         ),
@@ -364,17 +324,13 @@ export function BoardMembersSection({
         </div>
       )}
 
-      {(membersError || roleError) && (
+      {roleError && (
         <div className="api-error" role="alert">
-          {roleError ?? membersError}
+          {roleError}
         </div>
       )}
 
-      {isLoading ? (
-        <div className="board-members-feedback" role="status">
-          Carregando membros...
-        </div>
-      ) : members.length === 0 ? (
+      {members.length === 0 ? (
         <div className="board-members-empty">
           <h3>Nenhum membro encontrado</h3>
           <p>Este Board ainda não possui membros.</p>
@@ -577,7 +533,7 @@ export function BoardMembersSection({
             <header className="modal-header">
               <div>
                 <h2 id="remove-board-member-title">Remover membro</h2>
-                <p>O usuário perderá o acesso a este Board.</p>
+                <p>O usuário deixará de ser membro deste Board.</p>
               </div>
               <button type="button" className="modal-close-button" onClick={closeRemoveModal} disabled={isRemoving} aria-label="Fechar modal">
                 ×
@@ -588,7 +544,7 @@ export function BoardMembersSection({
               <div className="delete-board-warning">
                 <strong>Remover do Board:</strong>
                 <span>{memberToRemove.user?.name ?? "Usuário"}</span>
-                <p>A conta e a participação no Workspace não serão removidas.</p>
+                <p>A conta e a participação no Workspace não serão removidas. Proprietários e administradores do Workspace ainda podem visualizar este Board.</p>
               </div>
 
               {removeError && <div className="api-error" role="alert">{removeError}</div>}

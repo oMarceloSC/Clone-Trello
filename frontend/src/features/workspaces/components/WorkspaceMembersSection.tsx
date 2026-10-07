@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import {
+  useCallback,
   useEffect,
   useState,
   type ChangeEvent,
@@ -126,35 +127,41 @@ export function WorkspaceMembersSection({
     },
   });
 
-  async function loadMembers() {
-    try {
-      setIsLoading(true);
-      setMembersError(null);
-
-      const data = await listWorkspaceMembers(workspaceId);
-
-      setMembers(data);
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        const message =
-          error.response?.data?.message ??
-          "Não foi possível carregar os membros.";
-
-        setMembersError(message);
-        return;
-      }
-
-      setMembersError(
-        "Ocorreu um erro inesperado ao carregar os membros.",
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  }
+  const loadMembers = useCallback((isActive: () => boolean = () => true) => {
+    return listWorkspaceMembers(workspaceId)
+      .then(
+        (data) => {
+          if (isActive()) setMembers(data);
+        },
+        (error: unknown) => {
+          if (!isActive()) return;
+          if (axios.isAxiosError(error)) {
+            const message =
+              error.response?.data?.message ??
+              "Não foi possível carregar os membros.";
+    
+            setMembersError(message);
+            return;
+          }
+    
+          setMembersError(
+            "Ocorreu um erro inesperado ao carregar os membros.",
+          );
+        },
+      )
+      .finally(() => {
+        if (isActive()) setIsLoading(false);
+      });
+  }, [workspaceId]);
 
   useEffect(() => {
-    void loadMembers();
-  }, [workspaceId]);
+    let isActive = true;
+    void loadMembers(() => isActive);
+
+    return () => {
+      isActive = false;
+    };
+  }, [loadMembers]);
 
   const currentMember = members.find(
     (member) =>
@@ -492,6 +499,8 @@ export function WorkspaceMembersSection({
             type="button"
             className="secondary-button"
             onClick={() => {
+              setIsLoading(true);
+              setMembersError(null);
               void loadMembers();
             }}
           >

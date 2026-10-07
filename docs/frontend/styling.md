@@ -1779,6 +1779,16 @@ Entre elas:
 
 ---
 
+# Estados visuais finais de Boards
+
+O modal de edição na WorkspacePage reutiliza `modal-backdrop`, `modal-card`, `modal-header`, `workspace-form`, `form-field`, `field-error`, `api-error`, `success-message` e `modal-actions`. Não há CSS duplicado para esse fluxo. Os inputs de cor e URL mantêm o padrão da criação.
+
+Cards sem BoardMember exibem `Acesso pelo Workspace`; favorito e ações dependem do membro autenticado. BoardMembersSection reutiliza os estilos de lista, candidatos e confirmação; a mensagem de remoção distingue participação no Board de acesso pelo Workspace.
+
+Lists continuam como placeholder, sem interface de CRUD implementada.
+
+---
+
 # Organização Futura
 
 Com o crescimento da aplicação, os estilos serão divididos por responsabilidade.

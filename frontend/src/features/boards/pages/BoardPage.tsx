@@ -141,15 +141,17 @@ export function BoardPage() {
     currentMember?.isFavorite ?? false;
 
   const handleMembersChange = useCallback(
-    (members: BoardMember[]) => {
-      setBoard((currentBoard) =>
-        currentBoard
-          ? {
-              ...currentBoard,
-              members,
-            }
-          : currentBoard,
-      );
+    (updater: (currentMembers: BoardMember[]) => BoardMember[]) => {
+      setBoard((currentBoard) => {
+        if (!currentBoard) {
+          return currentBoard;
+        }
+
+        return {
+          ...currentBoard,
+          members: updater(currentBoard.members),
+        };
+      });
     },
     [],
   );
@@ -654,7 +656,7 @@ export function BoardPage() {
         boardId={board.id}
         workspaceId={board.workspaceId}
         currentUserId={user?.id}
-        initialMembers={board.members}
+        members={board.members}
         onMembersChange={handleMembersChange}
       />
 

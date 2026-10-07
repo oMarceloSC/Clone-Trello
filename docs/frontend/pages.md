@@ -1700,7 +1700,7 @@ ProfilePage
 Atualmente apresenta:
 
 - Dashboard.
-- Boards como placeholder.
+- Atalho global Boards como placeholder; Boards individuais já são acessíveis pelos cards da WorkspacePage.
 - Notificações como placeholder.
 - Nome do usuário.
 - Email do usuário.
@@ -1743,6 +1743,16 @@ Essa tela é utilizada pelos componentes `RequireAuthentication` e `RequireGuest
 
 Essa tela impede que rotas protegidas sejam exibidas antes da validação do token.
 
+# Edição de Board na WorkspacePage
+
+Os cards ativos exibem `Editar` apenas para OWNER/ADMIN do próprio Board. O modal inicia com title, description, backgroundColor e coverImage atuais, convertendo valores ausentes para strings vazias nos campos. Reutiliza React Hook Form e a validação de criação: trim e título com pelo menos 3 caracteres. A cor usa input color e a capa usa input url.
+
+Ao salvar, chama `updateBoard()` e atualiza o card sem reload, preservando membros, role e favorito. Strings vazias são enviadas, não convertidas em null. Exibe erros por campo/API e `Salvando...`; o fechamento é bloqueado durante envio. O sucesso permanece aproximadamente 800 ms antes de limpar/fechar.
+
+Os cards exibem a role e o favorito do usuário autenticado; sem BoardMember, mostram `Acesso pelo Workspace`. A restauração também depende de OWNER/ADMIN do Board e mantém a lista ativa sem duplicação.
+
+---
+
 # BoardPage
 
 ## Arquivo
@@ -1767,7 +1777,7 @@ O acesso é validado pelo backend de acordo com as regras do Workspace e do Boar
 
 ## Objetivos
 
-Permitir a visualização, a edição, a exclusão e o arquivamento de um Board específico.
+Permitir visualização, favorito, exclusão, arquivamento e gerenciamento de membros de um Board específico. A edição está disponível na WorkspacePage.
 
 Nesta etapa do projeto a página apresenta as informações gerais do Board e prepara a estrutura para a futura implementação das Lists.
 
@@ -1927,7 +1937,8 @@ A remoção abre um modal que identifica o membro e informa que a conta e a part
 
 #### Estados da Seção
 
-- `Carregando membros...`;
+O carregamento inicial é realizado pela BoardPage com o Board completo; a seção recebe os membros por props.
+
 - lista vazia `Nenhum membro encontrado`;
 - mensagens inline de erro e sucesso;
 - atualização local depois de adicionar, alterar ou remover.
@@ -2035,11 +2046,11 @@ WorkspacePage
 ```text
 BoardPage
 ↓
-listBoardMembers()
+getBoardById() → GET /boards/:id
 ↓
-GET /boards/:id/members
+board.members
 ↓
-BoardMembersSection
+BoardMembersSection controlado
 ↓
 Adicionar / Alterar role / Confirmar remoção
 ↓

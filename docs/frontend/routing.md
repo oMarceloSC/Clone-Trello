@@ -78,6 +78,7 @@ AppRoutes
 ├── /reset-password
 ├── (AuthenticatedLayout)
 │   ├── /dashboard
+│   ├── /boards/:id
 │   ├── /workspaces/:id
 │   └── /workspace-invitations/:token/accept
 └── NotFoundPage (*)
@@ -96,6 +97,7 @@ AppRoutes
 | `/reset-password` | Visitante | ✅ | Redefinição de senha |
 | `/dashboard` | Autenticado | ✅ | Dashboard |
 | `/workspaces/:id` | Autenticado | ✅ | Visualização e gerenciamento do Workspace |
+| `/boards/:id` | Autenticado | ✅ | BoardPage, favorito e gerenciamento do Board/membros |
 | `/workspace-invitations/:token/accept` | Autenticado | ✅ | Aceitação de convite por token |
 | `*` | Público | ✅ | Página 404 personalizada |
 
@@ -478,7 +480,7 @@ A rota permite:
 - Exibir nome, email e cargo de cada participante.
 - Atualizar o Workspace.
 - Excluir o Workspace.
-- Preparar a área para os futuros Boards.
+- Listar Boards ativos/arquivados, criar, editar, restaurar e abrir Boards conforme permissão.
 - Criar convites.
 - Gerar links de convite.
 
@@ -588,9 +590,8 @@ Outlet
 WorkspacePage
 ```
 
-No futuro também renderizará:
+Também renderiza BoardPage. No futuro renderizará:
 
-- BoardPage.
 - NotificationPage.
 - ProfilePage.
 
@@ -899,17 +900,15 @@ WorkspacePage
 
 ---
 
-# Rotas Planejadas
+# Board — rota implementada
 
-## Boards
+`/boards/:id` renderiza BoardPage dentro de AuthenticatedLayout, protegida por RequireAuthentication. A navegação parte dos cards do Workspace; a autorização de leitura é validada pela API.
 
-```text
-/boards/:id
-```
-
-Será renderizada dentro do `AuthenticatedLayout`.
+A página oferece favorito, arquivamento, exclusão e membros conforme BoardRole. A edição é feita no modal da WorkspacePage. Lists permanecem como placeholder.
 
 ---
+
+# Rotas Planejadas
 
 ## Perfil
 
@@ -939,7 +938,6 @@ Estão planejadas:
 - Code Splitting.
 - Breadcrumbs reutilizáveis.
 - Proteção visual por permissões.
-- Rotas por Board.
 - Rotas dinâmicas adicionais.
 - Navegação baseada em permissões.
 - Layout administrativo.
@@ -995,7 +993,6 @@ Estão planejadas:
 
 ## Planejado
 
-- Rotas dos Boards.
 - Rotas de Perfil.
 - Rotas de Notificações.
 - Lazy Loading.

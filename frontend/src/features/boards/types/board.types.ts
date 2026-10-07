@@ -69,7 +69,7 @@ export type UpdateBoardRequest = {
 
 export type UpdateBoardResponse = {
   message: string;
-  board: Board;
+  board: Omit<Board, "members" | "workspace">;
 };
 
 export type DeleteBoardResponse = {

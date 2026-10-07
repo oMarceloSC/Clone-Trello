@@ -116,6 +116,8 @@ Responsável pelo tratamento global de erros.
 
 ## modules
 
+Implementados: `auth`, `workspaces` e `boards`. Árvores que incluem Lists, Cards e módulos posteriores representam a expansão planejada.
+
 A principal pasta da aplicação.
 
 Cada funcionalidade do sistema possui seu próprio módulo.
@@ -651,15 +653,23 @@ Aceita um convite utilizando o token recebido.
 
 ---
 
+# Módulo de Boards — implementado
+
+A Milestone 4 inclui criação, listagem ativa/arquivada, busca por ID, edição, exclusão, favorito por membro, arquivamento/restauração e gerenciamento de membros. Rotas autenticadas em `src/modules/boards/routes/board.routes.ts`; contratos completos em [Boards API](api/boards.md).
+
+`BoardAccessService.ensureMember()` valida Board, vínculo com o Workspace e BoardMember. `ensureRole()` reutiliza essa checagem antes de autorizar a ação pela BoardRole. `ensureViewAccess()` permite leitura a OWNER/ADMIN do Workspace sem conceder administração ou favorito no Board.
+
+Na remoção de WorkspaceMember, o caso de uso bloqueia a saída de proprietário de Board do mesmo Workspace (403). Após as validações, a exclusão dos BoardMembers daquele usuário naquele Workspace e do WorkspaceMember acontece em uma transação. Participações em outros Workspaces são preservadas. A consulta que detecta propriedade de Board ocorre antes da transação de exclusão.
+
+Lists ainda não possuem módulo implementado.
+
+---
+
 # Próximos Módulos
 
-Com a conclusão do módulo de Workspaces, as próximas implementações seguirão esta ordem:
+Com Workspaces e Boards implementados, as próximas implementações seguirão esta ordem:
 
 ```
-Boards
-
-↓
-
 Lists
 
 ↓

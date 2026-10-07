@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 
@@ -73,65 +73,71 @@ export function DashboardPage() {
     },
   });
 
-  async function loadWorkspaces() {
-    try {
-      setIsLoadingWorkspaces(true);
-      setWorkspaceError(null);
+  const loadWorkspaces = useCallback((isActive: () => boolean = () => true) => {
+    return listWorkspaces()
+      .then(
+        (data) => {
+          if (isActive()) setWorkspaces(data);
+        },
+        (error: unknown) => {
+          if (!isActive()) return;
+          if (axios.isAxiosError(error)) {
+            const message =
+              error.response?.data?.message ??
+              "Não foi possível carregar os Workspaces.";
+    
+            setWorkspaceError(message);
+            return;
+          }
+    
+          setWorkspaceError(
+            "Ocorreu um erro inesperado ao carregar os Workspaces.",
+          );
+        },
+      )
+      .finally(() => {
+        if (isActive()) setIsLoadingWorkspaces(false);
+      });
+  }, []);
 
-      const data = await listWorkspaces();
-
-      setWorkspaces(data);
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        const message =
-          error.response?.data?.message ??
-          "Não foi possível carregar os Workspaces.";
-
-        setWorkspaceError(message);
-        return;
-      }
-
-      setWorkspaceError(
-        "Ocorreu um erro inesperado ao carregar os Workspaces.",
-      );
-    } finally {
-      setIsLoadingWorkspaces(false);
-    }
-  }
-
-  async function loadPendingInvitations() {
-    try {
-      setIsLoadingInvitations(true);
-      setInvitationsError(null);
-
-      const data =
-        await listPendingWorkspaceInvitations();
-
-      setPendingInvitations(data);
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        const message =
-          error.response?.data?.message ??
-          "Não foi possível carregar os convites pendentes.";
-
-        setInvitationsError(message);
-        return;
-      }
-
-      setInvitationsError(
-        "Ocorreu um erro inesperado ao carregar os convites.",
-      );
-    } finally {
-      setIsLoadingInvitations(false);
-    }
-  }
+  const loadPendingInvitations = useCallback((isActive: () => boolean = () => true) => {
+    return listPendingWorkspaceInvitations()
+      .then(
+        (data) => {
+          if (isActive()) setPendingInvitations(data);
+        },
+        (error: unknown) => {
+          if (!isActive()) return;
+          if (axios.isAxiosError(error)) {
+            const message =
+              error.response?.data?.message ??
+              "Não foi possível carregar os convites pendentes.";
+    
+            setInvitationsError(message);
+            return;
+          }
+    
+          setInvitationsError(
+            "Ocorreu um erro inesperado ao carregar os convites.",
+          );
+        },
+      )
+      .finally(() => {
+        if (isActive()) setIsLoadingInvitations(false);
+      });
+  }, []);
 
   useEffect(() => {
+    let isActive = true;
     void Promise.all([
-      loadWorkspaces(),
-      loadPendingInvitations(),
+      loadWorkspaces(() => isActive),
+      loadPendingInvitations(() => isActive),
     ]);
-  }, []);
+
+    return () => {
+      isActive = false;
+    };
+  }, [loadWorkspaces, loadPendingInvitations]);
 
   function openCreateModal() {
     setCreateWorkspaceError(null);
@@ -231,6 +237,8 @@ export function DashboardPage() {
         ),
       );
 
+      setIsLoadingWorkspaces(true);
+      setWorkspaceError(null);
       await loadWorkspaces();
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -306,6 +314,8 @@ export function DashboardPage() {
                 type="button"
                 className="secondary-button"
                 onClick={() => {
+                  setIsLoadingInvitations(true);
+                  setInvitationsError(null);
                   void loadPendingInvitations();
                 }}
               >

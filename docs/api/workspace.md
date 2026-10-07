@@ -4,7 +4,7 @@
 
 O módulo de Workspaces é responsável pelo gerenciamento dos espaços de trabalho do sistema.
 
-Um Workspace representa o nível mais alto de organização da aplicação, agrupando Boards, membros, permissões e, futuramente, convites, atividades, notificações e configurações.
+Um Workspace representa o nível mais alto de organização da aplicação, agrupando Boards, membros, permissões e convites e, futuramente, atividades, notificações e configurações.
 
 Todo Workspace possui pelo menos um membro com a permissão **OWNER**, que é automaticamente definido no momento da criação.
 
@@ -56,7 +56,7 @@ Atualmente:
 - **MEMBER** não possui permissões administrativas.
 - **VIEWER** possui apenas acesso de leitura.
 
-As demais permissões serão utilizadas nas próximas funcionalidades, como gerenciamento de membros, Boards e Convites.
+As roles são usadas no gerenciamento do Workspace, de membros e convites; Boards possuem BoardRole independente, com acesso de leitura adicional pelo Workspace.
 
 ---
 
@@ -1060,23 +1060,21 @@ Roles permitidas:
 
 ---
 
-# Próximos Endpoints
+# Remover Membro
 
-Os próximos endpoints previstos para o módulo de Workspaces são:
-
----
-
-## Remover Membro
-
-```
+```http
 DELETE /workspaces/:id/members/:memberId
 ```
 
-Remove um membro do Workspace.
+Exige JWT, `id` e `memberId` UUID. Sem body. Apenas OWNER do Workspace pode remover; OWNER e auto-remoção são bloqueados. Retorna 200 com `{ "message": "Membro removido com sucesso" }`.
 
-Apenas o `OWNER` poderá realizar esta operação.
+A remoção também é bloqueada com 403 se o alvo for OWNER de algum Board desse Workspace. Após validar, exclui em transação seus BoardMembers daquele Workspace e o WorkspaceMember. User e participações em outros Workspaces são preservados. UUID inválido retorna 400; autenticação inválida, 401; falta de permissão, 403; Workspace inacessível ou membro inexistente, 404.
 
 ---
+
+# Próximos Endpoints
+
+As rotas abaixo ainda não estão implementadas.
 
 ## Listar Convites
 
@@ -1108,7 +1106,7 @@ Reenvia um convite existente, renovando sua data de expiração.
 
 ---
 
-# Fluxo de Permissões (Planejado)
+# Fluxo de Permissões
 
 ```
 Usuário
@@ -1144,7 +1142,7 @@ VIEWER
 Permissão concedida
 ```
 
-Esse fluxo será utilizado em todas as operações futuras do módulo de Workspaces, como atualização, exclusão, gerenciamento de membros e convites.
+Os casos de uso validam WorkspaceMember e sua role nas operações de atualização, exclusão, gerenciamento de membros e convites.
 
 ---
 
@@ -1176,4 +1174,4 @@ Esse fluxo será utilizado em todas as operações futuras do módulo de Workspa
 - Cancelamento de convites.
 - Reenvio de convites.
 - Auditoria de atividades do Workspace.
-- Integração com Boards.
+- Expansão com Lists e Cards nas próximas milestones.

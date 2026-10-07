@@ -120,7 +120,6 @@ Futuramente serão adicionadas:
 ```text
 features/
 
-├── boards/
 ├── lists/
 ├── cards/
 ├── comments/
@@ -168,12 +167,13 @@ Exemplo da feature `boards`:
 boards/
 
 ├── components/
-│
+│   └── BoardMembersSection.tsx
 ├── pages/
 │   └── BoardPage.tsx
 │
 ├── schemas/
-│   └── create-board.schema.ts
+│   ├── create-board.schema.ts
+│   └── update-board.schema.ts
 │
 ├── services/
 │   └── board.service.ts
@@ -484,8 +484,6 @@ acceptWorkspaceInvitation()
 Futuramente serão criados:
 
 ```text
-board.service.ts
-
 list.service.ts
 
 card.service.ts
@@ -1388,7 +1386,7 @@ BoardPage
 ## Atualização
 
 ```text
-BoardPage
+WorkspacePage
 
 ↓
 
@@ -1431,7 +1429,7 @@ DELETE /boards/:id
 WorkspacePage
 ```
 
-A `BoardPage` concentra a visualização, a edição e a exclusão do Board. O botão e o fluxo de exclusão são disponibilizados somente ao `OWNER` do próprio Board; a autorização definitiva permanece no backend.
+A `BoardPage` concentra a visualização e a exclusão do Board; a edição está no modal da `WorkspacePage`. O botão e o fluxo de exclusão são disponibilizados somente ao `OWNER` do próprio Board; a autorização definitiva permanece no backend.
 
 ---
 
@@ -1457,7 +1455,7 @@ BoardMember.isFavorite
 Atualização local da BoardPage
 ```
 
-O favorito pertence ao `BoardMember`, é específico para cada usuário e não é uma propriedade global do Board. A `BoardPage` disponibiliza visualização, atualização, exclusão e favorito por usuário.
+O favorito pertence ao `BoardMember`, é específico para cada usuário e não é uma propriedade global do Board. A `BoardPage` disponibiliza visualização, exclusão e favorito por usuário; a edição dos dados está na WorkspacePage.
 
 O `board.service.ts` disponibiliza:
 
@@ -1549,9 +1547,8 @@ O arquivamento e a restauração alteram `Board.isArchived`. A listagem de arqui
 ## Listagem
 
 ```text
-BoardPage → listBoardMembers() → GET /boards/:id/members
-→ BoardController → ListBoardMembersUseCase
-→ BoardAccessService.ensureViewAccess() → Prisma → BoardMember[]
+BoardPage → getBoardById() → GET /boards/:id
+→ board.members → BoardMembersSection controlado
 ```
 
 ## Adição
@@ -1589,11 +1586,23 @@ Pertencer ao Workspace é pré-requisito para ser adicionado ao Board, mas não 
 
 ## BoardAccessService
 
-- `ensureMember()` confirma a participação direta no Board.
+- `ensureMember()` confirma Board existente e participação no Workspace e no Board.
 - `ensureRole()` exige uma das `BoardRole` permitidas pela operação.
 - `ensureViewAccess()` valida o Board, a participação no Workspace e a visualização especial de `OWNER`/`ADMIN` do Workspace.
 
 As operações de alteração e remoção combinam `memberId` e `boardId`, protegendo contra ações em membros pertencentes a outro Board. UUIDs são validados com Zod, `OWNER` é protegido e a adição confirma previamente o `WorkspaceMember`.
+
+---
+
+# Estado de Boards e sincronização
+
+`BoardPage.board.members` é a fonte única dos membros. BoardMembersSection recebe `members` e `onMembersChange(updater)`; o pai aplica a função sobre o estado mais recente. Não há cópia local sincronizada por effect nem consulta redundante ao montar a seção. Adicionar/remover preserva os demais membros; alterar role preserva o favorito atual. `listBoardMembers()` continua disponível no service para consulta explícita.
+
+A WorkspacePage identifica o membro pelo ID autenticado (`userId` ou `user.id`). Sem BoardMember, os cards mostram `Acesso pelo Workspace`, sem assumir role MEMBER ou favorito. A BoardPage mantém atualmente `Não identificada` no resumo de permissão desse caso, mas não concede ações administrativas.
+
+O update de Board retorna campos escalares; a página preserva os membros ao mesclar a resposta. Na restauração, preserva os dados disponíveis e substitui/adiciona o Board por ID sem duplicar a lista ativa.
+
+Carregamentos de WorkspaceMembersSection e Dashboard usam callbacks estáveis, dependências completas e respostas assíncronas protegidas contra aplicação após limpeza do effect. O estado de loading inicial vem do useState; novas tentativas o iniciam no evento. WorkspaceMembersSection recebe key do Workspace para reinicializar ao mudar de contexto.
 
 ---
 
@@ -1871,7 +1880,7 @@ As próximas implementações serão:
 1. Cancelamento de convites.
 2. Reenvio de convites.
 3. Componentes compartilhados.
-4. Evolução da feature Boards.
+4. Testes e refinamentos futuros da feature Boards, cuja Milestone 4 está concluída.
 5. Feature Lists.
 6. Feature Cards.
 7. Integração em tempo real com Socket.IO.

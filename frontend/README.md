@@ -1,75 +1,35 @@
-# React + TypeScript + Vite
+# Frontend — Clone do Trello
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React, TypeScript e Vite, com React Router, Axios, React Hook Form e Zod. Estilos globais em `src/index.css`.
 
-Currently, two official plugins are available:
+## Executar
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Configure `VITE_API_URL=http://localhost:3333` em `.env`. Para verificar:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+npm run lint
+npm run build
 ```
+
+## Estado atual
+
+Autenticação, Workspaces e Milestone 4 — Boards implementados. WorkspacePage lista Boards ativos/arquivados e permite criar, editar e restaurar conforme permissão. BoardPage oferece favorito, arquivamento, exclusão e gerenciamento de membros. Lists são a próxima milestone; o botão da BoardPage é apenas um placeholder.
+
+BoardMembersSection é controlado pelos membros da BoardPage. Permissões administrativas e favorito dependem de BoardMember; administradores/proprietários do Workspace podem visualizar sem receber uma role artificial no Board.
+
+## Documentação
+
+- [Execução do projeto](../README.md)
+- [Arquitetura](../docs/frontend/architecture.md)
+- [Páginas](../docs/frontend/pages.md)
+- [Rotas](../docs/frontend/routing.md)
+- [Componentes](../docs/frontend/components.md)
+- [Serviços](../docs/frontend/services.md)
+- [Estado](../docs/frontend/state-management.md)
+- [Estilos](../docs/frontend/styling.md)
+- [API de Boards](../docs/api/boards.md)

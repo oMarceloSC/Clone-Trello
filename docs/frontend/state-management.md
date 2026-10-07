@@ -400,7 +400,19 @@ useState
 Lista de membros
 ```
 
-Esse estado não precisa ser compartilhado com outras páginas.
+A seção mantém sua lista local; após remoção notifica WorkspacePage por `onMemberRemoved`, para atualizar as informações relacionadas.
+
+---
+
+# Boards
+
+WorkspacePage controla listas ativa/arquivada e modais de criação/edição. O update mescla a resposta escalar mantendo membros, role e favorito. A restauração remove da lista arquivada e insere/substitui por ID na ativa, sem duplicar Boards.
+
+BoardPage mantém o Board e `board.members` como única fonte de verdade. BoardMembersSection é controlado por props e comunica atualizações funcionais via `onMembersChange`. Não copia props para estado por effect nem busca novamente os membros ao montar. Operações usam a lista mais recente do pai; a alteração de role preserva isFavorite e os demais membros permanecem intactos.
+
+Role/favorito são derivados do membro cujo userId ou user.id coincide com o usuário autenticado. Acesso de leitura pelo Workspace não cria BoardMember nem favorito.
+
+Dashboard e WorkspaceMembersSection iniciam consultas em effects com callbacks estáveis. Resultados são aplicados assincronamente e ignorados após a limpeza do effect; recargas iniciam loading/limpam erro no evento. A key do Workspace reinicializa a seção ao trocar de Workspace.
 
 ---
 
@@ -483,10 +495,8 @@ Próximas funcionalidades previstas:
 
 - Refresh Token.
 - Atualização automática da sessão.
-- Logout automático após token expirado.
 - Alteração de perfil.
 - Alteração de avatar.
-- Recuperação de senha.
 - Sessões simultâneas.
 
 ---

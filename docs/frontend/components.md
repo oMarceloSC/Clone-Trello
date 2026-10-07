@@ -4,7 +4,7 @@
 
 O frontend do Clone do Trello foi planejado para utilizar componentes reutilizáveis conforme a aplicação evoluir.
 
-Nesta etapa inicial, os componentes ainda estão implementados diretamente nas páginas de autenticação.
+Os componentes de domínio incluem WorkspaceMembersSection e BoardMembersSection. Formulários e modais ainda permanecem nas páginas/seções; componentes genéricos adicionais são planejados.
 
 À medida que novas funcionalidades forem desenvolvidas, esses elementos serão extraídos para uma biblioteca própria de componentes.
 
@@ -111,10 +111,9 @@ Essa abordagem já é utilizada pelas seguintes páginas:
 
 - Dashboard.
 - Workspace.
+- Board.
 
 Também prepara a aplicação para futuras páginas como:
-
-- Board.
 - Perfil.
 - Notificações.
 
@@ -128,6 +127,7 @@ Atualmente a maior parte dos elementos da interface permanece dentro das página
 - RegisterPage.
 - DashboardPage.
 - WorkspacePage.
+- BoardPage.
 - AcceptWorkspaceInvitationPage.
 - Modal de edição de Workspace (implementado na WorkspacePage).
 - Modal de confirmação de exclusão (implementado na WorkspacePage).
@@ -141,6 +141,7 @@ Atualmente esse layout já é compartilhado entre:
 
 - DashboardPage.
 - WorkspacePage.
+- BoardPage.
 - AcceptWorkspaceInvitationPage.
 
 Atualmente os modais de edição, exclusão, criação de convites e remoção de membros ainda fazem parte da própria WorkspacePage e do WorkspaceMembersSection.
@@ -158,6 +159,20 @@ O gerenciamento dos participantes do Workspace já foi extraído para o componen
 Os modais ainda deverão ser extraídos para componentes reutilizáveis conforme novas funcionalidades forem adicionadas ao sistema.
 
 Essa decisão reduz duplicação de código e prepara a arquitetura para as próximas funcionalidades.
+
+---
+
+# BoardMembersSection
+
+Arquivo: `src/features/boards/components/BoardMembersSection.tsx`.
+
+Componente controlado por `BoardPage.board.members`, recebido na prop `members`. Recebe também boardId, workspaceId, currentUserId e `onMembersChange`, que aceita uma função de atualização. Não mantém outra lista de BoardMembers nem executa uma segunda busca de membros ao montar.
+
+Exibe avatar, nome, email, role, contador e indicação do usuário atual. OWNER/ADMIN do Board podem adicionar usuários já pertencentes ao Workspace; apenas OWNER altera roles e remove membros. OWNER e o próprio usuário não são alvos editáveis/removíveis. Roles atribuíveis: ADMIN, MEMBER e VIEWER.
+
+A seleção de candidatos consulta WorkspaceMembers ao abrir o modal. Operações exibem loading/erro/sucesso e atualizam o pai funcionalmente, preservando membros não afetados e o favorito atual. A remoção não exclui conta ou participação no Workspace; seus proprietários/administradores podem continuar visualizando o Board.
+
+O carregamento inicial dos membros pertence à BoardPage. Os modais reutilizam classes globais existentes, sem componente Modal genérico.
 
 ---
 

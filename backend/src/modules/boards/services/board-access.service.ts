@@ -24,6 +24,40 @@ export class BoardAccessService {
     boardId,
     userId,
   }: EnsureBoardMemberRequest) {
+    const board = await prisma.board.findUnique({
+      where: {
+        id: boardId,
+      },
+      select: {
+        id: true,
+        workspaceId: true,
+      },
+    });
+
+    if (!board) {
+      throw new AppError(
+        "Board não encontrado.",
+        404,
+      );
+    }
+
+    const workspaceMember =
+      await prisma.workspaceMember.findUnique({
+        where: {
+          userId_workspaceId: {
+            userId,
+            workspaceId: board.workspaceId,
+          },
+        },
+      });
+
+    if (!workspaceMember) {
+      throw new AppError(
+        "Board não encontrado.",
+        404,
+      );
+    }
+
     const member =
       await prisma.boardMember.findUnique({
         where: {

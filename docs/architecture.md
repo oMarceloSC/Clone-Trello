@@ -162,6 +162,8 @@ O frontend também utiliza um `AuthenticatedLayout`, responsável por compartilh
 
 # Organização por Módulos
 
+Implementados: `auth`, `workspaces` e `boards`. Árvores que incluem Lists, Cards e módulos posteriores representam a expansão planejada.
+
 Cada domínio da aplicação possui seu próprio módulo.
 
 Exemplo:
@@ -621,6 +623,16 @@ VIEWER
 
 ---
 
+# Módulo de Boards — Milestone 4 concluída
+
+O módulo implementa CRUD, favoritos por BoardMember, arquivamento/restauração, listagens e gerenciamento de membros. [Boards API](api/boards.md) descreve rotas, contratos e matriz de permissões.
+
+WorkspaceMember e BoardMember são vínculos distintos. A autorização de escrita exige ambos; a visualização também admite OWNER/ADMIN do Workspace sem BoardMember. Remover um WorkspaceMember limpa seus vínculos com Boards do mesmo Workspace em transação e é bloqueado quando ele possui Board como OWNER.
+
+No frontend, WorkspacePage cria/edita/restaura Boards. BoardPage consulta o Board, gerencia favorito, arquivamento, exclusão e membros. BoardMembersSection é controlado por `board.members` no pai; atualizações funcionais preservam estado recente. Lists permanecem como placeholder e próxima milestone.
+
+---
+
 # Comunicação em Tempo Real
 
 As funcionalidades colaborativas utilizarão Socket.IO.
@@ -763,17 +775,11 @@ Sem alterar módulos existentes.
 
 ### Frontend
 
-- Alteração de permissões dos membros.
-- Sistema de convites.
-- Página 404.
-- Interceptor global de respostas.
-- Tratamento automático de sessão expirada.
 - Componentes reutilizáveis.
 - Sistema de toasts.
 
 ### Backend
 
-- Boards.
 - Lists.
 - Cards.
 - Socket.IO.
@@ -788,18 +794,16 @@ Sem alterar módulos existentes.
 
 A evolução da arquitetura seguirá a seguinte ordem:
 
-1. Sistema de convites no frontend.
-2. Boards.
-3. Lists.
-4. Cards.
-5. Comentários.
-6. Etiquetas.
-7. Checklists.
-8. Uploads.
-9. Socket.IO.
-10. Notificações.
-13. Dashboard avançado.
-14. Busca Global.
+1. Lists.
+2. Cards.
+3. Comentários.
+4. Etiquetas.
+5. Checklists.
+6. Uploads.
+7. Socket.IO.
+8. Notificações.
+9. Dashboard avançado.
+10. Busca Global.
 
 Cada novo módulo continuará seguindo exatamente a arquitetura descrita neste documento, mantendo:
 

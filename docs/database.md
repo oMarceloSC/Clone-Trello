@@ -40,7 +40,7 @@ Toda a comunicação entre a aplicação e o banco de dados acontece através do
 
 # Models Implementados
 
-Atualmente o sistema possui quatro entidades.
+Atualmente o schema Prisma possui sete modelos.
 
 ```
 User
@@ -50,6 +50,12 @@ Workspace
 WorkspaceMember
 
 WorkspaceInvitation
+
+PasswordResetToken
+
+Board
+
+BoardMember
 ```
 
 ---
@@ -117,6 +123,12 @@ Workspace
 ├── WorkspaceMember
 
 └── WorkspaceInvitation
+
+PasswordResetToken
+
+Board
+
+BoardMember
 ```
 
 ---
@@ -270,10 +282,15 @@ WorkspaceMember   WorkspaceInvitation
 
 ### Relações
 
-- User ↔ WorkspaceMember (N:N)
+- User ↔ WorkspaceMember (1:N)
 - Workspace ↔ WorkspaceMember (1:N)
 - Workspace ↔ WorkspaceInvitation (1:N)
 - User ↔ WorkspaceInvitation (1:N)
+- Workspace ↔ Board (1:N)
+- User ↔ Board (1:N, criador)
+- Board ↔ BoardMember (1:N)
+- User ↔ BoardMember (1:N); User ↔ Board é N:N por BoardMember
+- User ↔ PasswordResetToken (1:N)
 
 ---
 
@@ -350,7 +367,7 @@ Como chave primária.
 
 # Estratégia de Datas
 
-Todos os modelos seguem o padrão:
+Board, BoardMember, User, Workspace e WorkspaceInvitation seguem o padrão abaixo. WorkspaceMember e PasswordResetToken possuem createdAt, mas não updatedAt:
 
 ```
 createdAt
@@ -384,6 +401,8 @@ Isso inclui:
 
 - WorkspaceMember
 - WorkspaceInvitation
+- Board e seus BoardMembers (ao excluir Workspace ou o usuário criador)
+- BoardMember e PasswordResetToken relacionados ao usuário
 
 ---
 
@@ -406,19 +425,49 @@ Atualmente o banco suporta:
 
 ---
 
+# Model: Board
+
+Implementado em `backend/prisma/schema.prisma`.
+
+| Campo | Tipo/default | Observação |
+|---|---|---|
+| id | String / uuid() | Chave primária |
+| title | String | Obrigatório |
+| description, backgroundColor, coverImage | String? | Nullable no banco |
+| isArchived | Boolean / false | Define lista ativa ou arquivada |
+| workspaceId | String | FK Workspace |
+| createdById | String | FK User, relação BoardCreator |
+| createdAt | DateTime / now() | Criação |
+| updatedAt | DateTime / @updatedAt | Atualização |
+
+Possui `members: BoardMember[]`. Índices em workspaceId, createdById e isArchived. Workspace e criador usam `onDelete: Cascade`.
+
+# Model: BoardMember
+
+| Campo | Tipo/default | Observação |
+|---|---|---|
+| id | String / uuid() | Chave primária |
+| boardId, userId | String | FKs Board e User, ambas Cascade |
+| role | BoardRole / MEMBER | OWNER, ADMIN, MEMBER ou VIEWER |
+| isFavorite | Boolean / false | Favorito individual do usuário |
+| createdAt | DateTime / now() | Criação |
+| updatedAt | DateTime / @updatedAt | Atualização |
+
+Restrição única composta `[boardId, userId]` e índice em userId. User possui `boardsCreated` e `boardMembers`; Workspace possui `boards`.
+
+Não existe FK de BoardMember para WorkspaceMember: a aplicação valida esse vínculo. Remover WorkspaceMember limpa BoardMembers apenas daquele Workspace em transação; se o usuário é OWNER de Board nesse Workspace, a operação é rejeitada. A regra de propriedade é verificada antes da transação. A matriz de autorização está em [Boards API](api/boards.md).
+
+# Model: PasswordResetToken
+
+Também implementado: id UUID, token único, userId, expiresAt, usedAt opcional e createdAt. Relação User com Cascade; índices em userId e expiresAt. Não possui updatedAt.
+
+---
+
 # Modelos Planejados
 
 Os próximos modelos serão implementados na seguinte ordem.
 
 ```
-Board
-
-↓
-
-BoardMember
-
-↓
-
 List
 
 ↓
@@ -533,14 +582,4 @@ A modelagem foi planejada para:
 
 # Próxima Atualização
 
-Na próxima milestone serão adicionadas as entidades:
-
-- Board
-- BoardMember
-
-Após a implementação, este documento será atualizado com:
-
-- Novos relacionamentos.
-- Diagrama completo do banco.
-- Regras de permissão por Board.
-- Controle de acesso aos Cards.
+A Milestone 5 prevê List e seu relacionamento com Board. List, Card e os demais modelos da seção planejada ainda não existem no schema atual.

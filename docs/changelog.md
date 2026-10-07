@@ -8,6 +8,17 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 
 # [0.4.0] - Boards
 
+## Fixed
+
+* Conclusão do formulário de edição de Board na WorkspacePage, com validação consistente com a criação e preservação de membros/favorito após atualizar.
+* Validação do vínculo com o Workspace em `BoardAccessService.ensureMember()` e, por consequência, nas ações protegidas por `ensureRole()`.
+* Remoção transacional dos BoardMembers do Workspace ao remover um WorkspaceMember; bloqueio quando o usuário é OWNER de algum Board desse Workspace.
+* Retorno de role em archive/restore e restauração sem duplicar Boards ativos.
+* Identificação da role e do favorito pelo usuário autenticado; indicação `Acesso pelo Workspace` nos cards sem BoardMember.
+* Mensagem de remoção esclarecendo que o acesso de visualização pelo Workspace pode permanecer.
+* Fonte única de membros em BoardPage e atualizações funcionais, evitando perda do favorito por cópias antigas da lista.
+* Correções de React Hooks nos carregamentos de membros e Dashboard, sem suprimir regras do ESLint.
+
 ## Added
 
 ### Backend

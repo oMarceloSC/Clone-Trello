@@ -83,6 +83,7 @@ Atualmente o backend já possui:
 - ✅ Remoção de membros.
 - ✅ Tratamento global de erros.
 - ✅ Validação utilizando Zod.
+- ✅ Boards: CRUD, favoritos por usuário, arquivamento/restauração e membros.
 
 ---
 
@@ -108,6 +109,8 @@ O frontend já possui:
 - ✅ Estados de carregamento.
 - ✅ Estados de erro.
 - ✅ Feedback de sucesso.
+- ✅ Boards ativos e arquivados, criação, edição e restauração no Workspace.
+- ✅ BoardPage com favorito, arquivamento, exclusão e gerenciamento de membros.
 
 ---
 
@@ -137,7 +140,7 @@ O frontend já possui:
 - Axios
 - React Hook Form
 - Zod
-- Tailwind CSS
+- CSS global em `src/index.css`
 
 ---
 
@@ -263,8 +266,8 @@ Toda a documentação técnica do projeto está organizada na pasta `docs`, sepa
 | Documento | Descrição |
 |-----------|-----------|
 | auth.md | Autenticação |
-| workspaces.md | Workspaces |
-| workspace-invitations.md | Convites |
+| [workspace.md](docs/api/workspace.md) | Workspaces, membros e convites |
+| [boards.md](docs/api/boards.md) | Boards, membros e permissões |
 
 ---
 
@@ -365,7 +368,7 @@ O desenvolvimento do projeto é dividido em milestones, permitindo evolução co
 | ✅ Milestone 1 — Foundation | Concluído |
 | ✅ Milestone 2 — Workspaces | Concluído |
 | ✅ Milestone 3 — Frontend de Integração | Concluído |
-| 🚧 Milestone 4 — Boards | Em andamento |
+| ✅ Milestone 4 — Boards | Concluído |
 | ⏳ Milestone 5 — Lists | Próximo |
 | ⏳ Milestone 6 — Cards | Planejado |
 | ⏳ Milestone 7 — Colaboração em Tempo Real | Planejado |
@@ -573,7 +576,7 @@ As próximas etapas do projeto incluem:
 
 ## Boards
 
-- Evolução das permissões do Board.
+- Permissões da Milestone 4 concluídas; ampliações futuras dependem de novos requisitos.
 - Testes automatizados dos fluxos de Boards.
 
 ---

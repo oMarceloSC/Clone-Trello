@@ -4,6 +4,63 @@ Responsável pelo gerenciamento dos Boards pertencentes aos Workspaces.
 
 ---
 
+# Contrato comum e permissões
+
+Todas as rotas abaixo estão implementadas e exigem `Authorization: Bearer TOKEN`. Parâmetros `workspaceId`, `id` e `memberId` são UUIDs; `memberId` identifica o BoardMember, não o User. GET e DELETE não exigem body. Bodies de POST/PATCH são JSON.
+
+| Operação | OWNER | ADMIN | MEMBER | VIEWER | Workspace OWNER/ADMIN sem BoardMember |
+|---|:---:|:---:|:---:|:---:|:---:|
+| Visualizar Board e listar membros | Sim | Sim | Sim | Sim | Sim |
+| Editar Board | Sim | Sim | Não | Não | Não |
+| Excluir Board | Sim | Não | Não | Não | Não |
+| Arquivar/restaurar | Sim | Sim | Não | Não | Não |
+| Favoritar/desfavoritar | Sim | Sim | Sim | Sim | Não |
+| Adicionar membro | Sim | Sim | Não | Não | Não |
+| Alterar role/remover membro | Sim | Não | Não | Não | Não |
+
+As quatro primeiras colunas são **BoardRole** e pressupõem vínculo vigente com o Workspace. Criar Board depende da **WorkspaceRole**: OWNER, ADMIN ou MEMBER. O criador recebe BoardMember OWNER. Não há promoção automática de administradores do Workspace a membros do Board.
+
+`ensureMember()` exige Board existente, WorkspaceMember e BoardMember. `ensureRole()` acrescenta a validação da BoardRole. `ensureViewAccess()` exige vínculo com o Workspace e permite visualização a OWNER/ADMIN do Workspace mesmo sem BoardMember; aos demais exige participação no Board.
+
+Erros comuns a todas as rotas: `400` para parâmetros/body inválidos; `401` para autenticação ausente/inválida; `404` para recurso inexistente ou sem vínculo/acesso. Nas ações administrativas, BoardMember com role insuficiente recebe `403`; sem BoardMember recebe `404`. Falhas inesperadas retornam `500`.
+
+Erros de negócio têm `{ statusCode, message }`; validação Zod retorna `{ statusCode: 400, message: "Erro de validação", issues }`. Erros de autenticação retornam `{ message }`. Os exemplos resumidos abaixo podem omitir campos; datas são strings ISO na resposta e `"uuid"` representa um UUID real.
+
+## Endpoints implementados
+
+| Método | Rota | Permissão | Body | Resposta |
+|---|---|---|---|---|
+| POST | `/workspaces/:workspaceId/boards` | Workspace OWNER/ADMIN/MEMBER | title obrigatório; description/backgroundColor/coverImage opcionais | `201 { message, board }` |
+| GET | `/workspaces/:workspaceId/boards` | Visibilidade pelo Workspace/Board | Sem body | `200 { boards }` |
+| GET | `/workspaces/:workspaceId/boards/archived` | Visibilidade pelo Workspace/Board | Sem body | `200 { boards }` |
+| GET | `/boards/:id` | Leitura pelo Workspace/Board | Sem body | `200 { board }` |
+| PATCH | `/boards/:id` | Board OWNER/ADMIN | title/description/backgroundColor/coverImage opcionais | `200 { message, board }` |
+| DELETE | `/boards/:id` | Board OWNER | Sem body | `200 { message }` |
+| PATCH | `/boards/:id/favorite` | Qualquer BoardRole com vínculo vigente | isFavorite boolean obrigatório | `200 { message, member }` |
+| PATCH | `/boards/:id/archive` | Board OWNER/ADMIN | isArchived boolean obrigatório; false restaura | `200 { message, board }` |
+| GET | `/boards/:id/members` | Leitura pelo Workspace/Board | Sem body | `200 { members }` |
+| POST | `/boards/:id/members` | Board OWNER/ADMIN | memberUserId UUID e role obrigatórios | `201 { message, member }` |
+| PATCH | `/boards/:id/members/:memberId` | Board OWNER | role obrigatório | `200 { message, member }` |
+| DELETE | `/boards/:id/members/:memberId` | Board OWNER | Sem body | `200 { message }` |
+
+## Formatos das respostas
+
+O Board escalar contém `id`, `title`, `description`, `backgroundColor`, `coverImage`, `isArchived`, `workspaceId`, `createdById`, `createdAt` e `updatedAt`. Os três campos textuais opcionais podem ser `null` nas **respostas** por serem nullable no banco; isso não autoriza `null` no request.
+
+- Criação: `{ message, board }`, incluindo `members` com o criador; cada membro contém `id`, `boardId`, `userId`, `role`, `isFavorite`, `createdAt` e `updatedAt`.
+- Listagens ativa/arquivada: `{ boards }`; cada Board inclui `members` filtrado pelo usuário autenticado, com `id`, `userId`, `role`, `isFavorite`, `createdAt`, `updatedAt`. Sem participação, o array é vazio.
+- Busca por ID: `{ board }`, incluindo todos os membros com os campos escalares acima e `user: { id, name, email, avatarUrl }`, além de `workspace: { id, name }`.
+- Atualização: `{ message, board }` com **somente os campos escalares do Board**, sem `members` ou `workspace`.
+- Arquivar/restaurar: `{ message, board }`, incluindo a projeção de `members` do usuário autenticado usada nas listagens, com `role` e `isFavorite`.
+- Favorito: `{ message, member }`, com os campos escalares do BoardMember, sem `user`. Favorito pertence ao membro, não globalmente ao Board.
+- Listar membros: `{ members }`, com campos escalares e `user`, ordenados por `createdAt` crescente.
+- Adicionar/alterar role: `{ message, member }`, com campos escalares e `user`.
+- Excluir Board/remover membro: `{ message }`.
+
+O estado arquivado separa as listagens, mas não há bloqueio adicional de operações por `isArchived` nos casos de uso atuais.
+
+---
+
 # Criar Board
 
 ## POST
@@ -14,7 +71,7 @@ Responsável pelo gerenciamento dos Boards pertencentes aos Workspaces.
 
 ### Descrição
 
-Cria um novo Board dentro de um Workspace.
+Cria um novo Board dentro de um Workspace. `title` é string obrigatória com pelo menos 3 caracteres. `description`, `backgroundColor` e `coverImage` são strings opcionais (aceitam vazio, não aceitam null); omitidas na criação, ficam null no banco. O backend não aplica trim nem valida formato de cor/URL.
 
 O usuário deve possuir uma das seguintes permissões no Workspace:
 
@@ -49,7 +106,7 @@ Authorization: Bearer TOKEN
   "title": "Desenvolvimento",
   "description": "Board responsável pelo desenvolvimento do sistema",
   "backgroundColor": "#0C66E4",
-  "coverImage": null
+  "coverImage": ""
 }
 ```
 
@@ -67,7 +124,7 @@ Authorization: Bearer TOKEN
     "title": "Desenvolvimento",
     "description": "Board responsável pelo desenvolvimento do sistema",
     "backgroundColor": "#0C66E4",
-    "coverImage": null,
+    "coverImage": "",
     "isArchived": false,
     "workspaceId": "uuid",
     "createdById": "uuid",
@@ -371,11 +428,11 @@ Authorization: Bearer TOKEN
   "title": "Backend",
   "description": "Nova descrição",
   "backgroundColor": "#0052CC",
-  "coverImage": null
+  "coverImage": ""
 }
 ```
 
-Todos os campos são opcionais.
+Todos os campos são strings opcionais; `null` não é aceito. `title`, quando enviado, deve ter pelo menos 3 caracteres. Campos omitidos não são alterados; `description`, `backgroundColor` e `coverImage` aceitam `""` para esvaziar o valor. `{}` é aceito. O backend não aplica trim nem valida formato de cor/URL; o formulário aplica trim e exige título de 3 caracteres, como na criação.
 
 ### Resposta
 
@@ -1148,6 +1205,10 @@ Roles aceitas: `ADMIN`, `MEMBER` e `VIEWER`.
 
 ---
 
+Nos endpoints de membros, `memberUserId` é UUID obrigatório na adição e `role` é obrigatória na adição/alteração, aceitando somente ADMIN, MEMBER ou VIEWER. Alterar/remover alvo inexistente ou de outro Board retorna `404`; tentar alterar/remover OWNER ou a si próprio retorna `403`. Remover BoardMember não remove User nem WorkspaceMember: OWNER/ADMIN do Workspace podem continuar visualizando o Board.
+
+---
+
 # Alterar Role de Membro
 
 ## PATCH
@@ -1225,8 +1286,8 @@ Somente o `OWNER` pode remover. O proprietário não pode ser removido nem remov
 # Fluxo de Gerenciamento de Membros
 
 ```text
-Usuário autenticado → BoardPage → GET /boards/:id/members
-→ Lista de BoardMember → Ações permitidas pela BoardRole
+Usuário autenticado → BoardPage → GET /boards/:id
+→ board.members → BoardMembersSection → Ações permitidas pela BoardRole
 → Adicionar / Alterar / Remover → Prisma → Interface atualizada
 ```
 

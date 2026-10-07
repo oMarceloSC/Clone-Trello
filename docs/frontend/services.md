@@ -1203,7 +1203,7 @@ Board[]
 
 ## Responsabilidades
 
-- Buscar todos os Boards do Workspace.
+- Buscar os Boards visíveis ao usuário no Workspace.
 - Retornar apenas Boards ativos.
 - Fornecer os dados necessários para a `WorkspacePage`.
 - Atualizar a interface após alterações.
@@ -1364,6 +1364,12 @@ Renderização da BoardPage
 
 ---
 
+O service centraliza HTTP e retorna dados; atualizações de estado são responsabilidade das páginas. `getBoardById()` já retorna os membros com dados do usuário. `listBoardMembers()` permanece disponível, mas não é chamado na montagem do BoardMembersSection controlado.
+
+Na atualização, campos opcionais são strings, não null. Campos omitidos permanecem inalterados; campos textuais opcionais aceitam string vazia. A resposta não contém relações: WorkspacePage preserva `members` ao mesclar os dados. Archive/restore retorna somente a participação do usuário em `members`, incluindo role e favorito.
+
+---
+
 # updateBoard()
 
 ## Endpoint
@@ -1398,7 +1404,7 @@ Todos os campos são opcionais, permitindo atualização parcial do Board.
 ```ts
 type UpdateBoardResponse = {
   message: string;
-  board: Board;
+  board: Omit<Board, "members" | "workspace">;
 }
 ```
 
@@ -1406,7 +1412,7 @@ type UpdateBoardResponse = {
 
 - Atualizar as informações de um Board.
 - Permitir atualização parcial dos dados.
-- Enviar apenas os campos que precisam ser modificados.
+- Encaminhar o payload recebido; o service não calcula diferenças entre campos.
 - Retornar a mensagem de sucesso enviada pela API.
 - Retornar o Board atualizado.
 - Propagar erros de acesso e de permissão para a página responsável.
@@ -1414,7 +1420,7 @@ type UpdateBoardResponse = {
 ## Fluxo
 
 ```text
-BoardPage
+WorkspacePage
 
 ↓
 
@@ -1678,7 +1684,7 @@ Seção de Boards arquivados
 GET /boards/:id/members
 ```
 
-Recebe `boardId`, consome `ListBoardMembersResponse` e retorna diretamente `BoardMember[]` para a `BoardMembersSection`.
+Recebe `boardId`, consome `ListBoardMembersResponse` e retorna diretamente `BoardMember[]` ao chamador. A BoardMembersSection atual recebe a lista do pai, sem executar esse service ao montar.
 
 ---
 
@@ -2060,25 +2066,6 @@ type UpdateWorkspaceMemberRoleResponse = {
 
 ---
 
-## Board
-
-```ts
-type Board = {
-  id: string;
-  title: string;
-  description: string | null;
-  backgroundColor: string | null;
-  coverImage: string | null;
-  isArchived: boolean;
-  workspaceId: string;
-  createdById: string;
-  createdAt: string;
-  updatedAt: string;
-}
-```
-
----
-
 ## CreateBoardRequest
 
 ```ts
@@ -2208,7 +2195,7 @@ type UpdateBoardRequest = {
 ```ts
 type UpdateBoardResponse = {
   message: string;
-  board: Board;
+  board: Omit<Board, "members" | "workspace">;
 }
 ```
 

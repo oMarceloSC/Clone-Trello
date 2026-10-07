@@ -67,13 +67,10 @@ Gerenciamento de Workspaces.
 Arquivo:
 
 ```
-workspaces.md
+workspace.md
 ```
 
-Endpoints atuais:
-
-- POST /workspaces
-- GET /workspaces
+Endpoints atuais: CRUD de Workspaces, listagem/alteração/remoção de membros, criação de convites e aceitação/listagem de convites pendentes. Consulte [Workspaces](workspace.md).
 
 ---
 
@@ -85,7 +82,7 @@ Arquivo:
 boards.md
 ```
 
-Endpoints planejados.
+Milestone 4 implementada: CRUD, favoritos, arquivamento/restauração, listagem de arquivados e quatro endpoints de membros. Contratos e permissões em [Boards API](boards.md).
 
 ---
 
