@@ -6,6 +6,55 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 
 ---
 
+# [0.5.0] - Lists
+
+## Added
+
+### Backend
+
+* Model `BoardList` e migration `20261007003215_create_board_listt`, com título, posição, timestamps, índices e relação com Board.
+* CRUD: `POST`/`GET /boards/:boardId/lists` e `PATCH`/`DELETE /lists/:id`.
+* Reordenação transacional por `PATCH /boards/:boardId/lists/reorder`, validando a coleção completa de IDs do Board sem duplicações.
+* Validação Zod de UUIDs e títulos de 1 a 100 caracteres após `trim()`.
+* Mutações autorizadas para OWNER, ADMIN e MEMBER do Board, verificando vínculo com Workspace; VIEWER permanece somente leitura.
+* Exclusão permanente e renumeração das posições restantes na mesma transação.
+
+### Frontend
+
+* Integração de Lists à `BoardPage`, com estado vazio, carregamento e atualização sem reload.
+* Componentes `BoardLists`, `ListColumn`, `CreateListForm`, `DeleteListModal` e `SortableListColumn`, serviços e tipos de Lists.
+* Criação, edição inline por Enter/Salvar, cancelamento por Escape/Cancelar e exclusão com confirmação.
+* Drag-and-drop horizontal com dnd-kit, handle dedicado, sensores de mouse/toque e reordenação por teclado.
+* Foco visível, nomes acessíveis, anúncios em português e gerenciamento de foco no modal.
+* Estados de envio, bloqueio de requisições duplicadas, preservação de rascunhos em falhas e mensagens de erro acessíveis.
+* Ordem otimista, rollback local, reconciliação e ação para recuperar sincronização após falhas.
+* Proteções por geração/remontagem para respostas obsoletas e coordenação de criação, edição, exclusão e reordenação.
+* Confirmação da ordem por GET após o PATCH: o controller atual retorna somente mensagem, sem coleção de Lists.
+
+### Testes e documentação
+
+* Script `npm run test:lists` com `node:test`/tsx, PostgreSQL real isolado e Playwright com Microsoft Edge headless.
+* 27 testes de API e 16 cenários reais de navegador aprovados na auditoria, zero falhas finais; 44 registros do runner incluem o agrupador da interface.
+* Fixtures descartáveis em bancos novos por execução e ferramenta de inspeção/limpeza restrita de auditorias interrompidas.
+* Relatório `docs/LISTS_MILESTONE_5_AUDIT.md`, documentação dos cinco endpoints, atualização de README e roadmap.
+
+## Fixed
+
+* Criação concorrente de Lists que gerava posições repetidas: cálculo e inserção em transação serializável, com retentativas para conflitos Prisma e do adaptador PostgreSQL.
+* Middleware de autenticação que aceitava esquemas diferentes de Bearer; validação de formato e subject do JWT.
+* Aplicação de respostas antigas no carregamento e na tentativa de recarga da `BoardPage` após troca de Board.
+* Erros de lint em Lists, preservação da causa de erros e referências usadas em cleanup.
+* Contenção explícita de Tab/Shift+Tab no modal, além do foco inicial e da restauração de foco.
+
+## Limitações conhecidas
+
+* Cobertura de navegador restrita ao Edge headless; sem validação em outros navegadores, leitor de tela ou dispositivo físico.
+* Sem teste de carga ou garantia de todas as combinações de concorrência entre clientes.
+* GET adicional após reordenação e aviso de bundle principal acima de 500 kB mantidos.
+* Milestone concluída no escopo auditado; não representa homologação de produção. Cards permanecem planejados.
+
+---
+
 # [0.4.0] - Boards
 
 ## Fixed

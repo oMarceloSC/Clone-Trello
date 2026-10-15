@@ -3,6 +3,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import {
@@ -13,6 +14,7 @@ import {
 
 import { useAuth } from "../../auth/hooks/useAuth";
 import { BoardMembersSection } from "../components/BoardMembersSection";
+import { BoardLists } from "../../lists/components/BoardLists";
 import {
   archiveBoard,
   deleteBoard,
@@ -36,6 +38,7 @@ export function BoardPage() {
   const navigate = useNavigate();
   const { id } = useParams();
   const { user } = useAuth();
+  const boardRequestGeneration = useRef(0);
 
   const [board, setBoard] =
     useState<Board | null>(null);
@@ -77,6 +80,8 @@ export function BoardPage() {
     useState<string | null>(null);
 
   useEffect(() => {
+    const requestGeneration = ++boardRequestGeneration.current;
+    let isActive = true;
     async function loadBoard() {
       if (!id) {
         setBoardError(
@@ -92,12 +97,14 @@ export function BoardPage() {
         setBoardError(null);
 
         const data = await getBoardById(id);
+        if (!isActive || requestGeneration !== boardRequestGeneration.current) return;
 
         setBoard({
           ...data,
           members: data.members ?? [],
         });
       } catch (error) {
+        if (!isActive || requestGeneration !== boardRequestGeneration.current) return;
         if (axios.isAxiosError(error)) {
           const message =
             error.response?.data?.message ??
@@ -111,11 +118,12 @@ export function BoardPage() {
           "Ocorreu um erro inesperado ao carregar o Board.",
         );
       } finally {
-        setIsLoading(false);
+        if (isActive && requestGeneration === boardRequestGeneration.current) setIsLoading(false);
       }
     }
 
     void loadBoard();
+    return () => { isActive = false; };
   }, [id]);
 
   const currentMember:
@@ -132,6 +140,11 @@ export function BoardPage() {
 
   const canDeleteBoard =
     currentMember?.role === "OWNER";
+
+  const canManageLists =
+    currentMember?.role === "OWNER" ||
+    currentMember?.role === "ADMIN" ||
+    currentMember?.role === "MEMBER";
 
   const canArchiveBoard =
     currentMember?.role === "OWNER" ||
@@ -161,17 +174,20 @@ export function BoardPage() {
       return;
     }
 
+    const requestGeneration = ++boardRequestGeneration.current;
     setIsLoading(true);
     setBoardError(null);
 
     void getBoardById(id)
       .then((data) => {
+        if (requestGeneration !== boardRequestGeneration.current) return;
         setBoard({
           ...data,
           members: data.members ?? [],
         });
       })
       .catch((error: unknown) => {
+        if (requestGeneration !== boardRequestGeneration.current) return;
         if (axios.isAxiosError(error)) {
           setBoardError(
             error.response?.data?.message ??
@@ -186,7 +202,7 @@ export function BoardPage() {
         );
       })
       .finally(() => {
-        setIsLoading(false);
+        if (requestGeneration === boardRequestGeneration.current) setIsLoading(false);
       });
   }
 
@@ -398,7 +414,7 @@ export function BoardPage() {
     }
   }
 
-  if (isLoading) {
+  if (isLoading || (board && board.id !== id && !boardError)) {
     return (
       <main className="board-page">
         <div
@@ -666,36 +682,13 @@ export function BoardPage() {
             <h2>Lists</h2>
 
             <p>
-              As listas deste Board serão exibidas aqui.
+              Organize as atividades deste Board em listas.
             </p>
           </div>
 
-          <button
-            type="button"
-            className="primary-button"
-            disabled
-            title="Disponível na Milestone de Lists"
-          >
-            Criar List
-          </button>
         </div>
 
-        <div className="board-lists-empty">
-          <div
-            className="board-lists-empty-icon"
-            aria-hidden="true"
-          >
-            L
-          </div>
-
-          <h3>
-            Nenhuma List disponível
-          </h3>
-
-          <p>
-            A criação e listagem de Lists serão implementadas na próxima milestone.
-          </p>
-        </div>
+        <BoardLists boardId={board.id} canManageLists={canManageLists} />
       </section>
 
       {isArchiveModalOpen && (

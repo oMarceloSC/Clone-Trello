@@ -212,24 +212,41 @@ Cada milestone representa um conjunto de funcionalidades relacionadas.
 
 ---
 
-# Milestone 5 — Lists
+# Milestone 5 — Lists ✅
 
 ## Backend
 
-* [ ] Model List
-* [ ] Criar List
-* [ ] Listar Lists
-* [ ] Atualizar List
-* [ ] Excluir List
-* [ ] Reordenar Lists
+* [x] Model BoardList
+* [x] Migration de BoardList
+* [x] Criar List
+* [x] Listar Lists
+* [x] Atualizar List
+* [x] Excluir List
+* [x] Reordenar Lists
+* [x] Permissões de leitura e mutação por Board e Workspace
+* [x] Proteção da criação concorrente
 
 ## Frontend
 
-* [ ] Exibir Lists
-* [ ] Criar List
-* [ ] Atualizar List
-* [ ] Excluir List
-* [ ] Reordenar Lists
+* [x] Exibir Lists
+* [x] Criar List
+* [x] Atualizar List
+* [x] Excluir List
+* [x] Reordenar Lists
+* [x] Drag-and-drop horizontal por mouse e toque emulado
+* [x] Reordenação por teclado e feedback acessível
+* [x] Controles por permissão e confirmação de exclusão
+* [x] Integração frontend/backend na BoardPage sem reload
+* [x] Proteções contra respostas obsoletas e operações conflitantes
+* [x] Reconciliação e recuperação da sincronização da ordem
+
+## Validação e documentação
+
+* [x] Testes automatizados de Lists: 27 testes de API e 16 cenários reais no Edge headless, zero falhas finais na auditoria
+* [x] Auditoria técnica e funcional documentada
+* [x] Documentação da API, README e changelog
+
+Concluída no escopo da [auditoria](LISTS_MILESTONE_5_AUDIT.md), sem homologação de produção. Permanecem validação em outros navegadores, leitor de tela e dispositivo físico, testes de carga/concorrência ampliada e avaliação do aviso de bundle acima de 500 kB. O PATCH de reordenação retorna somente mensagem, e o frontend confirma a coleção por GET. Essas limitações não são marcadas como funcionalidades aprovadas. Cards continuam na Milestone 6.
 
 ---
 

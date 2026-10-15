@@ -1818,6 +1818,7 @@ button {
 }
 
 .board-page {
+  min-width: 0;
   display: grid;
   gap: 28px;
   padding: 32px;
@@ -1934,6 +1935,7 @@ button {
 
 .board-members-section,
 .board-lists-section {
+  min-width: 0;
   padding: 28px;
   border-radius: 12px;
   background: #ffffff;
@@ -2548,5 +2550,321 @@ button {
 
   .workspace-archived-count {
     align-self: flex-start;
+  }
+}
+
+/* ===================================
+   LISTS — MILESTONE 5
+   =================================== */
+
+.board-lists-container {
+  width: 100%;
+  min-width: 0;
+  margin-top: 24px;
+  overflow-x: auto;
+  padding-bottom: 12px;
+}
+
+.board-lists-columns {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  min-height: 160px;
+}
+
+.board-list-column {
+  width: 280px;
+  min-width: 280px;
+  max-width: 280px;
+  flex-shrink: 0;
+  padding: 14px;
+  border: 1px solid #dfe1e6;
+  border-radius: 12px;
+  background: #f1f2f4;
+  box-shadow: 0 2px 6px rgb(9 30 66 / 10%);
+}
+
+.board-list-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 4px 4px 12px;
+}
+
+.board-list-title {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: #172b4d;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.board-list-edit-button {
+  flex-shrink: 0;
+  padding: 5px 8px;
+  border: 1px solid #dfe1e6;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #44546f;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.board-list-edit-button:hover {
+  border-color: #0c66e4;
+  background: #e9f2ff;
+}
+
+.board-list-header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  flex: 0 0 auto;
+  gap: 4px;
+}
+
+.board-list-sortable {
+  position: relative;
+  flex: 0 0 auto;
+  border-radius: 12px;
+}
+
+.board-list-sortable.is-dragging {
+  z-index: 2;
+  opacity: 0.85;
+  box-shadow: 0 8px 24px rgb(9 30 66 / 30%);
+}
+
+.board-list-sortable.is-drop-target {
+  outline: 3px dashed #0c66e4;
+  outline-offset: 3px;
+}
+
+.board-list-drag-handle {
+  flex-shrink: 0;
+  border: 0;
+  border-radius: 4px;
+  padding: 2px 4px;
+  background: transparent;
+  color: #44546f;
+  font-size: 22px;
+  line-height: 1;
+  cursor: grab;
+  touch-action: none;
+}
+
+.board-list-drag-handle:active {
+  cursor: grabbing;
+}
+
+.board-list-drag-handle:focus-visible {
+  outline: 2px solid #0c66e4;
+  outline-offset: 2px;
+}
+
+.board-list-drag-handle:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.board-list-sortable .board-list-header {
+  flex-wrap: wrap;
+}
+
+.board-list-sortable .board-list-title {
+  flex: 1;
+}
+
+.board-list-sortable .board-list-header-actions {
+  margin-left: auto;
+}
+
+.board-lists-columns[aria-busy="true"] .board-list-column {
+  border-color: #0c66e4;
+}
+
+.board-list-delete-button {
+  color: #ae2e24;
+}
+
+.board-list-header-actions button:disabled,
+.board-list-add-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.delete-list-dialog {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  border: 0;
+  color: #172b4d;
+  overflow-y: auto;
+}
+
+.delete-list-dialog:not([open]) {
+  display: none;
+}
+
+.delete-list-dialog .modal-card {
+  min-width: 0;
+  max-height: 100%;
+  overflow-y: auto;
+}
+
+.delete-list-dialog button:focus-visible,
+.board-lists-columns:focus-visible {
+  outline: 2px solid #0c66e4;
+  outline-offset: 2px;
+}
+
+.delete-list-name {
+  overflow-wrap: anywhere;
+}
+
+.board-list-edit-button:focus-visible {
+  outline: 2px solid #0c66e4;
+  outline-offset: 2px;
+}
+
+.edit-list-form {
+  display: grid;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+}
+
+.edit-list-form :disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.edit-list-form .create-list-actions > button {
+  flex: 1 1 auto;
+}
+
+.edit-list-status {
+  color: #5e6c84;
+  font-size: 12px;
+}
+
+.board-list-content {
+  display: grid;
+  gap: 10px;
+  min-height: 64px;
+}
+
+.board-list-empty {
+  margin: 0;
+  padding: 16px 12px;
+  border: 1px dashed #dfe1e6;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #5e6c84;
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.board-lists-columns > .board-lists-empty {
+  width: 280px;
+  flex: 0 0 280px;
+  min-width: 0;
+  margin-top: 0;
+}
+
+.board-list-create-column {
+  width: 280px;
+  flex: 0 0 280px;
+  min-width: 0;
+}
+
+.board-list-add-button {
+  width: 100%;
+  padding: 16px;
+  border: 1px dashed #dfe1e6;
+  border-radius: 12px;
+  background: #f1f2f4;
+  color: #172b4d;
+  text-align: left;
+  font-weight: 600;
+}
+
+.board-list-add-button:hover {
+  background: #e9f2ff;
+  border-color: #0c66e4;
+}
+
+.create-list-form {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid #dfe1e6;
+  border-radius: 12px;
+  background: #f1f2f4;
+}
+
+.create-list-label {
+  color: #172b4d;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.create-list-input {
+  width: 100%;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid #dfe1e6;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #172b4d;
+}
+
+.create-list-input:focus-visible,
+.board-list-add-button:focus-visible,
+.create-list-actions button:focus-visible {
+  outline: 2px solid #0c66e4;
+  outline-offset: 2px;
+}
+
+.create-list-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.create-list-error {
+  margin: 0;
+  color: #ae2e24;
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.create-list-form :disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+@media (max-width: 760px) {
+  .board-lists-container {
+    margin-top: 20px;
+  }
+
+  .board-list-column {
+    width: 260px;
+    min-width: 260px;
+    max-width: 260px;
+  }
+
+  .board-list-create-column,
+  .board-lists-columns > .board-lists-empty {
+    width: 260px;
+    flex-basis: 260px;
   }
 }

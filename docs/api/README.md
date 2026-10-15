@@ -94,7 +94,15 @@ Arquivo:
 lists.md
 ```
 
-Endpoints planejados.
+Milestone 5 implementada. Contratos e permissões em [Lists API](lists.md):
+
+- `POST /boards/:boardId/lists`
+- `GET /boards/:boardId/lists`
+- `PATCH /lists/:id`
+- `DELETE /lists/:id`
+- `PATCH /boards/:boardId/lists/reorder`
+
+O PATCH de reordenação retorna somente uma mensagem; o frontend consulta novamente a coleção por GET para confirmar a ordem.
 
 ---
 
@@ -177,14 +185,4 @@ search.md
 
 # Versionamento
 
-Versão atual:
-
-```
-v0.2.0
-```
-
-Consulte também:
-
-```
-docs/changelog.md
-```
+O histórico funcional segue as versões documentadas por milestone no [Changelog](../changelog.md), incluindo a Milestone 5 — Lists em `0.5.0`. As rotas atuais não possuem prefixo de versão. Essa referência documental não altera a versão dos pacotes nem o campo `version` do endpoint raiz.

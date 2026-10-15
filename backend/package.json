@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "test:lists": "tsx --test --test-concurrency=1 tests/lists.audit.test.ts",
     "dev": "tsx watch src/server.ts"
   },
   "keywords": [],

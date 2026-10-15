@@ -17,9 +17,9 @@ export async function authMiddleware(
     });
   }
 
-  const [, token] = authHeader.split(" ");
+  const [scheme, token, extra] = authHeader.trim().split(/\s+/);
 
-  if (!token) {
+  if (scheme?.toLowerCase() !== "bearer" || !token || extra) {
     return reply.status(401).send({
       message: "Token inválido",
     });
@@ -30,6 +30,10 @@ export async function authMiddleware(
       token,
       process.env.JWT_SECRET as string
     ) as JwtPayload;
+
+    if (typeof decoded !== "object" || !decoded || typeof decoded.sub !== "string" || !decoded.sub.trim()) {
+      return reply.status(401).send({ message: "Token inválido" });
+    }
 
     request.user = {
       id: decoded.sub,

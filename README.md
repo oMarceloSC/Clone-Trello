@@ -84,6 +84,8 @@ Atualmente o backend já possui:
 - ✅ Tratamento global de erros.
 - ✅ Validação utilizando Zod.
 - ✅ Boards: CRUD, favoritos por usuário, arquivamento/restauração e membros.
+- ✅ Lists: criação, listagem, edição, exclusão e reordenação com permissões por Board.
+- ✅ Criação concorrente de Lists protegida por transação serializável.
 
 ---
 
@@ -111,6 +113,8 @@ O frontend já possui:
 - ✅ Feedback de sucesso.
 - ✅ Boards ativos e arquivados, criação, edição e restauração no Workspace.
 - ✅ BoardPage com favorito, arquivamento, exclusão e gerenciamento de membros.
+- ✅ Lists na BoardPage: criação, edição inline e exclusão com confirmação, sem reload.
+- ✅ Drag-and-drop horizontal de Lists por mouse/toque, reordenação por teclado e recuperação de sincronização.
 
 ---
 
@@ -141,6 +145,7 @@ O frontend já possui:
 - React Hook Form
 - Zod
 - CSS global em `src/index.css`
+- dnd-kit para reordenação de Lists
 
 ---
 
@@ -158,6 +163,7 @@ O frontend já possui:
 - Thunder Client
 - Prisma Studio
 - Docker Desktop
+- node:test/tsx e Playwright com Microsoft Edge para a auditoria de Lists
 
 ---
 
@@ -268,6 +274,7 @@ Toda a documentação técnica do projeto está organizada na pasta `docs`, sepa
 | auth.md | Autenticação |
 | [workspace.md](docs/api/workspace.md) | Workspaces, membros e convites |
 | [boards.md](docs/api/boards.md) | Boards, membros e permissões |
+| [lists.md](docs/api/lists.md) | CRUD, reordenação e permissões de Lists |
 
 ---
 
@@ -295,6 +302,7 @@ Toda a documentação técnica do projeto está organizada na pasta `docs`, sepa
 | roadmap.md | Planejamento do projeto |
 | changelog.md | Histórico de versões |
 | decisions.md | Decisões arquiteturais |
+| [LISTS_MILESTONE_5_AUDIT.md](docs/LISTS_MILESTONE_5_AUDIT.md) | Evidências, correções e limitações da auditoria de Lists |
 
 ---
 
@@ -359,6 +367,17 @@ Toda a documentação técnica do projeto está organizada na pasta `docs`, sepa
 
 ---
 
+## Lists
+
+- [x] Model BoardList e migration.
+- [x] Criar, listar, editar título e excluir Lists.
+- [x] Reordenar Lists com persistência e confirmação por GET.
+- [x] Drag-and-drop horizontal e alternativa por teclado.
+- [x] Permissões, confirmação de exclusão e tratamento de falhas sem reload.
+- [x] Proteção contra respostas obsoletas e testes automatizados com banco isolado.
+
+---
+
 # 🗺️ Roadmap
 
 O desenvolvimento do projeto é dividido em milestones, permitindo evolução contínua da aplicação e documentação completa de cada etapa.
@@ -369,7 +388,7 @@ O desenvolvimento do projeto é dividido em milestones, permitindo evolução co
 | ✅ Milestone 2 — Workspaces | Concluído |
 | ✅ Milestone 3 — Frontend de Integração | Concluído |
 | ✅ Milestone 4 — Boards | Concluído |
-| ⏳ Milestone 5 — Lists | Próximo |
+| ✅ Milestone 5 — Lists | Concluído no escopo auditado |
 | ⏳ Milestone 6 — Cards | Planejado |
 | ⏳ Milestone 7 — Colaboração em Tempo Real | Planejado |
 | ⏳ Milestone 8 — Dashboard, Atividades e Notificações | Planejado |
@@ -512,16 +531,29 @@ http://localhost:5173
 
 # 🧪 Testes
 
-Atualmente os testes das APIs são realizados utilizando:
+APIs também podem ser verificadas manualmente com Thunder Client e Prisma Studio. A Milestone 5 possui testes automatizados de API e interface real:
 
-- Thunder Client
-- Prisma Studio
+```powershell
+cd backend
+npm run test:lists
+```
 
-Futuramente serão adicionados:
+No Windows, use `npm.cmd run test:lists` se a política do PowerShell bloquear o wrapper `npm.ps1`.
 
-- Testes Unitários
-- Testes de Integração
-- Testes End-to-End (E2E)
+Requisitos para a suíte completa:
+
+- Dependências instaladas em `backend` e `frontend`, incluindo as de desenvolvimento; Prisma Client gerado.
+- PostgreSQL disponível no `DATABASE_URL` existente e usuário com permissão para criar bancos temporários.
+- `JWT_SECRET` configurado no ambiente do backend.
+- Microsoft Edge instalado no ambiente que executa Playwright. A auditoria foi executada no Windows com Edge headless.
+
+A suíte cria um banco `lists_audit_<UUID>` exclusivo, aplica nele as migrations existentes e cria fixtures descartáveis. Não executa reset ou seed no banco de desenvolvimento. Inicia backend e frontend temporários e remove seu próprio banco no teardown. Não é necessário manter `npm run dev` aberto para esse comando.
+
+A auditoria registrou **27 testes de API e 16 cenários de navegador aprovados**, com zero falhas finais. O runner informa 44 registros porque também conta o agrupador da interface; são 43 casos efetivos. Consulte o [relatório de auditoria](docs/LISTS_MILESTONE_5_AUDIT.md) para reprodução, resultados e limitações. Para apenas inspecionar bancos deixados por uma interrupção, execute `node tests/audit-cleanup.mjs` a partir de `backend`; a remoção exige opção explícita e verificação das fixtures.
+
+Verificações estáticas disponíveis: `npx.cmd tsc --noEmit` no backend; `npx.cmd tsc -p tsconfig.app.json --noEmit`, `npm.cmd run lint` e `npm.cmd run build` no frontend. O script genérico `npm test` do backend ainda é um placeholder; utilize `test:lists` para esta suíte.
+
+Permanecem fora da cobertura: outros navegadores, leitor de tela, dispositivo móvel físico, carga elevada e todas as combinações de concorrência entre clientes. A conclusão da milestone não equivale a homologação de produção. Testes dos demais módulos e infraestrutura de CI permanecem planejados.
 
 ---
 
@@ -565,7 +597,7 @@ Tipos utilizados:
 | Frontend | 🚧 |
 | Banco de Dados | ✅ |
 | Documentação | 🚧 |
-| Testes Automatizados | ⏳ |
+| Testes Automatizados | ✅ Lists; demais módulos planejados |
 | Deploy | ⏳ |
 
 ---
@@ -583,8 +615,7 @@ As próximas etapas do projeto incluem:
 
 ## Lists
 
-- CRUD completo.
-- Ordenação.
+- CRUD e reordenação concluídos na Milestone 5. A validação complementar segue as limitações da auditoria; o próximo módulo funcional é Cards.
 
 ---
 

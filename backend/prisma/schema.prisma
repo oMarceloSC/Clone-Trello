@@ -121,6 +121,7 @@ model Board {
   createdBy User      @relation("BoardCreator", fields: [createdById], references: [id], onDelete: Cascade)
 
   members BoardMember[]
+  lists   BoardList[]
 
   @@index([workspaceId])
   @@index([createdById])
@@ -141,4 +142,18 @@ model BoardMember {
 
   @@unique([boardId, userId])
   @@index([userId])
+}
+
+model BoardList {
+  id        String   @id @default(uuid())
+  title     String
+  position  Int
+  boardId   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  board Board @relation(fields: [boardId], references: [id], onDelete: Cascade)
+
+  @@index([boardId])
+  @@index([boardId, position])
 }
