@@ -151,9 +151,28 @@ model BoardList {
   boardId   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  cards     Card[]
 
   board Board @relation(fields: [boardId], references: [id], onDelete: Cascade)
 
   @@index([boardId])
   @@index([boardId, position])
+}
+
+model Card {
+  id          String    @id @default(uuid())
+  title       String
+  description String?
+  position    Int
+  isArchived  Boolean   @default(false)
+  dueDate     DateTime?
+  listId      String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  list BoardList @relation(fields: [listId], references: [id], onDelete: Cascade)
+
+  @@index([listId])
+  @@index([listId, position])
+  @@index([isArchived])
 }

@@ -2868,3 +2868,305 @@ button {
     flex-basis: 260px;
   }
 }
+
+/* Cards — Milestone 6 */
+.list-cards,
+.create-card-form {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.board-card {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 12px;
+  border: 1px solid #dfe1e6;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #172b4d;
+  box-shadow: 0 1px 2px rgb(9 30 66 / 15%);
+  text-align: left;
+  overflow-wrap: anywhere;
+  line-height: 1.5;
+}
+
+.board-card:hover:not(:disabled) {
+  border-color: #0c66e4;
+  background: #f7faff;
+}
+
+.card-add-button {
+  min-height: 44px;
+  padding: 8px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #44546f;
+  text-align: left;
+}
+
+.card-add-button:hover:not(:disabled) {
+  background: #dfe1e6;
+}
+
+.create-card-form label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.create-card-form input {
+  width: 100%;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid #dfe1e6;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #172b4d;
+}
+
+.card-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.card-form-actions button {
+  flex: 1 1 auto;
+  min-height: 44px;
+  padding: 10px;
+  font-size: 13px;
+}
+
+.card-feedback,
+.card-error {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.card-feedback { color: #5e6c84; }
+.card-error { color: #ae2e24; }
+
+.list-cards button:disabled,
+.create-card-form input:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.list-cards button:focus-visible,
+.create-card-form input:focus-visible,
+.card-details-dialog button:focus-visible {
+  outline: 2px solid #0c66e4;
+  outline-offset: 2px;
+}
+
+.card-details-dialog {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  border: 0;
+  color: #172b4d;
+  overflow-y: auto;
+}
+
+.card-details-dialog:not([open]) { display: none; }
+
+.card-details-dialog .modal-card {
+  min-width: 0;
+  max-height: 100%;
+  overflow-y: auto;
+}
+
+.card-details-dialog h2,
+.card-details-content {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.card-details-content {
+  display: grid;
+  gap: 20px;
+  padding: 24px;
+}
+
+.card-details-content dl,
+.card-details-content h3,
+.card-description { margin: 0; }
+.card-details-content dt { font-weight: 700; }
+.card-details-content dd { margin: 6px 0 16px; }
+.card-details-content h3 { font-size: 16px; }
+.card-description {
+  margin-top: 8px;
+  white-space: pre-wrap;
+  line-height: 1.6;
+}
+
+@media (max-width: 640px) {
+  .card-details-content { padding: 20px 16px; }
+  .card-details-dialog .modal-header { padding: 20px 16px; }
+  .card-form-actions { flex-direction: column; }
+}
+
+/* ===================================
+   CARDS ARQUIVADOS — MILESTONE 6
+   =================================== */
+
+.list-archived-section {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  padding-top: 10px;
+  border-top: 1px solid #dfe1e6;
+}
+
+.list-archived-section > .card-add-button {
+  width: 100%;
+  min-height: 38px;
+  padding: 8px 10px;
+  color: #44546f;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.list-archived-section > .card-add-button:hover:not(:disabled) {
+  background: #dfe1e6;
+}
+
+.list-archived-content {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.list-archived-card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid #dfe1e6;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgb(9 30 66 / 8%);
+}
+
+.list-archived-card > span {
+  color: #44546f;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.list-archived-card > .card-add-button {
+  align-self: flex-end;
+  min-height: 34px;
+  padding: 6px 12px;
+  border: 1px solid #b3d4ff;
+  border-radius: 6px;
+  background: #e9f2ff;
+  color: #0c66e4;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.list-archived-card > .card-add-button:hover:not(:disabled) {
+  border-color: #85b8ff;
+  background: #d4e7ff;
+}
+
+.list-archived-content > .board-list-empty {
+  padding: 12px;
+  font-size: 12px;
+}
+
+@media (max-width: 480px) {
+  .list-archived-card > .card-add-button {
+    width: 100%;
+    align-self: stretch;
+  }
+}
+
+
+/* ===================================
+   DRAG-AND-DROP DOS CARDS
+   MILESTONE 6
+   =================================== */
+
+.card-drop-zone {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  min-height: 48px;
+  padding: 4px;
+  border: 2px dashed transparent;
+  border-radius: 8px;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease;
+}
+
+.card-drop-zone.is-drop-target {
+  border-color: #0c66e4;
+  background: #e9f2ff;
+}
+
+.board-card-sortable {
+  min-width: 0;
+  border-radius: 8px;
+}
+
+.board-card-sortable.is-dragging {
+  opacity: 0.45;
+}
+
+.board-card-sortable.is-drop-target {
+  outline: 2px solid #0c66e4;
+  outline-offset: 2px;
+}
+
+.board-card-sortable-content {
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+  min-width: 0;
+}
+
+.board-card-sortable-content > .board-card {
+  flex: 1;
+  min-width: 0;
+}
+
+.board-card-drag-handle {
+  flex: 0 0 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #dfe1e6;
+  border-radius: 6px;
+  background: #f1f2f4;
+  color: #44546f;
+  cursor: grab;
+  touch-action: none;
+}
+
+.board-card-drag-handle:hover:not(:disabled) {
+  background: #dfe1e6;
+  color: #172b4d;
+}
+
+.board-card-drag-handle:active {
+  cursor: grabbing;
+}
+
+.board-card-drag-handle:focus-visible {
+  outline: 2px solid #0c66e4;
+  outline-offset: 2px;
+}

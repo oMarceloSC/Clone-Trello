@@ -5,10 +5,26 @@ import { ListColumn } from "./ListColumn";
 
 type Props = ComponentProps<typeof ListColumn> & { sortingDisabled: boolean };
 
-export function SortableListColumn({ sortingDisabled, ...props }: Props) {
-  const { attributes, listeners, setNodeRef, setActivatorNodeRef, transform, transition, isDragging, isOver } = useSortable({
+export function SortableListColumn({ 
+  sortingDisabled, 
+  ...props 
+}: Props) {
+  const { 
+    attributes, 
+    listeners, 
+    setNodeRef, 
+    setActivatorNodeRef, 
+    transform, 
+    transition, 
+    isDragging, 
+    isOver 
+  } = useSortable({
     id: props.list.id,
     disabled: sortingDisabled,
+    data: {
+      type: "list",
+      listId: props.list.id,
+    },
   });
   return (
     <div ref={setNodeRef}

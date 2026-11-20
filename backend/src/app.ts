@@ -8,6 +8,7 @@ import { workspaceInvitationRoutes } from "./modules/workspaces/routes/workspace
 import { workspaceRoutes } from "./modules/workspaces/routes/workspace.routes.js";
 import { boardRoutes } from "./modules/boards/routes/board.routes.js";
 import { listRoutes } from "./modules/lists/routes/list.routes.js";
+import { cardRoutes } from "./modules/cards/routes/card.routes.js";
 
 const isProduction = process.env.NODE_ENV === "production";
 
@@ -35,6 +36,8 @@ app.register(workspaceRoutes, {
 app.register(boardRoutes);
 
 app.register(listRoutes);
+
+app.register(cardRoutes);
 
 app.register(workspaceInvitationRoutes, {
   prefix: "/workspace-invitations",
