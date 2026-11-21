@@ -1166,6 +1166,8 @@ Os casos de uso validam WorkspaceMember e sua role nas operações de atualizaç
 - ✅ Alteração de permissões dos membros.
 - ✅ Remoção de membros.
 
+Os Boards do Workspace oferecem [Lists](lists.md) e [Cards](cards.md).
+
 ---
 
 ## Próximas Funcionalidades
@@ -1174,4 +1176,3 @@ Os casos de uso validam WorkspaceMember e sua role nas operações de atualizaç
 - Cancelamento de convites.
 - Reenvio de convites.
 - Auditoria de atividades do Workspace.
-- Expansão com Lists e Cards nas próximas milestones.

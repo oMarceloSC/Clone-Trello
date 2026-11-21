@@ -18,7 +18,7 @@ npm run build
 
 ## Estado atual
 
-Autenticação, Workspaces e Milestone 4 — Boards implementados. WorkspacePage lista Boards ativos/arquivados e permite criar, editar e restaurar conforme permissão. BoardPage oferece favorito, arquivamento, exclusão e gerenciamento de membros. Lists são a próxima milestone; o botão da BoardPage é apenas um placeholder.
+Autenticação, Workspaces e Milestone 4 — Boards implementados. WorkspacePage lista Boards ativos/arquivados e permite criar, editar e restaurar conforme permissão. BoardPage oferece favorito, arquivamento, exclusão e gerenciamento de membros. A BoardPage também integra Lists com CRUD e reordenação, além de Cards com CRUD, prazo opcional, arquivamento, restauração e drag-and-drop dentro da List ou entre Lists do Board.
 
 BoardMembersSection é controlado pelos membros da BoardPage. Permissões administrativas e favorito dependem de BoardMember; administradores/proprietários do Workspace podem visualizar sem receber uma role artificial no Board.
 
@@ -33,3 +33,5 @@ BoardMembersSection é controlado pelos membros da BoardPage. Permissões admini
 - [Estado](../docs/frontend/state-management.md)
 - [Estilos](../docs/frontend/styling.md)
 - [API de Boards](../docs/api/boards.md)
+- [API de Lists](../docs/api/lists.md)
+- [API de Cards](../docs/api/cards.md)

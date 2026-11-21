@@ -108,13 +108,7 @@ O PATCH de reordenação retorna somente uma mensagem; o frontend consulta novam
 
 ## Cards
 
-Arquivo:
-
-```
-cards.md
-```
-
-Endpoints planejados.
+A Milestone 6 já disponibiliza CRUD, reordenação, movimentação entre Lists do mesmo Board, arquivamento e restauração. Consulte as nove rotas e suas permissões na [API de Cards](cards.md).
 
 ---
 

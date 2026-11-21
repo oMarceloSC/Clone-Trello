@@ -6,6 +6,29 @@ O formato utilizado é inspirado no padrão **Keep a Changelog**, e o projeto se
 
 ---
 
+# [Unreleased] - Cards
+
+## Added
+
+### Backend
+
+* Model `Card` e migration `20261016005239_create_cards`, com posição, prazo opcional e exclusão em cascata com a List.
+* [API de Cards](api/cards.md) com CRUD, arquivamento, listagem de arquivados e restauração. As rotas usam JWT, validação Zod e permissões por Board.
+* Reordenação e movimentação entre Lists do mesmo Board. A operação persiste posições consecutivas dos Cards ativos nas Lists afetadas em transação serializável, com retentativas de conflito. A exclusão de um Card ativo também recompõe as posições da List.
+
+### Frontend
+
+* Cards ativos nas Lists da BoardPage, criação inline, detalhes em modal, edição de título, descrição e prazo, exclusão com confirmação e seção de arquivados com restauração.
+* Drag-and-drop com dnd-kit e alça dedicada, áreas de destino em Lists vazias e detecção de alvos que preserva a reordenação de Lists.
+* Controles de mutação por permissão, bloqueios durante operações conflitantes, destaque do alvo e feedback de andamento, sucesso e erro. A interface reconsulta Cards após a movimentação ou falha.
+
+### Testes e documentação
+
+* **10/10 cenários manuais aprovados**, conforme resultado reportado no [roadmap](roadmap.md#validação-funcional). O cenário de permissões cobriu os controles da interface.
+* A validação direta da autorização na API permanece pendente. A automação específica da movimentação foi adiada por planejamento.
+
+---
+
 # [0.5.0] - Lists
 
 ## Added

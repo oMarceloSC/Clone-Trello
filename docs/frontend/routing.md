@@ -904,7 +904,7 @@ WorkspacePage
 
 `/boards/:id` renderiza BoardPage dentro de AuthenticatedLayout, protegida por RequireAuthentication. A navegação parte dos cards do Workspace; a autorização de leitura é validada pela API.
 
-A página oferece favorito, arquivamento, exclusão e membros conforme BoardRole. A edição é feita no modal da WorkspacePage. Lists permanecem como placeholder.
+A página oferece favorito, arquivamento, exclusão e membros conforme BoardRole. A edição é feita no modal da WorkspacePage. Lists e Cards são exibidos nessa mesma rota. O modal de detalhes de Card é aberto pela coluna.
 
 ---
 

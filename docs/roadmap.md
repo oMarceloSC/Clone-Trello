@@ -252,17 +252,21 @@ Concluída no escopo da [auditoria](LISTS_MILESTONE_5_AUDIT.md), sem homologaç�
 
 # Milestone 6 — Cards
 
+Em andamento. O fluxo básico está disponível na BoardPage. Consulte a [API de Cards](api/cards.md).
+
 ## Backend
 
-* [ ] Model Card
+* [x] Model Card e migration no PostgreSQL
 * [ ] Model CardMember
-* [ ] Criar Card
-* [ ] Buscar Card
-* [ ] Atualizar Card
-* [ ] Excluir Card
-* [ ] Arquivar Card
-* [ ] Movimentar Card
-* [ ] Datas de entrega
+* [x] Criar Card
+* [x] Listar Cards ativos e arquivados por List e buscar Card por ID
+* [x] Atualizar Card
+* [x] Excluir Card
+* [x] Arquivar e restaurar Card
+* [x] Reordenar na mesma List e mover entre Lists do mesmo Board
+* [x] Persistir posições dos Cards ativos em transação serializável com retentativas de conflito
+* [x] Validar entradas com Zod e proteger rotas com JWT e permissões do Board
+* [x] Data de entrega opcional por Card
 * [ ] Membros
 * [ ] Comentários
 * [ ] Etiquetas
@@ -271,18 +275,39 @@ Concluída no escopo da [auditoria](LISTS_MILESTONE_5_AUDIT.md), sem homologaç�
 
 ## Frontend
 
-* [ ] Exibir Cards
-* [ ] Criar Card
-* [ ] Atualizar Card
-* [ ] Excluir Card
-* [ ] Modal do Card
-* [ ] Drag and Drop
-* [ ] Datas de entrega
+* [x] Exibir Cards
+* [x] Criar Card
+* [x] Atualizar Card
+* [x] Excluir Card
+* [x] Modal de detalhes e edição do Card
+* [x] Arquivar, listar arquivados e restaurar na List
+* [x] Drag-and-drop com dnd-kit e feedback de operação
+* [x] Data de entrega opcional por Card
 * [ ] Membros
 * [ ] Comentários
 * [ ] Etiquetas
 * [ ] Checklist
 * [ ] Uploads
+
+## Validação funcional
+
+* [x] Reordenar Cards dentro da mesma List
+* [x] Movimentar Cards entre Lists diferentes
+* [x] Movimentar Cards para Lists vazias
+* [x] Movimentar o último Card de uma List
+* [x] Persistir movimentações após atualização da página
+* [x] Preservar a reordenação das Lists
+* [x] Cancelar movimentação com Escape
+* [x] Soltar fora das Lists sem alterar a posição no cenário manual
+* [x] Tratar falhas de conexão durante a movimentação
+* [x] Restringir controles de movimentação conforme permissões na interface
+
+**Resultado reportado: 10/10 cenários manuais aprovados.** O cenário de permissões exercitou os controles da interface. A regra de autorização do endpoint foi conferida no código.
+
+* [ ] Validar diretamente na API a autorização do endpoint de movimentação
+* [ ] Automatizar os cenários específicos de movimentação de Cards em uma etapa futura de qualidade
+
+O adiamento da automação foi uma decisão de planejamento e permite avançar nas funcionalidades restantes.
 
 ---
 
@@ -338,6 +363,8 @@ Concluída no escopo da [auditoria](LISTS_MILESTONE_5_AUDIT.md), sem homologaç�
 
 # Milestone 9 — Refinamento do Frontend
 
+A aplicação já tem modais, estados de carregamento e vazio, página 404, confirmações e feedback visual em fluxos específicos. Os itens abaixo acompanham o refinamento desses padrões no conjunto da interface.
+
 ## Interface
 
 * [ ] Responsividade
@@ -365,6 +392,8 @@ Concluída no escopo da [auditoria](LISTS_MILESTONE_5_AUDIT.md), sem homologaç�
 ---
 
 # Milestone 10 — Qualidade e Produção
+
+A auditoria de Lists já inclui testes automatizados de API e navegador. As tarefas abaixo abrangem a ampliação da cobertura do projeto.
 
 ## Testes
 

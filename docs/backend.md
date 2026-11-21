@@ -116,7 +116,7 @@ Responsável pelo tratamento global de erros.
 
 ## modules
 
-Implementados: `auth`, `workspaces` e `boards`. Árvores que incluem Lists, Cards e módulos posteriores representam a expansão planejada.
+Os módulos `auth`, `workspaces`, `boards`, `lists` e `cards` estão implementados. Os demais módulos da árvore são planejados.
 
 A principal pasta da aplicação.
 
@@ -661,23 +661,17 @@ A Milestone 4 inclui criação, listagem ativa/arquivada, busca por ID, edição
 
 Na remoção de WorkspaceMember, o caso de uso bloqueia a saída de proprietário de Board do mesmo Workspace (403). Após as validações, a exclusão dos BoardMembers daquele usuário naquele Workspace e do WorkspaceMember acontece em uma transação. Participações em outros Workspaces são preservadas. A consulta que detecta propriedade de Board ocorre antes da transação de exclusão.
 
-Lists ainda não possuem módulo implementado.
+# Módulos de Lists e Cards
+
+O módulo `lists` implementa CRUD e reordenação por Board. O módulo `cards` implementa CRUD, arquivamento, restauração e movimentação por List. O Fastify registra as rotas autenticadas e os controllers validam entradas com Zod antes de chamar os casos de uso. As operações reutilizam `BoardAccessService`. Consulte os contratos da [API de Lists](api/lists.md) e da [API de Cards](api/cards.md).
 
 ---
 
 # Próximos Módulos
 
-Com Workspaces e Boards implementados, as próximas implementações seguirão esta ordem:
+O CRUD de Cards já está disponível. A evolução dos módulos segue o [roadmap](roadmap.md).
 
 ```
-Lists
-
-↓
-
-Cards
-
-↓
-
 Comments
 
 ↓

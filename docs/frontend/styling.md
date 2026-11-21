@@ -78,7 +78,7 @@ Atualmente existem estilos para:
 - BoardPage.
 - Breadcrumb da BoardPage.
 - Cards de resumo do Board.
-- Área destinada às Lists.
+- Lists e Cards.
 - Estados de carregamento dos Boards.
 - Estados vazios dos Boards.
 - Feedback visual para erros de carregamento dos Boards.
@@ -402,7 +402,7 @@ Atualmente são exibidos:
 
 A seção de membros é carregada de forma independente da página principal, permitindo atualização apenas dessa área quando necessário.
 
-Cada card também possui um botão `Abrir`, responsável por navegar para a `BoardPage`, onde o usuário pode visualizar os detalhes do Board e, futuramente, gerenciar suas Lists e Cards.
+Cada card também possui um botão `Abrir`, responsável por navegar para a `BoardPage`, onde o usuário pode visualizar os detalhes do Board e gerenciar suas Lists e Cards conforme sua permissão.
 
 Dentro dela também está disponível o modal de criação de convite, responsável por:
 
@@ -484,7 +484,7 @@ Após sucesso:
 
 A `BoardPage` utiliza o mesmo padrão visual adotado nas demais páginas autenticadas.
 
-Seu objetivo é apresentar todas as informações relacionadas a um Board específico e servir como ponto de entrada para a futura implementação das Lists.
+Seu objetivo é apresentar todas as informações relacionadas a um Board específico e exibir suas Lists e Cards.
 
 ## Atualmente são exibidos
 
@@ -534,7 +534,7 @@ São exibidos:
 - Informações gerais.
 - Cards de resumo.
 - Lista de membros.
-- Área destinada às Lists.
+- Lists e Cards.
 
 ---
 
@@ -1785,7 +1785,7 @@ O modal de edição na WorkspacePage reutiliza `modal-backdrop`, `modal-card`, `
 
 Cards sem BoardMember exibem `Acesso pelo Workspace`; favorito e ações dependem do membro autenticado. BoardMembersSection reutiliza os estilos de lista, candidatos e confirmação; a mensagem de remoção distingue participação no Board de acesso pelo Workspace.
 
-Lists continuam como placeholder, sem interface de CRUD implementada.
+As colunas exibem Cards ativos e arquivados. `board-card-drag-handle` estiliza a alça, `board-card-sortable.is-dragging` distingue o Card arrastado e `card-drop-zone.is-drop-target` destaca a área de destino.
 
 ---
 

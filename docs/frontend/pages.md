@@ -1779,7 +1779,7 @@ O acesso é validado pelo backend de acordo com as regras do Workspace e do Boar
 
 Permitir visualização, favorito, exclusão, arquivamento e gerenciamento de membros de um Board específico. A edição está disponível na WorkspacePage.
 
-Nesta etapa do projeto a página apresenta as informações gerais do Board e prepara a estrutura para a futura implementação das Lists.
+A página apresenta as informações gerais do Board e suas Lists e Cards.
 
 ---
 
@@ -1809,7 +1809,7 @@ Nesta etapa do projeto a página apresenta as informações gerais do Board e pr
 - Redirecionar automaticamente para o Workspace após arquivar.
 - Exibir permanentemente o gerenciamento de membros do Board.
 - Carregar, adicionar, alterar roles e remover membros conforme a `BoardRole`.
-- Preparar a área destinada às Lists.
+- Gerenciar Lists e Cards conforme o papel do usuário no Board.
 
 ---
 
@@ -1827,7 +1827,7 @@ A página apresenta:
 - Cor de fundo.
 - Imagem de capa.
 - Lista de membros.
-- Área destinada às Lists.
+- Lists e Cards.
 
 ---
 
@@ -1856,7 +1856,7 @@ São exibidos:
 - Informações gerais.
 - Cards de resumo.
 - Lista de membros.
-- Área destinada às Lists.
+- Lists e Cards.
 
 ---
 
@@ -2059,6 +2059,18 @@ Interface e contador atualizados
 
 ---
 
+## Lists e Cards na BoardPage
+
+Cada coluna carrega seus Cards ativos por ordem de posição. A interface oferece criação inline e abre o modal de detalhes ao selecionar o título de um Card. O modal permite consultar título, descrição e prazo e, para quem pode editar, atualizar os campos, arquivar ou confirmar a exclusão permanente. Cada coluna também oferece uma seção de Cards arquivados com ação de restauração para editores.
+
+`OWNER`, `ADMIN` e `MEMBER` do Board têm acesso às ações de edição e à alça de movimentação. `VIEWER` e quem acessa somente para leitura pelo Workspace podem consultar os Cards.
+
+A alça de Card usa o mesmo contexto dnd-kit das Lists. O filtro de colisão distingue Lists, Cards e áreas de destino de Cards, inclusive em colunas vazias. O movimento de Lists permanece horizontal. Escape cancela o gesto e, se o dnd-kit informa que não há alvo válido, a interface não envia a movimentação. A detecção usa `closestCenter` entre alvos compatíveis, que pode selecionar um alvo pela proximidade.
+
+Ao aceitar um destino, a interface consulta os Cards de origem e destino, calcula a posição e chama a API. Exibe destaque de alvo, andamento e resultado, bloqueia ações conflitantes e reconsulta Cards após sucesso ou falha. Ao atualizar a página, a listagem lê novamente a ordem persistida. Os [cenários manuais](../roadmap.md#validação-funcional) registram o comportamento observado para Escape, soltura fora das Lists e falha de conexão.
+
+---
+
 # Páginas Planejadas
 
 ## ProfilePage
@@ -2155,7 +2167,7 @@ Responsabilidades planejadas:
 - Breadcrumb da BoardPage.
 - Cards de resumo do Board.
 - Exibição de membros do Board.
-- Área inicial destinada às Lists.
+- Lists e Cards.
 - Exclusão de Board pelo `OWNER` do Board.
 - Botão Excluir Board.
 - Modal de confirmação da exclusão do Board.

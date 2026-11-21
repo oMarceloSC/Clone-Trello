@@ -4,7 +4,7 @@
 
 O frontend do Clone do Trello foi planejado para utilizar componentes reutilizáveis conforme a aplicação evoluir.
 
-Os componentes de domínio incluem WorkspaceMembersSection e BoardMembersSection. Formulários e modais ainda permanecem nas páginas/seções; componentes genéricos adicionais são planejados.
+Os componentes de domínio incluem WorkspaceMembersSection e BoardMembersSection. Lists e Cards têm componentes próprios em `features/lists/components` e `features/cards/components`. Componentes genéricos adicionais são planejados.
 
 À medida que novas funcionalidades forem desenvolvidas, esses elementos serão extraídos para uma biblioteca própria de componentes.
 
@@ -173,6 +173,12 @@ Exibe avatar, nome, email, role, contador e indicação do usuário atual. OWNER
 A seleção de candidatos consulta WorkspaceMembers ao abrir o modal. Operações exibem loading/erro/sucesso e atualizam o pai funcionalmente, preservando membros não afetados e o favorito atual. A remoção não exclui conta ou participação no Workspace; seus proprietários/administradores podem continuar visualizando o Board.
 
 O carregamento inicial dos membros pertence à BoardPage. Os modais reutilizam classes globais existentes, sem componente Modal genérico.
+
+---
+
+# Componentes de Lists e Cards
+
+`BoardLists` coordena a coleção de colunas e o contexto de drag-and-drop. `ListColumn` hospeda `ListCards`, que carrega as coleções e abre `CreateCardForm` e `CardDetailsModal`. `SortableCard` fornece a alça dedicada, e `CardDropZone` mantém um alvo disponível mesmo quando a coluna está vazia. O [fluxo da BoardPage](pages.md#lists-e-cards-na-boardpage) detalha as operações e permissões.
 
 ---
 

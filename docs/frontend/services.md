@@ -2391,13 +2391,15 @@ Os serviços devem:
 
 ---
 
+# Serviços de Lists e Cards
+
+`list.service.ts` integra CRUD e reordenação de Lists. `card.service.ts` fornece `list`, `listArchived`, `get`, `create`, `update`, `archive`, `restore`, `move` e `delete`. As consultas de Cards aceitam `AbortSignal`. Consulte a [API de Lists](../api/lists.md) e a [API de Cards](../api/cards.md).
+
+O contrato de `archive` retorna apenas uma mensagem. O método do frontend tenta ler `response.data.card` e o modal usa apenas a conclusão da requisição para recarregar a List.
+
 # Serviços Planejados
 
 ```text
-list.service.ts
-
-card.service.ts
-
 notification.service.ts
 ```
 
@@ -2462,8 +2464,6 @@ notification.service.ts
 
 - Cancelamento de convites.
 - Reenvio de convites.
-- Serviços de Lists.
-- Serviços de Cards.
 - Integração com envio de email para recuperação de senha.
 - Refresh Token.
 - Cache de requisições.

@@ -416,6 +416,12 @@ Dashboard e WorkspaceMembersSection iniciam consultas em effects com callbacks e
 
 ---
 
+# Lists e Cards
+
+`BoardLists` coordena as mutações de Lists e a movimentação de Cards. `ListCards` mantém as coleções ativa e arquivada, os estados de consulta e criação e o ID do Card selecionado. As consultas de Cards usam cancelamento e geração de requisição para descartar respostas obsoletas. Um contador de atualização pede nova consulta de Cards após sucesso ou falha de movimentação.
+
+---
+
 # Fluxo Geral do Estado
 
 ```text

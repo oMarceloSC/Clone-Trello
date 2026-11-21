@@ -162,7 +162,7 @@ O frontend também utiliza um `AuthenticatedLayout`, responsável por compartilh
 
 # Organização por Módulos
 
-Implementados: `auth`, `workspaces` e `boards`. Árvores que incluem Lists, Cards e módulos posteriores representam a expansão planejada.
+Os módulos `auth`, `workspaces`, `boards`, `lists` e `cards` estão implementados. Os demais módulos da árvore são planejados.
 
 Cada domínio da aplicação possui seu próprio módulo.
 
@@ -629,7 +629,7 @@ O módulo implementa CRUD, favoritos por BoardMember, arquivamento/restauração
 
 WorkspaceMember e BoardMember são vínculos distintos. A autorização de escrita exige ambos; a visualização também admite OWNER/ADMIN do Workspace sem BoardMember. Remover um WorkspaceMember limpa seus vínculos com Boards do mesmo Workspace em transação e é bloqueado quando ele possui Board como OWNER.
 
-No frontend, WorkspacePage cria/edita/restaura Boards. BoardPage consulta o Board, gerencia favorito, arquivamento, exclusão e membros. BoardMembersSection é controlado por `board.members` no pai; atualizações funcionais preservam estado recente. Lists permanecem como placeholder e próxima milestone.
+No frontend, WorkspacePage cria/edita/restaura Boards. BoardPage consulta o Board, gerencia favorito, arquivamento, exclusão e membros. BoardMembersSection é controlado por `board.members` no pai; atualizações funcionais preservam estado recente. BoardPage também integra [Lists e Cards](frontend/pages.md#lists-e-cards-na-boardpage). A hierarquia persistida é `Board → BoardList → Card`.
 
 ---
 
@@ -780,8 +780,7 @@ Sem alterar módulos existentes.
 
 ### Backend
 
-- Lists.
-- Cards.
+- Funcionalidades adicionais de Cards, conforme o [roadmap](roadmap.md#milestone-6--cards).
 - Socket.IO.
 - Upload de arquivos.
 - Dashboard avançado.
@@ -794,16 +793,11 @@ Sem alterar módulos existentes.
 
 A evolução da arquitetura seguirá a seguinte ordem:
 
-1. Lists.
-2. Cards.
-3. Comentários.
-4. Etiquetas.
-5. Checklists.
-6. Uploads.
-7. Socket.IO.
-8. Notificações.
-9. Dashboard avançado.
-10. Busca Global.
+1. Funcionalidades restantes de Cards conforme o roadmap, incluindo comentários, etiquetas, checklists e anexos.
+2. Socket.IO.
+3. Notificações.
+4. Dashboard avançado.
+5. Busca Global.
 
 Cada novo módulo continuará seguindo exatamente a arquitetura descrita neste documento, mantendo:
 

@@ -112,7 +112,9 @@ features/
 
 ├── auth/
 ├── workspaces/
-└── boards/
+├── boards/
+├── lists/
+└── cards/
 ```
 
 Futuramente serão adicionadas:
@@ -120,8 +122,6 @@ Futuramente serão adicionadas:
 ```text
 features/
 
-├── lists/
-├── cards/
 ├── comments/
 ├── notifications/
 └── profile/
@@ -266,7 +266,7 @@ NotFoundPage
 
 A `AcceptWorkspaceInvitationPage` permite aceitar convites utilizando o token presente na URL, enquanto o `DashboardPage` também permite aceitar convites diretamente através da listagem de convites pendentes.
 
-A `BoardPage` é responsável por apresentar as informações de um Board específico, exibindo seus membros, informações gerais, Workspace de origem e preparando a estrutura para a futura implementação das Lists.
+A `BoardPage` é responsável por apresentar as informações de um Board específico, exibindo seus membros, informações gerais, Workspace de origem e integrando [Lists e Cards](pages.md#lists-e-cards-na-boardpage).
 
 A `NotFoundPage` é renderizada quando nenhuma rota corresponde ao endereço acessado, permitindo retornar à página anterior, ao Dashboard ou ao Login.
 
@@ -481,15 +481,7 @@ listPendingWorkspaceInvitations()
 acceptWorkspaceInvitation()
 ```
 
-Futuramente serão criados:
-
-```text
-list.service.ts
-
-card.service.ts
-
-notification.service.ts
-```
+Lists e Cards utilizam `list.service.ts` e `card.service.ts`. O serviço `notification.service.ts` permanece planejado.
 
 A comunicação HTTP é centralizada por uma instância compartilhada do Axios, responsável por:
 
@@ -1881,10 +1873,9 @@ As próximas implementações serão:
 2. Reenvio de convites.
 3. Componentes compartilhados.
 4. Testes e refinamentos futuros da feature Boards, cuja Milestone 4 está concluída.
-5. Feature Lists.
-6. Feature Cards.
-7. Integração em tempo real com Socket.IO.
-8. Envio da recuperação de senha por email.
+5. Funcionalidades restantes de Cards conforme o [roadmap](../roadmap.md#milestone-6--cards).
+6. Integração em tempo real com Socket.IO.
+7. Envio da recuperação de senha por email.
 
 Todas as novas páginas autenticadas utilizarão o `AuthenticatedLayout`.
 

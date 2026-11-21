@@ -174,7 +174,7 @@ Resposta **200**:
 
 Códigos principais: **200** excluída; **400** UUID inválido; **401** autenticação inválida; **403** role insuficiente; **404** List/Board inexistente ou sem acesso; **500** erro interno.
 
-Não há restauração ou exclusão lógica. O modelo atual não possui Cards ou outros modelos filhos de List. A confirmação apresentada pelo frontend não é uma etapa adicional da API.
+A exclusão é permanente e remove em cascata os Cards ativos e arquivados da List. O frontend solicita confirmação antes de enviar o DELETE.
 
 ## 5. Reordenar Lists
 

@@ -86,6 +86,7 @@ Atualmente o backend já possui:
 - ✅ Boards: CRUD, favoritos por usuário, arquivamento/restauração e membros.
 - ✅ Lists: criação, listagem, edição, exclusão e reordenação com permissões por Board.
 - ✅ Criação concorrente de Lists protegida por transação serializável.
+- ✅ Cards com CRUD, arquivamento, restauração e movimentação com posições persistidas no PostgreSQL.
 
 ---
 
@@ -115,6 +116,7 @@ O frontend já possui:
 - ✅ BoardPage com favorito, arquivamento, exclusão e gerenciamento de membros.
 - ✅ Lists na BoardPage: criação, edição inline e exclusão com confirmação, sem reload.
 - ✅ Drag-and-drop horizontal de Lists por mouse/toque, reordenação por teclado e recuperação de sincronização.
+- ✅ Cards na BoardPage com modal de detalhes, edição de prazo opcional e movimentação dentro da mesma List ou entre Lists do Board.
 
 ---
 
@@ -145,7 +147,7 @@ O frontend já possui:
 - React Hook Form
 - Zod
 - CSS global em `src/index.css`
-- dnd-kit para reordenação de Lists
+- dnd-kit para reordenação de Lists e movimentação de Cards
 
 ---
 
@@ -275,6 +277,7 @@ Toda a documentação técnica do projeto está organizada na pasta `docs`, sepa
 | [workspace.md](docs/api/workspace.md) | Workspaces, membros e convites |
 | [boards.md](docs/api/boards.md) | Boards, membros e permissões |
 | [lists.md](docs/api/lists.md) | CRUD, reordenação e permissões de Lists |
+| [cards.md](docs/api/cards.md) | CRUD, movimentação, arquivamento e permissões de Cards |
 
 ---
 
@@ -389,7 +392,7 @@ O desenvolvimento do projeto é dividido em milestones, permitindo evolução co
 | ✅ Milestone 3 — Frontend de Integração | Concluído |
 | ✅ Milestone 4 — Boards | Concluído |
 | ✅ Milestone 5 — Lists | Concluído no escopo auditado |
-| ⏳ Milestone 6 — Cards | Planejado |
+| 🚧 Milestone 6 — Cards | Em andamento |
 | ⏳ Milestone 7 — Colaboração em Tempo Real | Planejado |
 | ⏳ Milestone 8 — Dashboard, Atividades e Notificações | Planejado |
 | ⏳ Milestone 9 — Refinamento do Frontend | Planejado |
@@ -461,10 +464,10 @@ Instale as dependências:
 npm install
 ```
 
-Configure o arquivo `.env`:
+Configure `backend/.env`. Para o PostgreSQL do `docker-compose.yml`, use:
 
 ```env
-DATABASE_URL="postgresql://usuario:senha@localhost:5433/clone_trello"
+DATABASE_URL="postgresql://trello_user:trello_password@localhost:5433/trello_clone"
 JWT_SECRET="sua-chave-secreta"
 PORT=3333
 ```
@@ -497,7 +500,7 @@ http://localhost:3333
 
 # 💻 Frontend
 
-Entre na pasta:
+Em outro terminal, a partir da raiz do projeto, entre na pasta:
 
 ```bash
 cd frontend
@@ -553,7 +556,9 @@ A auditoria registrou **27 testes de API e 16 cenários de navegador aprovados**
 
 Verificações estáticas disponíveis: `npx.cmd tsc --noEmit` no backend; `npx.cmd tsc -p tsconfig.app.json --noEmit`, `npm.cmd run lint` e `npm.cmd run build` no frontend. O script genérico `npm test` do backend ainda é um placeholder; utilize `test:lists` para esta suíte.
 
-Permanecem fora da cobertura: outros navegadores, leitor de tela, dispositivo móvel físico, carga elevada e todas as combinações de concorrência entre clientes. A conclusão da milestone não equivale a homologação de produção. Testes dos demais módulos e infraestrutura de CI permanecem planejados.
+Permanecem fora da cobertura: outros navegadores, leitor de tela, dispositivo móvel físico, carga elevada e todas as combinações de concorrência entre clientes. A conclusão da milestone não equivale a homologação de produção. A infraestrutura de CI permanece planejada.
+
+A Milestone 6 registrou **10/10 cenários manuais aprovados**. O [roadmap](docs/roadmap.md#validação-funcional) reúne os cenários e as pendências de validação direta na API e de automação específica de movimentação.
 
 ---
 
@@ -615,17 +620,16 @@ As próximas etapas do projeto incluem:
 
 ## Lists
 
-- CRUD e reordenação concluídos na Milestone 5. A validação complementar segue as limitações da auditoria; o próximo módulo funcional é Cards.
+- CRUD e reordenação concluídos na Milestone 5. A validação complementar segue as limitações da auditoria.
 
 ---
 
 ## Cards
 
-- CRUD completo.
+- Associação de membros aos Cards.
 - Comentários.
 - Etiquetas.
 - Checklist.
-- Datas de entrega.
 - Upload de anexos.
 
 ---

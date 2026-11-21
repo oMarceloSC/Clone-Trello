@@ -463,19 +463,23 @@ Também implementado: id UUID, token único, userId, expiresAt, usedAt opcional 
 
 ---
 
+# Model: BoardList
+
+A migration `20261007003215_create_board_listt` adiciona `BoardList`, com ID UUID, título, posição inteira, timestamps e FK `boardId`. Há índices em `boardId` e `[boardId, position]`. Excluir o Board remove suas Lists em cascata.
+
+# Model: Card
+
+A migration `20261016005239_create_cards` adiciona `Card`, com ID UUID, título, descrição opcional, posição inteira, prazo opcional, sinalizador `isArchived` com padrão `false`, timestamps e FK `listId`. Há índices em `listId`, `[listId, position]` e `isArchived`. Excluir a List remove seus Cards em cascata.
+
+A posição é persistida no PostgreSQL e seu índice não é único. O caso de uso de movimentação recompõe a ordem dos Cards ativos em transação. Consulte a [API de Cards](api/cards.md#posições) para as regras de inserção e arquivamento.
+
+---
+
 # Modelos Planejados
 
 Os próximos modelos serão implementados na seguinte ordem.
 
 ```
-List
-
-↓
-
-Card
-
-↓
-
 CardMember
 
 ↓
@@ -544,7 +548,7 @@ Board
 
 ↓
 
-List
+BoardList
 
 ↓
 
@@ -582,4 +586,4 @@ A modelagem foi planejada para:
 
 # Próxima Atualização
 
-A Milestone 5 prevê List e seu relacionamento com Board. List, Card e os demais modelos da seção planejada ainda não existem no schema atual.
+As próximas alterações no schema para Cards seguem as funcionalidades pendentes da [Milestone 6](roadmap.md#milestone-6--cards).
